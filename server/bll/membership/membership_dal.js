@@ -97,6 +97,7 @@ function getMembershipById(id, cb) {
 }
 
 function getMembershipByEmail(email, cb) {
+  // return new Promise((resolve) => {
   //log('in getMembershipByEmail = ' + email);
   var connection = mypassDBConnection.GetConnection();
   //var options = { sql: "CALL membershipGetByEmail('" + email + "');" };

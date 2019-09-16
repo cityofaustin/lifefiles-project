@@ -60,22 +60,16 @@ function Register(req, res, next) {
   req.register.userip = req.ip;
 
   var errors = !req.register.email || !req.register.first || !req.register.last || !req.register.password;
-
   if (errors) {
     var authResponse = new AuthResponse();
+    authResponse.success=false;
     authResponse.error = 'all data required';
     res.status(200).send(authResponse);
     return;
   }
   else {
-
-    var authResponse = new AuthResponse();
-    // authResponse.error = errors;
-    res.status(200).send(authResponse);
-
     // req.register.email
-    bll.membership.getMembershipByEmail(req.register.email, function (response) {
-      //logger.log('auth getMembershipByEmail',util.inspect(response));
+    bll.membership.getByEmail(req.register.email, function (response) {
       if (!response.success) {
         var authResponse = new AuthResponse();
         authResponse.error = 'There was an error attempting to complete request.';
@@ -323,7 +317,7 @@ function CheckIsLoggedIn(req, res, next) {
 
 function AuthResponse(response) {
 
-  this.success;
+  this.success=true;
   this.error;
 
   if (response) {

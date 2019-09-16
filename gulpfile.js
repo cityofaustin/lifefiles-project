@@ -57,9 +57,9 @@ function Web_JS(cb) {
 exports.Web_Vendor=Web_Vendor;
 function Web_Vendor(cb) {
   var srcpaths = [
-    'webclient/vendor/jquery/jquery.min.js',
-    'webclient/vendor/lodash/lodash.min.js',
-    'webclient/vendor/moment/min/moment.min.js',
+    'webclient/vendor/jquery.min.js',
+    'webclient/vendor/lodash.min.js',
+    'webclient/vendor/moment.min.js',
   ];
   gulp.src(srcpaths).on("error", handleError).pipe(gulp.dest('publish/webclient/vendor/'));
 

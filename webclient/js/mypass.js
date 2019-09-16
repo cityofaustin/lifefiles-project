@@ -84,9 +84,7 @@
       });
     }
 
-    // function saveData(options) {
-    //   return postMsg('data/save', options);
-    // }
+    
     __mypass.postMsg=postMsg;
     function postMsg(route, data) {
 
@@ -102,20 +100,13 @@
         xhr.setRequestHeader("Content-Type", contentType);
         xhr.onload = function (e) {
           if (this.status === 200) {
-            // res.data = JSON.parse(this.response);
-            // res.success = res.data.success;
             resolve(JSON.parse(this.response));
           }
           else {
-            if (this.response) {
-              resolve(JSON.parse(this.response));
-            }
-            else {
               var res = new Response();
               res.success = false;
               resolve(res);
             }
-          }
         };
 
         xhr.onerror = function (e) {
