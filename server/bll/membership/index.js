@@ -2,7 +2,9 @@
 var
   util = require("util"),
   // membership_dal = require("./membership_dal"),
-  common = require("../../common")
+  common = require("../../common"),
+  appconfig = require('../../appconfig'),
+  microdb = require('../../microdb')(appconfig.microdb_api_key)
   ;
 
 
@@ -18,10 +20,20 @@ exports.getByEmail = getByEmail;
 // exports.getMembershipBy_PasswordRestCode = getMembershipBy_PasswordRestCode;
 
 function getByEmail(email, cb) {
-  dal.membership.getMembershipByEmail(email, function (response) {
-    cb(response);
+
+  return new Promise((resolve) => {
+    // common.logger.log('microdb.Tables.membership ' + util.inspect(microdb.Tables.membership));
+    microdb.Tables.membership.get({'email': email }).then(function (res) {
+      var response = new common.response();
+      resolve(response);
+    }
+    );
   });
+  // dal.membership.getMembershipByEmail(email, function (response) {
+  //   cb(response);
+  // });
 }
+
 
 
 function membershipEmailConfirm(req, cb) {

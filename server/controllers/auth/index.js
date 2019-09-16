@@ -69,71 +69,71 @@ function Register(req, res, next) {
   }
   else {
     // req.register.email
-    bll.membership.getByEmail(req.register.email, function (response) {
-      if (!response.success) {
+    bll.membership.getByEmail(req.register.email).then(function (response) {
+      // if (!response.success) {
         var authResponse = new AuthResponse();
         authResponse.error = 'There was an error attempting to complete request.';
         authResponse.success = false;
         res.status(200).send(authResponse);
         return;
-      }
-      else {
-        //logger.log('response.Membership : '+ util.inspect(response.Membership));
-        var authResponse = new AuthResponse(response);
-        if (response.HasMembership) {
-          authResponse.success = false;
-          res.status(200).send(authResponse);
-          return;
-        }
-        else {
-          if (!req.register.IsReg) {
-            req.register.Password = uuidV4();
-            req.register.TempPassword = req.register.Password;
-          }
+      // }
+      // else {
+      //   //logger.log('response.Membership : '+ util.inspect(response.Membership));
+      //   var authResponse = new AuthResponse(response);
+      //   if (response.HasMembership) {
+      //     authResponse.success = false;
+      //     res.status(200).send(authResponse);
+      //     return;
+      //   }
+      //   else {
+      //     if (!req.register.IsReg) {
+      //       req.register.Password = uuidV4();
+      //       req.register.TempPassword = req.register.Password;
+      //     }
 
-          var salt = bcrypt.genSaltSync(5);
-          var passwordHash = bcrypt.hashSync(req.register.Password, salt);
-          req.register.Password = passwordHash;
-          req.register.EmailCode = uuidV4();
+      //     var salt = bcrypt.genSaltSync(5);
+      //     var passwordHash = bcrypt.hashSync(req.register.Password, salt);
+      //     req.register.Password = passwordHash;
+      //     req.register.EmailCode = uuidV4();
 
-          bll.membership.createMembership(req.register, function (createRes) {
-            //logger.log('Calling bll.membership.createMembership'+util.inspect(createRes));
-            if (!createRes.success) {
-              authResponse = new AuthResponse();
-              authResponse.success = false;
-              res.status(200).send(authResponse);
-              return;
-            }
-            else {
-              var acct = {};
-              acct.MembershipId = createRes.MembershipId;
-              acct.AccountName = 'My Account';
+      //     bll.membership.createMembership(req.register, function (createRes) {
+      //       //logger.log('Calling bll.membership.createMembership'+util.inspect(createRes));
+      //       if (!createRes.success) {
+      //         authResponse = new AuthResponse();
+      //         authResponse.success = false;
+      //         res.status(200).send(authResponse);
+      //         return;
+      //       }
+      //       else {
+      //         var acct = {};
+      //         acct.MembershipId = createRes.MembershipId;
+      //         acct.AccountName = 'My Account';
 
-              bll.account.Create(acct, function (crtRes) {
-                //log('create crtRes = '+util.inspect(crtRes));
-                if (crtRes.success && crtRes.HasAccount) {
-                  myServices.email.SendRegisterEmail(req.register, function () { });
+      //         bll.account.Create(acct, function (crtRes) {
+      //           //log('create crtRes = '+util.inspect(crtRes));
+      //           if (crtRes.success && crtRes.HasAccount) {
+      //             myServices.email.SendRegisterEmail(req.register, function () { });
 
-                  authResponse = new AuthResponse(createRes);
-                  authResponse.success = true;
-                  if (!req.register.IsReg) {
-                    authResponse.temppass = req.register.TempPassword;
-                  }
+      //             authResponse = new AuthResponse(createRes);
+      //             authResponse.success = true;
+      //             if (!req.register.IsReg) {
+      //               authResponse.temppass = req.register.TempPassword;
+      //             }
 
-                }
-                else {
-                  authResponse = new AuthResponse();
-                  authResponse.success = false;
-                  //authResponse.error=errors.NO_CREATE;
-                }
-                res.status(200).send(authResponse);
-                return;
-              });
-            }
+      //           }
+      //           else {
+      //             authResponse = new AuthResponse();
+      //             authResponse.success = false;
+      //             //authResponse.error=errors.NO_CREATE;
+      //           }
+      //           res.status(200).send(authResponse);
+      //           return;
+      //         });
+      //       }
 
-          });
-        }
-      }
+      //     });
+      //   }
+      // }
     });
 
   }

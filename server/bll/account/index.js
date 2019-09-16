@@ -7,8 +7,8 @@ var
  membership = require('../membership'),
  bcrypt = require('bcryptjs'),
  uuidV4 = require('uuid/v4'),
- moment = require('moment'),
- account_dal = require("./account_dal")
+ moment = require('moment')
+//  account_dal = require("./account_dal")
 ;
 
 exports.SaveProfile = SaveProfile;
