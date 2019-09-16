@@ -68,7 +68,6 @@ function Register(req, res, next) {
     return;
   }
   else {
-    // req.register.email
     bll.membership.getByEmail(req.register.email).then(function (response) {
       if (!response.success) {
         var authResponse = new AuthResponse();
@@ -77,8 +76,21 @@ function Register(req, res, next) {
         res.status(200).send(authResponse);
         return;
       }
+      else if(response.users){
+        var authResponse = new AuthResponse();
+        authResponse.error = 'account exists';
+        authResponse.success = false;
+        res.status(200).send(authResponse);
+        return;
+      }
       else {
      
+          var salt = bcrypt.genSaltSync(5);
+          var passwordHash = bcrypt.hashSync(req.register.password, salt);
+          req.register.password = passwordHash;
+          req.register.emailcode = uuidV4();
+
+
         var uu={
           email:req.register.email,
           first_name:req.register.first,
@@ -87,75 +99,14 @@ function Register(req, res, next) {
         };
         bll.membership.createMembership(uu).then(function(res){
           var authResponse = new AuthResponse();
-          // authResponse.error = 'There was an error attempting to complete request.';
+          // acct.MembershipId = res.MembershipId;
           authResponse.success = true;
           res.status(200).send(authResponse);
           return;
         });
       }
-      //   //logger.log('response.Membership : '+ util.inspect(response.Membership));
-      //   var authResponse = new AuthResponse(response);
-      //   if (response.HasMembership) {
-      //     authResponse.success = false;
-      //     res.status(200).send(authResponse);
-      //     return;
-      //   }
-      //   else {
-      //     if (!req.register.IsReg) {
-      //       req.register.Password = uuidV4();
-      //       req.register.TempPassword = req.register.Password;
-      //     }
-
-      //     var salt = bcrypt.genSaltSync(5);
-      //     var passwordHash = bcrypt.hashSync(req.register.Password, salt);
-      //     req.register.Password = passwordHash;
-      //     req.register.EmailCode = uuidV4();
-
-      //     bll.membership.createMembership(req.register, function (createRes) {
-      //       //logger.log('Calling bll.membership.createMembership'+util.inspect(createRes));
-      //       if (!createRes.success) {
-      //         authResponse = new AuthResponse();
-      //         authResponse.success = false;
-      //         res.status(200).send(authResponse);
-      //         return;
-      //       }
-      //       else {
-      //         var acct = {};
-      //         acct.MembershipId = createRes.MembershipId;
-      //         acct.AccountName = 'My Account';
-
-      //         bll.account.Create(acct, function (crtRes) {
-      //           //log('create crtRes = '+util.inspect(crtRes));
-      //           if (crtRes.success && crtRes.HasAccount) {
-      //             myServices.email.SendRegisterEmail(req.register, function () { });
-
-      //             authResponse = new AuthResponse(createRes);
-      //             authResponse.success = true;
-      //             if (!req.register.IsReg) {
-      //               authResponse.temppass = req.register.TempPassword;
-      //             }
-
-      //           }
-      //           else {
-      //             authResponse = new AuthResponse();
-      //             authResponse.success = false;
-      //             //authResponse.error=errors.NO_CREATE;
-      //           }
-      //           res.status(200).send(authResponse);
-      //           return;
-      //         });
-      //       }
-
-      //     });
-      //   }
-      // }
     });
-
   }
-
-  // });
-
-
 
 }
 

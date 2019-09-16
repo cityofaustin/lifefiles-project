@@ -25,6 +25,10 @@ function getByEmail(email) {
   return new Promise((resolve) => {
     microdb.Tables.membership.get({ 'email': email }).then(function (res) {
       var response = new common.response();
+      if(res.success && res.data.Rows.length>0){
+        response.users = res.data.Rows;
+      }
+      
       response.success=true;
       resolve(response);
     }
