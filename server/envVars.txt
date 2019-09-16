@@ -1,0 +1,5 @@
+SERVER_PORT=9005
+NODE_ENV=local
+ENABLE_LOGGING=true
+LOGFILENAME=app_log.log
+
