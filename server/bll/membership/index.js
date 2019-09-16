@@ -9,8 +9,9 @@ var
 
 
 exports.getByEmail = getByEmail;
+exports.createMembership = createMembership;
+
 // exports.getMembershipById = getMembershipById;
-// exports.createMembership = createMembership;
 // exports.membershipEmailConfirm = membershipEmailConfirm;
 // exports.resetPasswordComplete = resetPasswordComplete;
 // exports.UpdateLastLogin = UpdateLastLogin;
@@ -19,12 +20,12 @@ exports.getByEmail = getByEmail;
 // exports.ClearBadAttempt = ClearBadAttempt;
 // exports.getMembershipBy_PasswordRestCode = getMembershipBy_PasswordRestCode;
 
-function getByEmail(email, cb) {
+function getByEmail(email) {
 
   return new Promise((resolve) => {
-    // common.logger.log('microdb.Tables.membership ' + util.inspect(microdb.Tables.membership));
-    microdb.Tables.membership.get({'email': email }).then(function (res) {
+    microdb.Tables.membership.get({ 'email': email }).then(function (res) {
       var response = new common.response();
+      response.success=true;
       resolve(response);
     }
     );
@@ -34,6 +35,36 @@ function getByEmail(email, cb) {
   // });
 }
 
+function createMembership(user) {
+  return new Promise((resolve) => {
+    var row = microdb.Tables.membership.addRow();
+
+    // var createREq={
+    //   email:req.register.email,
+    //   first_name:req.register.first,
+    //   last_name:req.register.last,
+    //   password:req.register.password
+    // };
+
+    var keys = Object.keys(user);
+    for (var i = 0; i < keys.length; i++) {
+      var col =keys[i];
+      row[col].Value = user[col];
+      // row.first_name.Value = 'first name ZZ ' + i;
+      // apitest_app.customers.save(row).then(onSaveData);
+    }
+
+    microdb.Tables.membership.save(row).then(function (res) {
+      var response = new common.response();
+      response.success=true;
+      resolve(response);
+    }
+    );
+  });
+  // dal.membership.createMembership(userInfo, function (response) {
+  //   cb(response);
+  // });
+}
 
 
 function membershipEmailConfirm(req, cb) {
@@ -59,11 +90,7 @@ function getMembershipById(id, cb) {
 
 
 
-function createMembership(userInfo, cb) {
-  dal.membership.createMembership(userInfo, function (response) {
-    cb(response);
-  });
-}
+
 
 
 function resetPasswordComplete(req) {

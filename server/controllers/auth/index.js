@@ -57,7 +57,7 @@ function AccountConfirm(req, res, next) {
 
 function Register(req, res, next) {
   req.register = req.body.data;
-  req.register.userip = req.ip;
+  // req.register.userip = req.ip;
 
   var errors = !req.register.email || !req.register.first || !req.register.last || !req.register.password;
   if (errors) {
@@ -70,14 +70,29 @@ function Register(req, res, next) {
   else {
     // req.register.email
     bll.membership.getByEmail(req.register.email).then(function (response) {
-      // if (!response.success) {
+      if (!response.success) {
         var authResponse = new AuthResponse();
         authResponse.error = 'There was an error attempting to complete request.';
         authResponse.success = false;
         res.status(200).send(authResponse);
         return;
-      // }
-      // else {
+      }
+      else {
+     
+        var uu={
+          email:req.register.email,
+          first_name:req.register.first,
+          last_name:req.register.last,
+          password:req.register.password
+        };
+        bll.membership.createMembership(uu).then(function(res){
+          var authResponse = new AuthResponse();
+          // authResponse.error = 'There was an error attempting to complete request.';
+          authResponse.success = true;
+          res.status(200).send(authResponse);
+          return;
+        });
+      }
       //   //logger.log('response.Membership : '+ util.inspect(response.Membership));
       //   var authResponse = new AuthResponse(response);
       //   if (response.HasMembership) {
