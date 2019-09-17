@@ -1,7 +1,6 @@
 (function (mypass) {
   'use strict';
 
-  mypass.signup = signup;
   mypass.regmodule('signup', '/ui/auth/signup/signup.html', 'onSignupLoad',mypass.Events.APP_NAV.signup);
 
   function init() {

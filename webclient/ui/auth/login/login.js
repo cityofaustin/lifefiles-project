@@ -1,7 +1,6 @@
 (function (mypass) {
   'use strict';
 
-  mypass.login = login;
   mypass.regmodule('login', '/ui/auth/login/login.html', 'onLoginLoad', mypass.Events.APP_NAV.login);
 
   function init() {
@@ -22,7 +21,6 @@
   }
 
   function login() {
-    // console.log('login');
     var req = {
       email: loginForm.elements.email.value,
       password: loginForm.elements.password.value
@@ -33,9 +31,11 @@
   function onlogin(res) {
     if(res.success){
       mypass.session.startSession(res.data);
+      var event = new CustomEvent(mypass.Events.APP_NAV.nav, { detail: { route: mypass.Events.APP_NAV.dashboard } });
+      window.dispatchEvent(event);
     }
     else{
-      var dd='';
+      var dd='SHOW LOGIN ERROR';
     }
     
   }

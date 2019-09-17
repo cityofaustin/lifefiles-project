@@ -1,13 +1,11 @@
+'use strict';
 (function () {
 
   window.mypass = new mypass();
 
   function mypass() {
-    'use strict';
-
     var dataCache;
     var pageFragments = {};
-
     var myapp = {
       baseURL: 'http://localhost',
       port: ':9005/',
@@ -15,56 +13,35 @@
 
     var __mypass = this;
     this.regmodule = regmodule;
-    // this.showLogin = showLogin;
 
     function init() {
       $(document).ready(function () {
-        
         window.addEventListener(__mypass.Events.APP_NAV.nav, onNavigate);
-        //show login page if not logged in
         if (!__mypass.isAuth) {
-          // __mypass.showLogin();
           loadPage(pageFragments.login);
         }
-
-
-        // getTables().then(function (res) {
-        //   myapp.Tables = res.data.Tables.sort(sortAlpha);
-        //   for (var index = 0; index < myapp.Tables.length; index++) {
-        //     const element = myapp.Tables[index];
-        //     var el = document.createElement('li');
-        //     el.innerText = element.name;
-        //     el.addEventListener('click', OnClick, { useCapture: true });
-        //     $('.left ul').append(el);
-        //   }
-        // });
-        // $('#createData').on('click', function(){showDynamicForm();});
-        // $('.btn-save').on('click',SaveForm);
       });
     }
 
     function onNavigate(evt) {
-      var keys=Object.keys(pageFragments);
+      var keys = Object.keys(pageFragments);
       for (var index = 0; index < keys.length; index++) {
         var key = keys[index];
-        if(pageFragments[key].navEvent==evt.detail.route){
+        if (pageFragments[key].navEvent == evt.detail.route) {
           loadPage(pageFragments[key]);
         }
       }
     }
 
     function loadPage(frag) {
-      // if (!pageFragments.login.template) {
-        // getModule(pageFragments.login).then(function (res) {
-          getModule(frag).then(function (res) {
-          $('.wrapper').empty();
-          $('.wrapper').append(res.template);
-        });
-      // }
+      getModule(frag).then(function (res) {
+        $('.wrapper').empty();
+        $('.wrapper').append(res.template);
+      });
     }
 
-    function regmodule(name, fragurl, loadEventName,navEvt) {
-      pageFragments[name] = { name: name, url: fragurl, loadEvent: loadEventName,navEvent:navEvt };
+    function regmodule(name, fragurl, loadEventName, navEvt) {
+      pageFragments[name] = { name: name, url: fragurl, loadEvent: loadEventName, navEvent: navEvt };
     }
 
     function getModule(mod) {
@@ -77,15 +54,15 @@
             mod.template = res;
             var event = new CustomEvent(mod.loadEvent);
             window.dispatchEvent(event);
-            
+
             resolve(mod);
           });
         }
       });
     }
 
-    
-    __mypass.postMsg=postMsg;
+
+    __mypass.postMsg = postMsg;
     function postMsg(route, data) {
 
       return new Promise((resolve) => {
@@ -103,10 +80,10 @@
             resolve(JSON.parse(this.response));
           }
           else {
-              var res = new Response();
-              res.success = false;
-              resolve(res);
-            }
+            var res = new Response();
+            res.success = false;
+            resolve(res);
+          }
         };
 
         xhr.onerror = function (e) {
