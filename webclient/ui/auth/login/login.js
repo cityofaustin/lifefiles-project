@@ -13,6 +13,7 @@
 
   function loginLoad(vt) {
       //ADD ANY PAGE CODE
+      $('.btn-logout').addClass('hidden');
       $('.login button.login').on('click', function () {
         login();
       });

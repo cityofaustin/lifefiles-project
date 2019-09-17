@@ -30,6 +30,7 @@
   }
 
   function logout() {
+ 
     mypass.cache.remove('account');
     mypass.datacontext.account.logout().then(function (res) {
       if (res.success && res.status == "auth.loggedout") {
