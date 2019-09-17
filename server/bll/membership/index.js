@@ -21,15 +21,16 @@ exports.createMembership = createMembership;
 // exports.getMembershipBy_PasswordRestCode = getMembershipBy_PasswordRestCode;
 
 function getByEmail(email) {
-
   return new Promise((resolve) => {
     microdb.Tables.membership.get({ 'email': email }).then(function (res) {
       var response = new common.response();
       if (res.success && res.data.Rows.length > 0) {
         response.users = res.data.Rows;
+        response.success = true;
       }
-
-      response.success = true;
+      else{
+        response.success = false;
+      }
       resolve(response);
     }
     );
@@ -52,8 +53,11 @@ function createMembership(user) {
       var response = new common.response();
       if(saveres.success && saveres.data && saveres.data.addedRows){
         response.UserId = saveres.data.addedRows[0].insertId;
+        response.success = true;
       }
-      response.success = true;
+      else{
+        response.success = false;
+      }
       resolve(response);
     }
     );

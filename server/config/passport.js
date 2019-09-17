@@ -7,14 +7,13 @@ var _ = require('lodash'),
   cookie = require('cookie'),
   cryptojs = require("crypto-js"),
   appconfig = require('./appsettings'),
-  bll = require("../bll")
+  bll = require("../bll"),
+  common=require('../common')
   ;
 
 function AuthResponse(response) {
-
   this.success;
   this.error;
-
   if (response) {
     this.success = response.success;
     this.error = response.error;
@@ -22,62 +21,47 @@ function AuthResponse(response) {
 }
 
 passport.serializeUser(function (user, done) {
-  //logger.log('passport.serializeUser '+util.inspect(user));
-  done(null, { id: user.MembershipId });
+  done(null, { id: user.primarykey });
 });
 
-passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'password', session: false }, function (email, password, done) {
+passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'password', session: false }, 
+function (email, password, done) {
 
-  //logger.log('passport call getMembershipByEmail');
-  bll.membership.getMembershipByEmail(email, function (response) {
-
-    //logger.log('response=' + util.inspect(response));
-    var user = {};
-    if (!response.success) {
-      logger.log('no good');
+  bll.membership.getByEmail(email).then(OnGetByEmail);
+  
+  function OnGetByEmail(response) {
+    if (!response.success || !response.users || (response.users && response.users.length==0)) {
+      common.logger.log('could not get user by email');
       return done(null, false, { message: 'Email ' + email + ' not found' });
-
     }
     else {
-      //logger.log('testing password ');
-      //logger.log('response=' + util.inspect(response));
-
-      if (!response.HasMembership) {
-        return done(null, false, { message: 'Invalid email or password.', status: 'badattempt' });
-      }
-      if (response.Membership) {
-
-        if (response.Membership.AccountLocked == 1) {
+        var member = response.users[0];
+        if (member.accountlocked == 1) {
           return done(null, false, { message: 'Account Locked', status: 'locked' });
         }
-
-        if (response.Membership.IsReset) {
+        if (member.isreset) {
           return done(null, false, { message: 'Password is reset', status: 'reset' });
         }
-        var isMatch = bcrypt.compareSync(password, response.Membership.Password);
+        
+        var isMatch = bcrypt.compareSync(password, member.password);
         if (isMatch) {
-          // this.AccountLocked=m.accountlocked;
-          // this.IsTrial=m.trialplan;
-          // this.PasswordAttempt=m.passwordattempt;
           //need to update their passwordattempt and/or accountlocked
-          bll.membership.ClearBadAttempt(user.MembershipId);
-          delete response.Membership.AccountLocked;
-          delete response.Membership.PasswordAttempt;
-
-          return done(null, response.Membership);
+          // bll.membership.ClearBadAttempt(user.MembershipId);
+          // delete response.Membership.AccountLocked;
+          // delete response.Membership.PasswordAttempt;
+          return done(null, member);
         }
         else {
-          if (response.Membership.PasswordAttempt > 5) {
-            bll.membership.LockAccount(response.Membership.MembershipId);
+          if (member.passwordattempt > 5) {
+            bll.membership.LockAccount(member.primarykey);
           }
           else {
-            bll.membership.UpdateBadAttempt(response.Membership.MembershipId);
+            bll.membership.UpdateBadAttempt(member.primarykey);
           }
           return done(null, false, { message: 'Invalid email or password.', status: 'badattempt' });
         }
-      }
     }
-  });
+  }
 
 }));
 

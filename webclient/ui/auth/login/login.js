@@ -27,7 +27,17 @@
       email: loginForm.elements.email.value,
       password: loginForm.elements.password.value
     };
-    mypass.datacontext.account.register(req).then(onregister);
+    mypass.datacontext.account.login(req).then(onlogin);
+  }
+
+  function onlogin(res) {
+    if(res.success){
+      mypass.session.startSession(res.data);
+    }
+    else{
+      var dd='';
+    }
+    
   }
 
 

@@ -9,7 +9,13 @@ var
   env = require('node-env-file'),
   controllers = require('./controllers'),
   appconfig=require('./appconfig'),
-  common=require('./common')
+  common=require('./common'),
+  cookieParser = require('cookie-parser'),
+  compress = require('compression'),
+  expressValidator = require('express-validator'),
+  helmet = require('helmet'),
+  session = require('express-session'),
+  passport = require('passport')
   ;
 
   
@@ -33,6 +39,29 @@ app.use(express.static('../webclient/'));
 app.use(express.static('../webclient/'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(compress());
+// app.use(expressValidator);
+app.use(helmet());
+app.disable('x-powered-by');
+
+var sessConfig={
+  secret: 'wowkdendje8j3e7dhry54fi4n4',
+  resave: false,
+  saveUninitialized: true,
+  unset:'destroy'
+};
+
+if (app.get('env') === 'production') {
+  app.set('trust proxy', 1); // trust first proxy
+  sessConfig.cookie={
+    secure:true
+  };
+}
+
+app.use(session(sessConfig));
+app.use(passport.initialize());
+//app.use(passport.session());
 
 controllers.init(app);
 

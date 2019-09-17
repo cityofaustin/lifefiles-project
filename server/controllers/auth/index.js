@@ -9,7 +9,6 @@ var
   cookie = require('cookie'),
   cryptojs = require("crypto-js"),
   appconfig = require('../../config/appsettings'),
-  // myServices = require('../../services'),
   uuidV4 = require('uuid/v4'),
   session = require('express-session')
   ;
@@ -18,46 +17,16 @@ exports.init = function (app) {
   app.post('/auth/register', Register);
   app.post('/auth/login', Login);
   app.post('/auth/logout', logout);
-  app.post('/auth/accountconfirm', AccountConfirm);
   app.post('/auth/resetpassword', ResetPassword);
   app.post('/auth/resetpasswordcomplete', ResetPasswordComplete);
   app.post('/auth/logck', CheckIsLoggedIn);
 
 };
 
-function AccountConfirm(req, res, next) {
-
-  //logger.log('AccountConfirm params ='+util.inspect(req.body.RequestData.data));
-  var req = req.body.RequestData.data[0];
-  var authResponse = new AuthResponse();
-
-  if (!req.Regcode || !req.Password || (req.Password != req.PasswordConfirm)) {
-    logger.log('did not pass ' + util.inspect(req));
-    authResponse.success = false;
-    res.status(200).send(authResponse);
-    return;
-  }
-
-  var salt = bcrypt.genSaltSync(5);
-  req.Password = bcrypt.hashSync(req.Password, salt);
-
-  bll.membership.membershipEmailConfirm(req, function (response) {
-    if (!response.success) {
-      authResponse.error = 'There was an error attempting to fulfil request.';
-      authResponse.success = false;
-    }
-    else {
-      authResponse.success = true;
-    }
-    res.status(200).send(authResponse);
-    return;
-  });
-
-}
 
 function Register(req, res, next) {
   req.register = req.body.data;
-  // req.register.userip = req.ip;
+  // req.register.userip = req.ip; //if we want to get users ip address...be sure database accounts for it if needed
 
   var errors = !req.register.email || !req.register.first || !req.register.last || !req.register.password;
   if (errors) {
@@ -84,13 +53,10 @@ function Register(req, res, next) {
         return;
       }
       else {
-
         var salt = bcrypt.genSaltSync(5);
         var passwordHash = bcrypt.hashSync(req.register.password, salt);
         req.register.password = passwordHash;
         req.register.emailcode = uuidV4();
-
-
         var uu = {
           email: req.register.email,
           first_name: req.register.first,
@@ -102,47 +68,31 @@ function Register(req, res, next) {
           if (createres.success) {
             var ciphertext = cryptojs.AES.encrypt(createres.UserId.toString(), appconfig.secrets.cryptoKey);
             res.cookie(appconfig.cookies.authCookieName, encodeURIComponent(ciphertext), { expires: appconfig.cookies.getExpiryDate() });
+            authResponse.data = {
+              email: req.register.email,
+              first_name: req.register.first,
+              last_name: req.register.last,
+              authenticate: true
+            };
+            authResponse.success = true;  
           }
-          authResponse.data = {
-            email: req.register.email,
-            first_name: req.register.first,
-            last_name: req.register.last,
-            authenticate: true
-          };
-
-          authResponse.success = true;
+          else{
+            authResponse.success = false;
+          }
           res.status(200).send(authResponse);
           return;
         });
       }
     });
   }
-
 }
 
-function logout(req, res, next) {
-
-  req.session.oauthRequestToken = null;
-  req.session.accessToken = null;
-
-  res.clearCookie(appconfig.cookies.authCookieName);
-  req.logout();
-
-  var authResponse = new AuthResponse();
-  authResponse.success = true;
-  authResponse.status = appconfig.status.auth.loggedOut;
-  // res.status(200).send(authResponse);
-  res.redirect('/');
-}
 
 function Login(req, res, next) {
-  req.login = req.body.RequestData.data[0].login;
+  req.login = req.body.data;
   req.body.email = req.login.email;
   req.body.password = req.login.password;
-  //logger.log('auth controller req.Login='+util.inspect(req.login));
-  //req.assert('email', 'Email is not valid').isEmail();
-  //req.assert('password', 'Password cannot be blank').notEmpty();
-  var errors = req.validationErrors();
+  // var errors = req.validationErrors();
 
   passport.authenticate('local', { session: false }, function (err, user, info) {
     //logger.log('passport.authenticate returned user = '+util.inspect(user));
@@ -150,29 +100,23 @@ function Login(req, res, next) {
     //logger.log('passport.authenticate returned info = '+util.inspect(info));
 
     if (err) {
-      logger.log('err ' + err);
+      common.logger.log('err ' + err);
       return next(err);
     }
     if (!user) {
-      // logger.log('sending back to login');
       var authResponse = new AuthResponse();
       authResponse.success = false;
       authResponse.status = info.status;
       res.status(200).send(authResponse);
       return;
-      // return res.redirect('/login');
     }
 
     req.logIn(user, function (err) {
       if (err) {
         return next(err);
-        // res.status(200).send(authResponse);
       }
-      // logger.log('passport.authenticate '+util.inspect(user));
-      //logger.log('appconfig.cookies.authCookieName='+appconfig.cookies.authCookieName);
-      //logger.log('CryptoJS= '+util.inspect(cryptojs));
 
-      bll.membership.UpdateLastLogin(user.MembershipId);
+      // bll.membership.UpdateLastLogin(user.MembershipId);
 
       var authResponse = new AuthResponse();
       bll.access.GetRolesForMembership({ MembershipId: user.MembershipId.toString() }, function (getUserRolesRes) {
@@ -211,6 +155,21 @@ function Login(req, res, next) {
     });
 
   })(req, res, next);
+}
+
+function logout(req, res, next) {
+
+  req.session.oauthRequestToken = null;
+  req.session.accessToken = null;
+
+  res.clearCookie(appconfig.cookies.authCookieName);
+  req.logout();
+
+  var authResponse = new AuthResponse();
+  authResponse.success = true;
+  authResponse.status = appconfig.status.auth.loggedOut;
+  // res.status(200).send(authResponse);
+  res.redirect('/');
 }
 
 function ResetPassword(req, res, next) {
