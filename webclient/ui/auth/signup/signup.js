@@ -15,8 +15,6 @@
   }
 
   function signup(evt) {
-    // console.log('signup');
-    
     var req={
         email:signupform.elements.email.value,
         first:signupform.elements.firstname.value,
@@ -27,9 +25,10 @@
   }
 
   function onregister(res) {
-    
+    if(res.success){
+      mypass.session.startSession(res.data);
+    }
   }
-
 
   init();
 

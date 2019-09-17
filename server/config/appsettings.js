@@ -13,7 +13,7 @@ exports.secrets = {
 
 
 exports.cookies = {
-  authCookieName: 'xbdvwvs',
+  authCookieName: 'mpa',
   getExpiryDate: function () {
     return new Date(Date.now() + 60 * 60 * 1000);
   },

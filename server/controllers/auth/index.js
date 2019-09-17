@@ -62,7 +62,7 @@ function Register(req, res, next) {
   var errors = !req.register.email || !req.register.first || !req.register.last || !req.register.password;
   if (errors) {
     var authResponse = new AuthResponse();
-    authResponse.success=false;
+    authResponse.success = false;
     authResponse.error = 'all data required';
     res.status(200).send(authResponse);
     return;
@@ -76,7 +76,7 @@ function Register(req, res, next) {
         res.status(200).send(authResponse);
         return;
       }
-      else if(response.users){
+      else if (response.users) {
         var authResponse = new AuthResponse();
         authResponse.error = 'account exists';
         authResponse.success = false;
@@ -84,22 +84,32 @@ function Register(req, res, next) {
         return;
       }
       else {
-     
-          var salt = bcrypt.genSaltSync(5);
-          var passwordHash = bcrypt.hashSync(req.register.password, salt);
-          req.register.password = passwordHash;
-          req.register.emailcode = uuidV4();
+
+        var salt = bcrypt.genSaltSync(5);
+        var passwordHash = bcrypt.hashSync(req.register.password, salt);
+        req.register.password = passwordHash;
+        req.register.emailcode = uuidV4();
 
 
-        var uu={
-          email:req.register.email,
-          first_name:req.register.first,
-          last_name:req.register.last,
-          password:req.register.password
+        var uu = {
+          email: req.register.email,
+          first_name: req.register.first,
+          last_name: req.register.last,
+          password: req.register.password
         };
-        bll.membership.createMembership(uu).then(function(res){
+        bll.membership.createMembership(uu).then(function (createres) {
           var authResponse = new AuthResponse();
-          // acct.MembershipId = res.MembershipId;
+          if (createres.success) {
+            var ciphertext = cryptojs.AES.encrypt(createres.UserId.toString(), appconfig.secrets.cryptoKey);
+            res.cookie(appconfig.cookies.authCookieName, encodeURIComponent(ciphertext), { expires: appconfig.cookies.getExpiryDate() });
+          }
+          authResponse.data = {
+            email: req.register.email,
+            first_name: req.register.first,
+            last_name: req.register.last,
+            authenticate: true
+          };
+
           authResponse.success = true;
           res.status(200).send(authResponse);
           return;
@@ -283,7 +293,7 @@ function CheckIsLoggedIn(req, res, next) {
 
 function AuthResponse(response) {
 
-  this.success=true;
+  this.success = true;
   this.error;
 
   if (response) {

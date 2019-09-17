@@ -25,11 +25,11 @@ function getByEmail(email) {
   return new Promise((resolve) => {
     microdb.Tables.membership.get({ 'email': email }).then(function (res) {
       var response = new common.response();
-      if(res.success && res.data.Rows.length>0){
+      if (res.success && res.data.Rows.length > 0) {
         response.users = res.data.Rows;
       }
-      
-      response.success=true;
+
+      response.success = true;
       resolve(response);
     }
     );
@@ -42,25 +42,18 @@ function getByEmail(email) {
 function createMembership(user) {
   return new Promise((resolve) => {
     var row = microdb.Tables.membership.addRow();
-
-    // var createREq={
-    //   email:req.register.email,
-    //   first_name:req.register.first,
-    //   last_name:req.register.last,
-    //   password:req.register.password
-    // };
-
     var keys = Object.keys(user);
     for (var i = 0; i < keys.length; i++) {
-      var col =keys[i];
+      var col = keys[i];
       row[col].Value = user[col];
-      // row.first_name.Value = 'first name ZZ ' + i;
-      // apitest_app.customers.save(row).then(onSaveData);
     }
 
-    microdb.Tables.membership.save(row).then(function (res) {
+    microdb.Tables.membership.save(row).then(function (saveres) {
       var response = new common.response();
-      response.success=true;
+      if(saveres.success && saveres.data && saveres.data.addedRows){
+        response.UserId = saveres.data.addedRows[0].insertId;
+      }
+      response.success = true;
       resolve(response);
     }
     );
@@ -91,11 +84,6 @@ function getMembershipById(id, cb) {
     cb(response);
   });
 }
-
-
-
-
-
 
 function resetPasswordComplete(req) {
   return dal.membership.resetPasswordComplete(req);

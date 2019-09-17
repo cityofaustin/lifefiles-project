@@ -37,7 +37,8 @@ function Web_JS(cb) {
   var srcpaths = [
     'webclient/js/mypass.js',
     'webclient/js/config.js',
-    'webclient/js/auth.js',
+    'webclient/js/cache.js',
+    'webclient/js/session.js',
     'webclient/js/datacontext.js',
     'webclient/ui/**/*.js'
   ];
