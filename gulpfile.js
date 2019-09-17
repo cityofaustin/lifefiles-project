@@ -31,6 +31,7 @@ function Server_All(cb) {
 
 exports.Web_ALL = gulp.series(Web_JS,Web_HTML,Web_CSS,Web_IMG,Web_Vendor);
 exports.Web_html_js_css = gulp.series(Web_JS,Web_HTML,Web_CSS);
+exports.Web_html_css= gulp.series(Web_HTML,Web_CSS);
 
 exports.Web_JS=Web_JS;
 function Web_JS(cb) {
@@ -40,6 +41,7 @@ function Web_JS(cb) {
     'webclient/js/cache.js',
     'webclient/js/session.js',
     'webclient/js/datacontext.js',
+    'webclient/js/navigation.js',
     'webclient/ui/**/*.js',
     'webclient/js/appboot.js'
   ];

@@ -5,78 +5,38 @@
 
   function mypass() {
     var dataCache;
-    var pageFragments = {};
+    
     var myapp = {
       baseURL: 'http://localhost',
       port: ':9005/',
     };
 
     var __mypass = this;
-    this.regmodule = regmodule;
+    this.registerFeature = registerFeature;
 
     function init() {
       window.addEventListener('mypass.booted', onAppBoot);
     }
 
     function onAppBoot(evt) {
-      window.addEventListener(__mypass.Events.APP_NAV.nav, onNavigate);
       window.addEventListener(__mypass.Events.APP_NAV.loggedout, onLogout);
 
       if (!__mypass.session.isAuthenticated()) {
-        loadPage(pageFragments.login);
+        __mypass.goto.login();
       }
       else {
-        loadPage(pageFragments.dashboard);
+        __mypass.goto.dashboard();
       }
 
     }
 
     function onLogout(evt) {
-      loadPage(pageFragments.login);
+      __mypass.goto.login();
     }
 
-    function onNavigate(evt) {
-      var keys = Object.keys(pageFragments);
-      for (var index = 0; index < keys.length; index++) {
-        var key = keys[index];
-        if (pageFragments[key].navEvent == evt.detail.route) {
-          loadPage(pageFragments[key]);
-        }
-      }
+    function registerFeature(feat) {
+      __mypass.navigation.addFeature(feat);
     }
-
-    function loadPage(frag) {
-      getModule(frag).then(function (res) {
-        $('.wrapper').empty();
-        $('.wrapper').append(res.template);
-      });
-    }
-
-    function regmodule(name, fragurl, loadEventName, navEvt) {
-      pageFragments[name] = { name: name, url: fragurl, loadEvent: loadEventName, navEvent: navEvt };
-    }
-
-    function getModule(mod) {
-      return new Promise((resolve) => {
-        if (pageFragments[mod.name] && pageFragments[mod.name].template) {
-          resolve(pageFragments[mod.name]);
-          var event = new CustomEvent(mod.loadEvent);
-          window.dispatchEvent(event);
-        }
-        else if (!pageFragments[mod.name] || !pageFragments[mod.name].template) {
-          $.ajax({
-            url: mod.url,
-            dataType: "html"
-          }).then(function (res) {
-            mod.template = res;
-            var event = new CustomEvent(mod.loadEvent);
-            window.dispatchEvent(event);
-            resolve(mod);
-          });
-        }
-      });
-    }
-
 
     __mypass.postMsg = postMsg;
     function postMsg(route, data) {

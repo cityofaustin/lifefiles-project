@@ -1,7 +1,12 @@
 (function (mypass) {
   'use strict';
 
-  mypass.regmodule('signup', '/ui/auth/signup/signup.html', 'onSignupLoad',mypass.Events.APP_NAV.signup);
+  mypass.registerFeature({
+    name: 'signup', 
+    url:'/ui/auth/signup/signup.html' , 
+    loadEvent: 'onSignupLoad', 
+    navEvent: mypass.Events.APP_NAV.signup 
+  });
 
   function init() {
     window.addEventListener('onSignupLoad', onSignupLoad);
@@ -10,6 +15,8 @@
   function onSignupLoad(evt) {
     setTimeout(function () {
       $('.signup button.create-acct').on('click',signup);
+      $('.signup button.login').on('click',login);
+      
     }, 1000);
   }
 
@@ -27,6 +34,10 @@
     if(res.success){
       mypass.session.startSession(res.data);
     }
+  }
+
+  function login(){
+
   }
 
   init();

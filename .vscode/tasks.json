@@ -43,6 +43,12 @@
       "task": "Web_html_js_css",
       "problemMatcher": []
     },
+    {
+      "type": "gulp",
+      "task": "Web_html_css",
+      "problemMatcher": []
+    },
+    
     
     
     

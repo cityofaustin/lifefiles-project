@@ -1,7 +1,12 @@
 (function (mypass) {
   'use strict';
 
-  mypass.regmodule('dashboard', '/ui/features/dashboard/index.html', 'onDashboardLoad',mypass.Events.APP_NAV.dashboard);
+  mypass.registerFeature({
+    name: 'dashboard', 
+    url:'/ui/features/dashboard/index.html' , 
+    loadEvent: 'onDashboardLoad', 
+    navEvent: mypass.Events.APP_NAV.dashboard 
+  });
 
   function init() {
     window.addEventListener('onDashboardLoad', onDashboardLoad);
@@ -11,8 +16,6 @@
     setTimeout(function () {
       $('.dashboard button.btn-logout').on('click', function () {
         mypass.session.logout();
-
-        
       });
     }, 500);
   }
