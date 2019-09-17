@@ -15,12 +15,24 @@
     this.regmodule = regmodule;
 
     function init() {
-      $(document).ready(function () {
-        window.addEventListener(__mypass.Events.APP_NAV.nav, onNavigate);
-        if (!__mypass.isAuth) {
-          loadPage(pageFragments.login);
-        }
-      });
+      window.addEventListener('mypass.booted', onAppBoot);
+    }
+
+    function onAppBoot(evt) {
+      window.addEventListener(__mypass.Events.APP_NAV.nav, onNavigate);
+      window.addEventListener(__mypass.Events.APP_NAV.loggedout, onLogout);
+
+      if (!__mypass.session.isAuthenticated()) {
+        loadPage(pageFragments.login);
+      }
+      else {
+        loadPage(pageFragments.dashboard);
+      }
+
+    }
+
+    function onLogout(evt) {
+      loadPage(pageFragments.login);
     }
 
     function onNavigate(evt) {
@@ -46,7 +58,12 @@
 
     function getModule(mod) {
       return new Promise((resolve) => {
-        if (!pageFragments[mod.name] || !pageFragments[mod.name].template) {
+        if (pageFragments[mod.name] && pageFragments[mod.name].template) {
+          resolve(pageFragments[mod.name]);
+          var event = new CustomEvent(mod.loadEvent);
+          window.dispatchEvent(event);
+        }
+        else if (!pageFragments[mod.name] || !pageFragments[mod.name].template) {
           $.ajax({
             url: mod.url,
             dataType: "html"
@@ -54,7 +71,6 @@
             mod.template = res;
             var event = new CustomEvent(mod.loadEvent);
             window.dispatchEvent(event);
-
             resolve(mod);
           });
         }

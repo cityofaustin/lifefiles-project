@@ -40,8 +40,10 @@ function Web_JS(cb) {
     'webclient/js/cache.js',
     'webclient/js/session.js',
     'webclient/js/datacontext.js',
-    'webclient/ui/**/*.js'
+    'webclient/ui/**/*.js',
+    'webclient/js/appboot.js'
   ];
+  //appboot.js must always be last in...this way the client app js gets event to know all code has loaded and is ready
 
   gulp.src(srcpaths)
     .pipe(concat('mypass.js'))

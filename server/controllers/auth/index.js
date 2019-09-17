@@ -125,10 +125,11 @@ function Login(req, res, next) {
       var ciphertext = cryptojs.AES.encrypt(user.primarykey.toString(), appconfig.secrets.cryptoKey);
       res.cookie(appconfig.cookies.authCookieName, encodeURIComponent(ciphertext), { expires: appconfig.cookies.getExpiryDate() });
       authResponse.success = true;
-      authResponse.status = appconfig.status.auth.loggedIn;
-      authResponse.firstname = user.first_name;
-      authResponse.lastname = user.last_name;
-      authResponse.email = user.email;
+      authResponse.data={};
+      authResponse.data.status = appconfig.status.auth.loggedIn;
+      authResponse.data.firstname = user.first_name;
+      authResponse.data.lastname = user.last_name;
+      authResponse.data.email = user.email;
       // authResponse.roles = getUserRolesRes.Roles;
       // authResponse.phone = user.Phone;
       // authResponse.createdon = user.createdate;
@@ -152,8 +153,8 @@ function logout(req, res, next) {
   var authResponse = new AuthResponse();
   authResponse.success = true;
   authResponse.status = appconfig.status.auth.loggedOut;
-  // res.status(200).send(authResponse);
-  res.redirect('/');
+  res.status(200).send(authResponse);
+  // res.redirect('/');
 }
 
 function ResetPassword(req, res, next) {

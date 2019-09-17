@@ -6,7 +6,14 @@
         nav:'appnav',
         signup:'nav.signup',
         login:'nav.login',
+        loggedout:'nav.logout',
         dashboard:'nav.main'
+      },
+      APP_STATUS:{
+        session:{
+          ready:'s.ready'
+        },
+        booted:'mypass.booted'
       }
   };
 
