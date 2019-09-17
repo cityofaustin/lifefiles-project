@@ -4,20 +4,14 @@
   mypass.registerFeature({
     name: 'signup', 
     url:'/ui/auth/signup/signup.html' , 
-    loadEvent: 'onSignupLoad', 
-    navEvent: mypass.Events.APP_NAV.signup 
+    load: signupLoad 
   });
 
   function init() {
-    window.addEventListener('onSignupLoad', onSignupLoad);
   }
 
-  function onSignupLoad(evt) {
-    setTimeout(function () {
+  function signupLoad() {
       $('.signup button.create-acct').on('click',signup);
-      $('.signup button.login').on('click',login);
-      
-    }, 1000);
   }
 
   function signup(evt) {
@@ -36,9 +30,6 @@
     }
   }
 
-  function login(){
-
-  }
 
   init();
 

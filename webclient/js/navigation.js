@@ -22,6 +22,7 @@
     getModule(frag).then(function (res) {
       $('.main-wrapper').empty();
       $('.main-wrapper').append(res.template);
+      frag.load();
     });
   }
 
@@ -29,8 +30,7 @@
     return new Promise((resolve) => {
       if (features[mod.name] && features[mod.name].template) {
         resolve(features[mod.name]);
-        var event = new CustomEvent(mod.loadEvent);
-        window.dispatchEvent(event);
+        // mod.load();
       }
       else if (!features[mod.name] || !features[mod.name].template) {
         $.ajax({
@@ -38,8 +38,7 @@
           dataType: "html"
         }).then(function (res) {
           mod.template = res;
-          var event = new CustomEvent(mod.loadEvent);
-          window.dispatchEvent(event);
+          // mod.load();
           resolve(mod);
         });
       }

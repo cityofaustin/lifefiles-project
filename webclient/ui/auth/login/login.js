@@ -1,28 +1,22 @@
 (function (mypass) {
   'use strict';
 
-  
+
   mypass.registerFeature({
-    name: 'login', 
-    url:'/ui/auth/login/login.html' , 
-    loadEvent: 'onLoginLoad', 
-    navEvent: mypass.Events.APP_NAV.login 
+    name: 'login',
+    url: '/ui/auth/login/login.html',
+    load: loginLoad
   });
 
   function init() {
-    window.addEventListener('onLoginLoad', onLoginLoad);
   }
 
-  function onLoginLoad(evt) {
-    setTimeout(function () {
+  function loginLoad(vt) {
+      //ADD ANY PAGE CODE
       $('.login button.login').on('click', function () {
         login();
       });
-      $('.login button.create-acct').on('click', function () {
-        mypass.goto.signup();
-      });
-
-    }, 500);
+    
   }
 
   function login() {
@@ -34,14 +28,14 @@
   }
 
   function onlogin(res) {
-    if(res.success){
+    if (res.success) {
       mypass.session.startSession(res.data);
       mypass.goto.dashboard();
     }
-    else{
-      var dd='SHOW LOGIN ERROR';
+    else {
+      var dd = 'SHOW LOGIN ERROR';
     }
-    
+
   }
 
 

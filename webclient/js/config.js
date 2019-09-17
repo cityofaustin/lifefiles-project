@@ -4,10 +4,7 @@
   mypass.Events = {
       APP_NAV:{
         nav:'appnav',
-        signup:'nav.signup',
-        login:'nav.login',
         loggedout:'nav.logout',
-        dashboard:'nav.main'
       },
       APP_STATUS:{
         session:{
@@ -18,7 +15,6 @@
   };
 
   function init() {
-    // window.addEventListener('onLoginLoad', onLoginLoad);
   }
 
   init();
