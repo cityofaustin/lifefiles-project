@@ -74,9 +74,9 @@ function Register(req, res, next) {
               last_name: req.register.last,
               authenticate: true
             };
-            authResponse.success = true;  
+            authResponse.success = true;
           }
-          else{
+          else {
             authResponse.success = false;
           }
           res.status(200).send(authResponse);
@@ -92,13 +92,8 @@ function Login(req, res, next) {
   req.login = req.body.data;
   req.body.email = req.login.email;
   req.body.password = req.login.password;
-  // var errors = req.validationErrors();
 
   passport.authenticate('local', { session: false }, function (err, user, info) {
-    //logger.log('passport.authenticate returned user = '+util.inspect(user));
-    //logger.log('passport.authenticate returned err = '+util.inspect(err));
-    //logger.log('passport.authenticate returned info = '+util.inspect(info));
-
     if (err) {
       common.logger.log('err ' + err);
       return next(err);
@@ -115,45 +110,34 @@ function Login(req, res, next) {
       if (err) {
         return next(err);
       }
-
-      // bll.membership.UpdateLastLogin(user.MembershipId);
-
       var authResponse = new AuthResponse();
-      bll.access.GetRolesForMembership({ MembershipId: user.MembershipId.toString() }, function (getUserRolesRes) {
-        if (!getUserRolesRes.success) {
-          authResponse.success = false;
-          res.status(200).send(authResponse);
-          return;
-        }
-        else {
-          var ciphertext = cryptojs.AES.encrypt(user.MembershipId.toString(), appconfig.secrets.cryptoKey);
-          res.cookie(appconfig.cookies.authCookieName, encodeURIComponent(ciphertext), { expires: appconfig.cookies.getExpiryDate() });
-          //http://expressjs.com/en/api.html#res.cookie
-          // clearCookie('cookie_name');
-          authResponse.success = true;
-          authResponse.status = appconfig.status.auth.loggedIn;
-          authResponse.roles = getUserRolesRes.Roles;
-          authResponse.firstname = user.FirstName;
-          authResponse.lastname = user.LastName;
-          authResponse.email = user.Email;
-          authResponse.phone = user.Phone;
-          authResponse.istrial = user.IsTrial;
-          authResponse.createdon = user.CreateDate;
 
+      //NEED TO UPDATE LAST LOGIN DATETIME
+      // bll.membership.UpdateLastLogin(user.MembershipId);
+      //GET ANY USER ROLES
+      // bll.access.GetRolesForMembership({ primarykey: user.primarykey.toString() }, function (getUserRolesRes) {
+      //   if (!getUserRolesRes.success) {
+      //     authResponse.success = false;
+      //     res.status(200).send(authResponse);
+      //     return;
+      //   }
+      //   else {
+      var ciphertext = cryptojs.AES.encrypt(user.primarykey.toString(), appconfig.secrets.cryptoKey);
+      res.cookie(appconfig.cookies.authCookieName, encodeURIComponent(ciphertext), { expires: appconfig.cookies.getExpiryDate() });
+      authResponse.success = true;
+      authResponse.status = appconfig.status.auth.loggedIn;
+      authResponse.firstname = user.first_name;
+      authResponse.lastname = user.last_name;
+      authResponse.email = user.email;
+      // authResponse.roles = getUserRolesRes.Roles;
+      // authResponse.phone = user.Phone;
+      // authResponse.createdon = user.createdate;
 
-          bll.account.GetByOwnerId(user.MembershipId.toString(), function (acctRes) {
-            if (acctRes.success && acctRes.HasAccount) {
-              authResponse.AccountId = acctRes.Account.AccountId;
-              authResponse.AccountMemberId = acctRes.Account.AccountMemberId;
-            }
-            res.status(200).send(authResponse);
-            return;
-          });
-        }
-      });
-
+      res.status(200).send(authResponse);
+      return;
+      // });
     });
-
+    // });
   })(req, res, next);
 }
 
