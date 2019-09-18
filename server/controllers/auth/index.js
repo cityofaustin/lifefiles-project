@@ -45,7 +45,7 @@ function Register(req, res, next) {
         res.status(200).send(authResponse);
         return;
       }
-      else if (response.users) {
+      else if (response.users && response.users.length>0) {
         var authResponse = new AuthResponse();
         authResponse.error = 'account exists';
         authResponse.success = false;

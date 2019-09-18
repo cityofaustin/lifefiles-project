@@ -27,6 +27,7 @@
   function onregister(res) {
     if(res.success){
       mypass.session.startSession(res.data);
+      mypass.goto.dashboard();
     }
   }
 
