@@ -2,7 +2,7 @@
 var
 util = require("util"),
 fs = require('fs'),
-env = require('node-env-file'),
+ env = require('node-env-file'),
 _ = require('lodash'),
 logger = require('./common/logger')
 ;
@@ -12,10 +12,9 @@ var Singleton = (function () {
 var instance;
 
 function Configuration() {
-  env('./envVars.txt');
+   env('./envVars.txt');
 
   this.aws = {};
-  this.microdb_api_key='71ade3fbf51043b19e3d53fe28a0e7a89676e3e1f02c49909bde1378cc8d4c91';
 
   this.ENVIRONMENT = {
     LOCAL: 'local',

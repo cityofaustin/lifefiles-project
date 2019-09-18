@@ -4,9 +4,11 @@ var
   // membership_dal = require("./membership_dal"),
   common = require("../../common"),
   appconfig = require('../../appconfig'),
-  microdb = require('../../microdb')(appconfig.microdb_api_key)
-  ;
+  env = require('node-env-file')
+   ;
 
+  env('./envVars.txt');
+  var microdb = require('../../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY)
 
 exports.getByEmail = getByEmail;
 exports.createMembership = createMembership;
