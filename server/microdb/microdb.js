@@ -6,11 +6,11 @@ var
   ;
 
 var Singleton = (function (apikey, opts) {
-  var instance;
-  //take out  env = require('node-env-file')  for release to public as they dont need it
-  //they must always use https
   env('./envVars.txt');
+
+  var instance;
   var httpService;
+
   if (process.env.NODE_ENV == 'local') {
     httpService = require('http');
   }
@@ -29,8 +29,6 @@ var Singleton = (function (apikey, opts) {
     var VERSION = '1.0.0';
     var _API_KEY = apikey;
     var _STATUS = 'ok';
-    var host = '127.0.0.1';
-    var port = '9001';
     var handlers = {
       onLoaded: null
     };
@@ -92,9 +90,10 @@ var Singleton = (function (apikey, opts) {
           'apiKey': _API_KEY,
         };
 
+       
         var options = {
-          hostname: host,
-          port: port,
+          hostname: process.env.API_HOST,
+          port: process.env.API_PORT,
           path: '/' + route,
           method: 'POST',
           headers: {
