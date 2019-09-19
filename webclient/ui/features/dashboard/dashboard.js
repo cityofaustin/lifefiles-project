@@ -5,9 +5,9 @@
     name: 'dashboard',
     url: '/ui/features/dashboard/index.html',
     load: dashboardLoad,
-    methods:{
-      editForm:editForm,
-      save:save
+    methods: {
+      editForm: editForm,
+      save: save
     }
   });
 
@@ -28,7 +28,26 @@
   }
 
   function save() {
-    $('.user-info input').attr('readonly','readonly');
+    var acc = mypass.session.getSession();
+    // userform.elements.email.value = acc.email;
+    // userform.elements.firstname.value = acc.firstname;
+    // userform.elements.lastname.value = acc.lastname;
+    var req = {
+      email: userform.elements.email.value,
+      first_name: userform.elements.firstname.value,
+      last_name: userform.elements.lastname.value
+    };
+    mypass.datacontext.membership.save(req).then(onsave);
+  }
+
+  function onsave(res) {
+    if (res.success) {
+      $('.user-info input').attr('readonly', 'readonly');
+    }
+    else {
+      //error
+    }
+
   }
 
   init();

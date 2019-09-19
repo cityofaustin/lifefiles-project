@@ -67,25 +67,19 @@ function (email, password, done) {
 
 exports.isAuthenticated = function (req, res, next) {
 
-  //logger.log('passport.isAuthenticated cookies = '+util.inspect(req.cookies));
-  // logger.log('passport = '+util.inspect(req));
-  // logger.log('passport = ' + req.url);
-
   if (!req.cookies || (req.cookies && !req.cookies[appconfig.cookies.authCookieName])) {
-
     var authRetUrl;
-    if (req.body.RequestData) {
-      authRetUrl = req.body.RequestData.location.length > 3 ? '/login?url=' + req.body.RequestData.location : '/login';
+    if (req.body.data) {
+      // authRetUrl = req.body.RequestData.location.length > 3 ? '/login?url=' + req.body.RequestData.location : '/login';
       var authResponse = new AuthResponse();
       authResponse.success = false;
-      authResponse.authRetUrl = authRetUrl;
+      authResponse.authRetUrl = '/';
       res.status(200).send(authResponse);
     }
     else {
-      authRetUrl = req.url.length > 3 ? '/login?url=' + req.url : '/login';
-      res.redirect(authRetUrl);
+      // authRetUrl = req.url.length > 3 ? '/login?url=' + req.url : '/login';
+      res.redirect('/');
     }
-
     return;
   }
 

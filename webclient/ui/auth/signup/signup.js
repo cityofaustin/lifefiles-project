@@ -24,7 +24,7 @@
         last:signupform.elements.lastname.value,
         password:signupform.elements.password.value
     };
-    mypass.datacontext.account.register(req).then(onregister);
+    mypass.datacontext.auth.register(req).then(onregister);
   }
 
   function onregister(res) {

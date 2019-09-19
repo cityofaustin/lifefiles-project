@@ -25,7 +25,7 @@
       email: loginForm.elements.email.value,
       password: loginForm.elements.password.value
     };
-    mypass.datacontext.account.login(req).then(onlogin);
+    mypass.datacontext.auth.login(req).then(onlogin);
   }
 
   function onlogin(res) {

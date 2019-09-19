@@ -32,7 +32,7 @@
   function logout() {
  
     mypass.cache.remove('account');
-    mypass.datacontext.account.logout().then(function (res) {
+    mypass.datacontext.auth.logout().then(function (res) {
       if (res.success && res.status == "auth.loggedout") {
         var event = new CustomEvent(mypass.Events.APP_NAV.loggedout);
         window.dispatchEvent(event);

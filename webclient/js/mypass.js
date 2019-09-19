@@ -8,7 +8,7 @@
     
     var myapp = {
       baseURL: 'http://localhost',
-      port: ':9005/',
+      port: ':9005',
     };
 
     var __mypass = this;

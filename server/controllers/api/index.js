@@ -1,10 +1,8 @@
 var
-  
-  accountAPI=require('./account')
- 
+  membership=require('./membership')
   ;
 
 exports.init = function(app) {
-  accountAPI.init(app);
+  membership.init(app);
 };
 
