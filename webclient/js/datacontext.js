@@ -10,7 +10,8 @@
   };
 
   mypass.datacontext.membership =  {
-    save:function(params) {return mypass.postMsg('/membership/save', params);}
+    save:function(params) {return mypass.postMsg('/membership/save', params);},
+    deleteAccount:function(params) {return mypass.postMsg('/membership/delete', params);}
   };
 
 

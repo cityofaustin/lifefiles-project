@@ -14,6 +14,7 @@ exports.getByEmail = getByEmail;
 exports.createMembership = createMembership;
 exports.getMembershipById = getMembershipById;
 exports.SaveProfile = SaveProfile;
+exports.DeleteAccount=DeleteAccount;
 
 // exports.membershipEmailConfirm = membershipEmailConfirm;
 // exports.resetPasswordComplete = resetPasswordComplete;
@@ -92,8 +93,25 @@ function SaveProfile(data) {
       resolve(response);
     });
   });
-
 }
+
+function DeleteAccount(data) {
+  //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
+  return new Promise((resolve) => {
+    microdb.Tables.membership.saveDelete(data).then(function (saveres) {
+      var response = new common.response();
+      response.success = true;
+      if (saveres.success && saveres.data && saveres.data.deletedRows) {
+        response.success = true;
+      }
+      else {
+        response.success = false;
+      }
+      resolve(response);
+    });
+  });
+}
+
 
 
 function resetPasswordComplete(req) {

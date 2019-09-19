@@ -7,7 +7,8 @@
     load: dashboardLoad,
     methods: {
       editForm: editForm,
-      save: save
+      save: save,
+      deleteAccount:deleteAccount
     }
   });
 
@@ -43,7 +44,20 @@
     else {
       //error
     }
+  }
 
+  function deleteAccount() {
+    //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
+    mypass.datacontext.membership.deleteAccount().then(ondeleteAccount);
+  }
+
+  function ondeleteAccount(res) {
+    if (res.success) {
+     
+    }
+    else {
+      //error
+    }
   }
 
   init();
