@@ -90,7 +90,7 @@ var Singleton = (function (apikey, opts) {
           'apiKey': _API_KEY,
         };
 
-       
+
         var options = {
           hostname: process.env.API_HOST,
           port: process.env.API_PORT,
@@ -181,32 +181,55 @@ var Singleton = (function (apikey, opts) {
       this.UpdateDate = __schema.UpdateDate;
       this.UpdatedBy = __schema.UpdatedBy;
       this.ColumnHeaders = [];
-      this.save = savetable;
-      this.addRow = addRow;
+      this.saveNew = saveNew;
+      this.saveUpdate = saveUpdate;
+      this.saveDelete = saveDelete;
+
+      this.getEmptyRow = getEmptyRow;
       this.get = getTableData;
 
       __schema.Columns.forEach(function (col) {
         __table.ColumnHeaders.push(new ColumnHeader(col));
       });
 
-      function addRow() {
+      function getEmptyRow() {
         var row = new TableRow(__schema.Columns);
-        row.IsNew = true;
         return row;
       }
 
-      function savetable(row) {
-        var sendrows = [];
-        if (row.IsNew) {
-          sendrows.push(row);
+      function saveNew(data) {
+        var row = getEmptyRow();
+        row = maprows(row, data);
+        row.IsNew = true;
+        return saveTableData(this.Id, [row]);
+      }
+
+      function saveUpdate(data) {
+        var row = getEmptyRow();
+        row = maprows(row, data);
+        row.IsUpdate = true;
+        return saveTableData(this.Id, [row]);
+      }
+
+      function saveDelete(data) {
+        var row = getEmptyRow();
+        row = maprows(row, data);
+        row.IsDelete = true;
+        return saveTableData(this.Id, [row]);
+      }
+
+      function maprows(row, data) {
+        var keys = Object.keys(data);
+        for (var i = 0; i < keys.length; i++) {
+          var col = keys[i];
+          if (row.hasOwnProperty(col)) {
+            row[col].Value = data[col];
+          }
         }
-        else if (row.IsUpdate) {
-          sendrows.push(row);
+        if (data.primarykey && data.primarykey > 0) {
+          row.primarykey.Value = data.primarykey;
         }
-        else if (row.IsDelete) {
-          sendrows.push(row);
-        }
-        return saveTableData(this.Id, sendrows);
+        return row;
       }
 
       function getTableData(data) {
@@ -246,7 +269,7 @@ var Singleton = (function (apikey, opts) {
 
     function ColumnHeader(col) {
       var __col = col;
-      
+
 
       //need to simplify the columns to a standard format so thres no confusion
       this.Name = col.Label;
@@ -259,7 +282,7 @@ var Singleton = (function (apikey, opts) {
       this.Length = col.Length;
       this.NotNull = col.NotNull;
       this.VirtualTypeId = col.VirtualTypeId;
-      
+
       return this;
     }
 

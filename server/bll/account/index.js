@@ -2,66 +2,38 @@
 var
   util = require("util"),
   common = require("../../common"),
-//  access = require("./access"),
- _ = require('lodash'),
- membership = require('../membership'),
- bcrypt = require('bcryptjs'),
- uuidV4 = require('uuid/v4'),
- moment = require('moment')
-//  account_dal = require("./account_dal")
-;
+  //  access = require("./access"),
+  _ = require('lodash'),
+  membership = require('../membership'),
+  bcrypt = require('bcryptjs'),
+  uuidV4 = require('uuid/v4'),
+  moment = require('moment'),
+  env = require('node-env-file')
+  //  account_dal = require("./account_dal")
+  ;
+
+  env('./envVars.txt');
+  var microdb = require('../../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY)
 
 exports.SaveProfile = SaveProfile;
 // exports.ChangePassword = ChangePassword;
 
 
-function SaveProfile(req) {
+function SaveProfile(data) {
   return new Promise((resolve) => {
-    // var row = microdb.Tables.membership.addRow();
-    // var keys = Object.keys(user);
-    // for (var i = 0; i < keys.length; i++) {
-    //   var col = keys[i];
-    //   row[col].Value = user[col];
-    // }
-
-    // microdb.Tables.membership.save(row).then(function (saveres) {
+    data.Profile.primarykey = data.OwnerMembershipId;
+    microdb.Tables.membership.saveUpdate(data.Profile).then(function (saveres) {
       var response = new common.response();
-      response.user=req;
-      // if(saveres.success && saveres.data && saveres.data.addedRows){
-      //   response.UserId = saveres.data.addedRows[0].insertId;
-      //   response.success = true;
-      // }
-      // else{
-      //   response.success = false;
-      // }
+      response.success = true;
+      if (saveres.success && saveres.data && saveres.data.updatedRows) {
+        response.success = true;
+      }
+      else {
+        response.success = false;
+      }
       resolve(response);
-    // }
-    // );
+    });
   });
-
-  // dal.account.GetByOwnerId(req.OwnerMembershipId, function (canRes) {
-  //   if (canRes.success && canRes.HasAccount) {
-  //     dal.account.SaveProfile(req).then(function (getRes) {
-  //       if (getRes.success) {
-  //         // log('SaveProfile getRes= '+util.inspect(getRes));
-  //         saveProfileCB(getRes);
-  //         return;
-  //       }
-  //       else {
-  //         response.error = errors.NO_ACCESS;
-  //         response.success = false;
-  //         saveProfileCB(response);
-  //         return;
-  //       }
-  //     });
-  //   }
-  //   else {
-  //     response.error = errors.NO_ACCESS;
-  //     response.success = false;
-  //     saveProfileCB(response);
-  //     return;
-  //   }
-  // });
 
 }
 

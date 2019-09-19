@@ -8,7 +8,7 @@ var _ = require('lodash'),
   cryptojs = require("crypto-js"),
   appconfig = require('./appsettings'),
   bll = require("../bll"),
-  common=require('../common')
+  common = require('../common')
   ;
 
 function AuthResponse(response) {
@@ -24,17 +24,17 @@ passport.serializeUser(function (user, done) {
   done(null, { id: user.primarykey });
 });
 
-passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'password', session: false }, 
-function (email, password, done) {
+passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'password', session: false },
+  function (email, password, done) {
 
-  bll.membership.getByEmail(email).then(OnGetByEmail);
-  
-  function OnGetByEmail(response) {
-    if (!response.success || !response.users || (response.users && response.users.length==0)) {
-      common.logger.log('could not get user by email');
-      return done(null, false, { message: 'Email ' + email + ' not found' });
-    }
-    else {
+    bll.membership.getByEmail(email).then(OnGetByEmail);
+
+    function OnGetByEmail(response) {
+      if (!response.success || !response.users || (response.users && response.users.length == 0)) {
+        common.logger.log('could not get user by email');
+        return done(null, false, { message: 'Email ' + email + ' not found' });
+      }
+      else {
         var member = response.users[0];
         if (member.accountlocked == 1) {
           return done(null, false, { message: 'Account Locked', status: 'locked' });
@@ -42,7 +42,7 @@ function (email, password, done) {
         if (member.isreset) {
           return done(null, false, { message: 'Password is reset', status: 'reset' });
         }
-        
+
         var isMatch = bcrypt.compareSync(password, member.password);
         if (isMatch) {
           //need to update their passwordattempt and/or accountlocked
@@ -60,10 +60,10 @@ function (email, password, done) {
           }
           return done(null, false, { message: 'Invalid email or password.', status: 'badattempt' });
         }
+      }
     }
-  }
 
-}));
+  }));
 
 exports.isAuthenticated = function (req, res, next) {
 
@@ -87,38 +87,45 @@ exports.isAuthenticated = function (req, res, next) {
   var bytes = cryptojs.AES.decrypt(val, appconfig.secrets.cryptoKey);
   var decryptedCookieVal = bytes.toString(cryptojs.enc.Utf8);
 
-  //find by decrypted user id
-  bll.membership.getMembershipById(decryptedCookieVal, function (response) {
-    //logger.log('exports.isAuthenticated = '+util.inspect(response));
-    //**********************IMPORTANT**********************
+  bll.membership.getMembershipById(decryptedCookieVal).then(function (response) {
     //PASSPORT REQUIRES A user OJBECT AS LOWERCASE
-    if (!response.success || !response.Membership) {
-      res.redirect(authRetUrl);
+
+    if (!response.success || !response.users || (response.users && response.users.length == 0)) {
+      var authResponse = new AuthResponse();
+      authResponse.success = false;
+      authResponse.authRetUrl = '/';
+      res.status(200).send(authResponse);
+      // res.redirect(authRetUrl);
       return;
     }
-    req.user = {
-      Email: response.Membership.Email,
-      FirstName: response.Membership.FirstName,
-      LastName: response.Membership.LastName,
-      MembershipId: response.Membership.MembershipId
-    };
-    
-    if(response.Membership.GoogleOAuth){
-      req.user.GoogleOAuth = response.Membership.GoogleOAuth;
+
+    var member = response.users[0];
+    if (member.accountlocked == 1) {
+      var authResponse = new AuthResponse();
+      authResponse.success = false;
+      authResponse.message = 'Account Locked';
+      res.status(200).send(authResponse);
+      return;
     }
-    // req.user.MembershipId = response.Membership.MembershipId;
+
+    if (member.isreset) {
+      var authResponse = new AuthResponse();
+      authResponse.success = false;
+      authResponse.message = 'Password is reset';
+      res.status(200).send(authResponse);
+      return;
+    }
+
+    req.user = {
+      email: member.email,
+      first_name: member.first_name,
+      last_name: member.last_name,
+      membershipid: member.primarykey
+    };
     req.User = req.user;
-
     //refresh cookie expire window
-    var ciphertext = cryptojs.AES.encrypt(response.Membership.MembershipId.toString(), appconfig.secrets.cryptoKey);
+    var ciphertext = cryptojs.AES.encrypt(req.user.membershipid.toString(), appconfig.secrets.cryptoKey);
     res.cookie(appconfig.cookies.authCookieName, encodeURIComponent(ciphertext), { expires: appconfig.cookies.getExpiryDate() });
-
-    //add empty google api cookie
-    // if(!req.cookies.hasOwnProperty(appconfig.cookies.google_api_name)){
-    //   res.cookie(appconfig.cookies.google_api_name, '');
-    // }
-    
-    
 
     if (req.isAuthenticated()) return next();
     res.redirect(authRetUrl);

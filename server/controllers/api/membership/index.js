@@ -16,8 +16,8 @@ exports.init = function (app) {
 function SaveProfile(req, res, next) {
   var data = {};
   data.Profile = req.body.data;
-  data.OwnerMembershipId = req.User.MembershipId;
-  bll.account.SaveProfile(data, function (bllRes) {
+  data.OwnerMembershipId = req.User.membershipid;
+  bll.account.SaveProfile(data).then(function (bllRes) {
     res.status(200).send(bllRes);
   });
 }
