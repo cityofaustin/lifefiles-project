@@ -4,14 +4,17 @@
   mypass.registerFeature({
     name: 'signup', 
     url:'/ui/auth/signup/signup.html' , 
-    load: signupLoad 
+    load: signupLoad,
+    methods:{
+      signup:signup
+    } 
   });
 
   function init() {
   }
 
   function signupLoad() {
-      $('.signup button.create-acct').on('click',signup);
+      // $('.signup button.create-acct').on('click',signup);
   }
 
   function signup(evt) {

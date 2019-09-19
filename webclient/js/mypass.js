@@ -36,6 +36,7 @@
 
     function registerFeature(feat) {
       __mypass.navigation.addFeature(feat);
+      __mypass[feat.name]=feat.methods;
     }
 
     __mypass.postMsg = postMsg;
