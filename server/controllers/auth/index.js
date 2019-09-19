@@ -17,9 +17,9 @@ exports.init = function (app) {
   app.post('/auth/register', Register);
   app.post('/auth/login', Login);
   app.post('/auth/logout', logout);
-  app.post('/auth/resetpassword', ResetPassword);
-  app.post('/auth/resetpasswordcomplete', ResetPasswordComplete);
-  app.post('/auth/logck', CheckIsLoggedIn);
+  // app.post('/auth/resetpassword', ResetPassword);
+  // app.post('/auth/resetpasswordcomplete', ResetPasswordComplete);
+  // app.post('/auth/logck', CheckIsLoggedIn);
 
 };
 
@@ -156,6 +156,7 @@ function logout(req, res, next) {
   res.status(200).send(authResponse);
   // res.redirect('/');
 }
+
 
 function ResetPassword(req, res, next) {
   req.email = req.body.RequestData.data[0].email;

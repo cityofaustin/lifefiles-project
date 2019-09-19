@@ -15,27 +15,27 @@ var
   env('./envVars.txt');
   var microdb = require('../../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY)
 
-exports.SaveProfile = SaveProfile;
+// exports.SaveProfile = SaveProfile;
 // exports.ChangePassword = ChangePassword;
 
 
-function SaveProfile(data) {
-  return new Promise((resolve) => {
-    data.Profile.primarykey = data.OwnerMembershipId;
-    microdb.Tables.membership.saveUpdate(data.Profile).then(function (saveres) {
-      var response = new common.response();
-      response.success = true;
-      if (saveres.success && saveres.data && saveres.data.updatedRows) {
-        response.success = true;
-      }
-      else {
-        response.success = false;
-      }
-      resolve(response);
-    });
-  });
+// function SaveProfile(data) {
+//   return new Promise((resolve) => {
+//     data.Profile.primarykey = data.OwnerMembershipId;
+//     microdb.Tables.membership.saveUpdate(data.Profile).then(function (saveres) {
+//       var response = new common.response();
+//       response.success = true;
+//       if (saveres.success && saveres.data && saveres.data.updatedRows) {
+//         response.success = true;
+//       }
+//       else {
+//         response.success = false;
+//       }
+//       resolve(response);
+//     });
+//   });
 
-}
+// }
 
 
 // function ChangePassword(req, chgPassCB) {

@@ -17,7 +17,7 @@ function SaveProfile(req, res, next) {
   var data = {};
   data.Profile = req.body.data;
   data.OwnerMembershipId = req.User.membershipid;
-  bll.account.SaveProfile(data).then(function (bllRes) {
+  bll.membership.SaveProfile(data).then(function (bllRes) {
     res.status(200).send(bllRes);
   });
 }

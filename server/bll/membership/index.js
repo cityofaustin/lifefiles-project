@@ -13,6 +13,7 @@ var
 exports.getByEmail = getByEmail;
 exports.createMembership = createMembership;
 exports.getMembershipById = getMembershipById;
+exports.SaveProfile = SaveProfile;
 
 // exports.membershipEmailConfirm = membershipEmailConfirm;
 // exports.resetPasswordComplete = resetPasswordComplete;
@@ -42,14 +43,7 @@ function getByEmail(email) {
 
 function createMembership(user) {
   return new Promise((resolve) => {
-    // var row = microdb.Tables.membership.addRow();
-    // var keys = Object.keys(user);
-    // for (var i = 0; i < keys.length; i++) {
-    //   var col = keys[i];
-    //   row[col].Value = user[col];
-    // }
-
-    microdb.Tables.membership.saveNew(user).then(function (saveres) {
+      microdb.Tables.membership.saveNew(user).then(function (saveres) {
       var response = new common.response();
       if(saveres.success && saveres.data && saveres.data.addedRows){
         response.UserId = saveres.data.addedRows[0].insertId;
@@ -62,9 +56,7 @@ function createMembership(user) {
     }
     );
   });
-  // dal.membership.createMembership(userInfo, function (response) {
-  //   cb(response);
-  // });
+
 }
 
 function getMembershipById(id) {
@@ -84,6 +76,24 @@ function getMembershipById(id) {
   });
 }
 
+
+function SaveProfile(data) {
+  return new Promise((resolve) => {
+    data.Profile.primarykey = data.OwnerMembershipId;
+    microdb.Tables.membership.saveUpdate(data.Profile).then(function (saveres) {
+      var response = new common.response();
+      response.success = true;
+      if (saveres.success && saveres.data && saveres.data.updatedRows) {
+        response.success = true;
+      }
+      else {
+        response.success = false;
+      }
+      resolve(response);
+    });
+  });
+
+}
 
 
 function resetPasswordComplete(req) {
