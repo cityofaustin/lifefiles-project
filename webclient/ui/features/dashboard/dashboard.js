@@ -28,10 +28,6 @@
   }
 
   function save() {
-    var acc = mypass.session.getSession();
-    // userform.elements.email.value = acc.email;
-    // userform.elements.firstname.value = acc.firstname;
-    // userform.elements.lastname.value = acc.lastname;
     var req = {
       email: userform.elements.email.value,
       first_name: userform.elements.firstname.value,
