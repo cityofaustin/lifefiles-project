@@ -127,11 +127,9 @@ function Login(req, res, next) {
       authResponse.success = true;
       authResponse.data={};
       authResponse.data.status = appconfig.status.auth.loggedIn;
-      authResponse.data.firstname = user.first_name;
-      authResponse.data.lastname = user.last_name;
+      authResponse.data.first_name = user.first_name;
+      authResponse.data.last_name = user.last_name;
       authResponse.data.email = user.email;
-      // authResponse.roles = getUserRolesRes.Roles;
-      // authResponse.phone = user.Phone;
       // authResponse.createdon = user.createdate;
 
       res.status(200).send(authResponse);
