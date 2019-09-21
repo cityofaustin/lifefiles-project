@@ -34,7 +34,8 @@ var Singleton = (function (apikey, opts) {
     };
     var _DbId;
     var mdbevents = {
-      'InitFailed': 'mdb.InitFailed'
+      initfailed: 'mdb.initfailed',
+      init:'mdb.init'
     };
 
     // this.getTables = getTables;
@@ -46,10 +47,11 @@ var Singleton = (function (apikey, opts) {
     function init() {
       getTables().then(function (gtRes) {
         if (!gtRes.success) {
-          app_instance.emit(mdbevents.InitFailed, 'empty args');
+          app_instance.emit(mdbevents.InitFailed);
         }
         else {
           app_instance.Init = true;
+          app_instance.emit(mdbevents.init);
         }
       });
     }

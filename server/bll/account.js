@@ -1,14 +1,12 @@
 
 var
   util = require("util"),
-  // account_dal = require("./account_dal"),
-  common = require("../../common"),
-  appconfig = require('../../appconfig'),
+  common = require("../common"),
   env = require('node-env-file')
    ;
 
   env('./envVars.txt');
-  var microdb = require('../../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY)
+  var microdb = require('../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
 
 exports.getByEmail = getByEmail;
 exports.createAccount = createAccount;
@@ -39,8 +37,9 @@ function getByEmail(email) {
       resolve(response);
     });
   });
-  
 }
+
+
 
 function createAccount(user) {
   return new Promise((resolve) => {

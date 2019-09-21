@@ -1,6 +1,6 @@
 
 var
-  logger = require('../../common/logger'),
+  common = require('../../common'),
   util = require("util"),
   bll = require("../../bll"),
   _ = require('lodash'),
@@ -45,7 +45,7 @@ function Register(req, res, next) {
         res.status(200).send(authResponse);
         return;
       }
-      else if (response.users && response.users.length>0) {
+      else if (response.users && response.users.length > 0) {
         var authResponse = new AuthResponse();
         authResponse.error = 'account exists';
         authResponse.success = false;
@@ -114,17 +114,40 @@ function Login(req, res, next) {
 
       //NEED TO UPDATE LAST LOGIN DATETIME
       // bll.account.UpdateLastLogin(user.AccountId);
-      
+      // var acctRoles = bll.dataHelper.getAccountRoles();
+
       var ciphertext = cryptojs.AES.encrypt(user.primarykey.toString(), appconfig.secrets.cryptoKey);
       res.cookie(appconfig.cookies.authCookieName, encodeURIComponent(ciphertext), { expires: appconfig.cookies.getExpiryDate() });
       authResponse.success = true;
-      authResponse.data={};
+      authResponse.data = {};
       authResponse.data.status = appconfig.status.auth.loggedIn;
       authResponse.data.email = user.email;
-      authResponse.data.access_role = user.access_role;
+      authResponse.data.account_role = user.account_role;
 
-      res.status(200).send(authResponse);
-      return;
+      switch (user.account_role) {
+        case 1:
+          bll.administrator.getByAccountId(user.primarykey).then(OnGetRole);
+          break;
+        case 2:
+          bll.owner.getByAccountId(user.primarykey).then(OnGetRole);
+          break;
+        case 3:
+          bll.serviceProvider.getByAccountId(user.primarykey).then(OnGetRole);
+          break;
+        case 4:
+          bll.agent.getByAccountId(user.primarykey).then(OnGetRole);
+          break;
+      }
+
+      function OnGetRole(OnGetRoleRes) {
+        if (OnGetRoleRes.success) {
+          authResponse.data.AccountInfo = OnGetRoleRes.user;
+        }
+        res.status(200).send(authResponse);
+        return;
+      }
+
+
     });
   })(req, res, next);
 }
