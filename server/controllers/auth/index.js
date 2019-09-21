@@ -37,7 +37,7 @@ function Register(req, res, next) {
     return;
   }
   else {
-    bll.membership.getByEmail(req.register.email).then(function (response) {
+    bll.account.getByEmail(req.register.email).then(function (response) {
       if (!response.success) {
         var authResponse = new AuthResponse();
         authResponse.error = 'There was an error attempting to complete request.';
@@ -63,7 +63,7 @@ function Register(req, res, next) {
           last_name: req.register.last,
           password: req.register.password
         };
-        bll.membership.createMembership(uu).then(function (createres) {
+        bll.account.createAccount(uu).then(function (createres) {
           var authResponse = new AuthResponse();
           if (createres.success) {
             var ciphertext = cryptojs.AES.encrypt(createres.UserId.toString(), appconfig.secrets.cryptoKey);
@@ -113,9 +113,9 @@ function Login(req, res, next) {
       var authResponse = new AuthResponse();
 
       //NEED TO UPDATE LAST LOGIN DATETIME
-      // bll.membership.UpdateLastLogin(user.MembershipId);
+      // bll.account.UpdateLastLogin(user.AccountId);
       //GET ANY USER ROLES
-      // bll.access.GetRolesForMembership({ primarykey: user.primarykey.toString() }, function (getUserRolesRes) {
+      // bll.access.GetRolesForAccount({ primarykey: user.primarykey.toString() }, function (getUserRolesRes) {
       //   if (!getUserRolesRes.success) {
       //     authResponse.success = false;
       //     res.status(200).send(authResponse);
@@ -127,8 +127,6 @@ function Login(req, res, next) {
       authResponse.success = true;
       authResponse.data={};
       authResponse.data.status = appconfig.status.auth.loggedIn;
-      authResponse.data.first_name = user.first_name;
-      authResponse.data.last_name = user.last_name;
       authResponse.data.email = user.email;
       // authResponse.createdon = user.createdate;
 
@@ -187,7 +185,7 @@ function ResetPasswordComplete(req, res, next) {
   var salt = bcrypt.genSaltSync(5);
   req.Password = bcrypt.hashSync(req.Password, salt);
 
-  bll.membership.getMembershipBy_PasswordRestCode(req).then(function (getMemRes) {
+  bll.account.getAccountBy_PasswordRestCode(req).then(function (getMemRes) {
 
     if (!getMemRes.success) {
       authResponse.error = 'Unable to complete password reset';
@@ -196,7 +194,7 @@ function ResetPasswordComplete(req, res, next) {
       return;
     }
 
-    bll.membership.resetPasswordComplete(req).then(function (response) {
+    bll.account.resetPasswordComplete(req).then(function (response) {
       if (!response.success) {
         authResponse.error = 'Unable to complete password reset';
         authResponse.success = false;
@@ -205,7 +203,7 @@ function ResetPasswordComplete(req, res, next) {
         authResponse.success = true;
         //send password changed email
         var rr = {
-          Email: getMemRes.Membership.Email
+          Email: getMemRes.Account.Email
         };
         // myServices.email.Send_PasswordChanged_Email(rr, function () { });
       }

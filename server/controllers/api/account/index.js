@@ -9,16 +9,16 @@ var
 
 
 exports.init = function (app) {
-  app.post('/membership/save', passportConf.isAuthenticated, SaveProfile);
-  app.post('/membership/delete', passportConf.isAuthenticated, DeleteAccount);
-  // app.post('/membership/changepassword', passportConf.isAuthenticated, ChangePassword);
+  app.post('/account/save', passportConf.isAuthenticated, SaveProfile);
+  app.post('/account/delete', passportConf.isAuthenticated, DeleteAccount);
+  // app.post('/account/changepassword', passportConf.isAuthenticated, ChangePassword);
 };
 
 function SaveProfile(req, res, next) {
   var data = {};
   data.Profile = req.body.data;
-  data.OwnerMembershipId = req.User.membershipid;
-  bll.membership.SaveProfile(data).then(function (bllRes) {
+  data.OwnerAccountId = req.User.accountid;
+  bll.account.SaveProfile(data).then(function (bllRes) {
     res.status(200).send(bllRes);
   });
 }
@@ -27,8 +27,8 @@ function DeleteAccount(req, res, next) {
   //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
   var data = {};
   // data.Profile = req.body.data;
-  data.primarykey = req.User.membershipid;
-  bll.membership.DeleteAccount(data).then(function (bllRes) {
+  data.primarykey = req.User.accountid;
+  bll.account.DeleteAccount(data).then(function (bllRes) {
     res.status(200).send(bllRes);
   });
 }
@@ -40,7 +40,7 @@ function DeleteAccount(req, res, next) {
 //   data.OldPassword = req.body.RequestData.data[0].OldPassword;
 //   data.NewPassword = req.body.RequestData.data[0].NewPassword;
 //   data.ConfirmPassword = req.body.RequestData.data[0].ConfirmPassword;
-//   data.OwnerMembershipId = req.User.MembershipId;
+//   data.OwnerAccountId = req.User.AccountId;
 //   bll.account.ChangePassword(data, function (bllRes) {
 //     res.status(200).send(bllRes);
 //   });

@@ -9,9 +9,9 @@
     logout:function(params) {return mypass.postMsg('/auth/logout', params);},
   };
 
-  mypass.datacontext.membership =  {
-    save:function(params) {return mypass.postMsg('/membership/save', params);},
-    deleteAccount:function(params) {return mypass.postMsg('/membership/delete', params);}
+  mypass.datacontext.account =  {
+    save:function(params) {return mypass.postMsg('/account/save', params);},
+    deleteAccount:function(params) {return mypass.postMsg('/account/delete', params);}
   };
 
 

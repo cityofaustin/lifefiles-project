@@ -1,7 +1,7 @@
 
 var
   util = require("util"),
-  // membership_dal = require("./membership_dal"),
+  // account_dal = require("./account_dal"),
   common = require("../../common"),
   appconfig = require('../../appconfig'),
   env = require('node-env-file')
@@ -11,22 +11,22 @@ var
   var microdb = require('../../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY)
 
 exports.getByEmail = getByEmail;
-exports.createMembership = createMembership;
-exports.getMembershipById = getMembershipById;
+exports.createAccount = createAccount;
+exports.getAccountById = getAccountById;
 exports.SaveProfile = SaveProfile;
 exports.DeleteAccount=DeleteAccount;
 
-// exports.membershipEmailConfirm = membershipEmailConfirm;
+// exports.accountEmailConfirm = accountEmailConfirm;
 // exports.resetPasswordComplete = resetPasswordComplete;
 // exports.UpdateLastLogin = UpdateLastLogin;
 // exports.LockAccount = LockAccount;
 // exports.UpdateBadAttempt = UpdateBadAttempt;
 // exports.ClearBadAttempt = ClearBadAttempt;
-// exports.getMembershipBy_PasswordRestCode = getMembershipBy_PasswordRestCode;
+// exports.getAccountBy_PasswordRestCode = getAccountBy_PasswordRestCode;
 
 function getByEmail(email) {
   return new Promise((resolve) => {
-    microdb.Tables.membership.get({ 'email': email }).then(function (res) {
+    microdb.Tables.account.get({ 'email': email }).then(function (res) {
       var response = new common.response();
       if (!res.success){
         response.message='error attempting to get by email';
@@ -42,9 +42,9 @@ function getByEmail(email) {
   
 }
 
-function createMembership(user) {
+function createAccount(user) {
   return new Promise((resolve) => {
-      microdb.Tables.membership.saveNew(user).then(function (saveres) {
+      microdb.Tables.account.saveNew(user).then(function (saveres) {
       var response = new common.response();
       if(saveres.success && saveres.data && saveres.data.addedRows){
         response.UserId = saveres.data.addedRows[0].insertId;
@@ -60,9 +60,9 @@ function createMembership(user) {
 
 }
 
-function getMembershipById(id) {
+function getAccountById(id) {
   return new Promise((resolve) => {
-    microdb.Tables.membership.get({'primarykey': id }).then(function (res) {
+    microdb.Tables.account.get({'primarykey': id }).then(function (res) {
       var response = new common.response();
       if (!res.success){
         response.message='error attempting to get by primarykey';
@@ -80,8 +80,8 @@ function getMembershipById(id) {
 
 function SaveProfile(data) {
   return new Promise((resolve) => {
-    data.Profile.primarykey = data.OwnerMembershipId;
-    microdb.Tables.membership.saveUpdate(data.Profile).then(function (saveres) {
+    data.Profile.primarykey = data.OwnerAccountId;
+    microdb.Tables.account.saveUpdate(data.Profile).then(function (saveres) {
       var response = new common.response();
       response.success = true;
       if (saveres.success && saveres.data && saveres.data.updatedRows) {
@@ -98,7 +98,7 @@ function SaveProfile(data) {
 function DeleteAccount(data) {
   //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
   return new Promise((resolve) => {
-    microdb.Tables.membership.saveDelete(data).then(function (saveres) {
+    microdb.Tables.account.saveDelete(data).then(function (saveres) {
       var response = new common.response();
       response.success = true;
       if (saveres.success && saveres.data && saveres.data.deletedRows) {
@@ -115,26 +115,26 @@ function DeleteAccount(data) {
 
 
 function resetPasswordComplete(req) {
-  return dal.membership.resetPasswordComplete(req);
+  return dal.account.resetPasswordComplete(req);
 }
 
-function getMembershipBy_PasswordRestCode(req) {
-  return dal.membership.getMembershipBy_PasswordRestCode(req);
+function getAccountBy_PasswordRestCode(req) {
+  return dal.account.getAccountBy_PasswordRestCode(req);
 }
 
 
-function UpdateLastLogin(membershipId) {
-  return dal.membership.UpdateLastLogin(membershipId);
+function UpdateLastLogin(accountId) {
+  return dal.account.UpdateLastLogin(accountId);
 }
 
-function LockAccount(membershipId) {
-  return dal.membership.LockAccount(membershipId);
+function LockAccount(accountId) {
+  return dal.account.LockAccount(accountId);
 }
 
-function UpdateBadAttempt(membershipId) {
-  return dal.membership.UpdateBadAttempt(membershipId);
+function UpdateBadAttempt(accountId) {
+  return dal.account.UpdateBadAttempt(accountId);
 }
 
-function ClearBadAttempt(membershipId) {
-  return dal.membership.ClearBadAttempt(membershipId);
+function ClearBadAttempt(accountId) {
+  return dal.account.ClearBadAttempt(accountId);
 }

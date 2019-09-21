@@ -27,7 +27,7 @@ passport.serializeUser(function (user, done) {
 passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'password', session: false },
   function (email, password, done) {
 
-    bll.membership.getByEmail(email).then(OnGetByEmail);
+    bll.account.getByEmail(email).then(OnGetByEmail);
 
     function OnGetByEmail(response) {
       if (!response.success || !response.users || (response.users && response.users.length == 0)) {
@@ -46,17 +46,17 @@ passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'passwor
         var isMatch = bcrypt.compareSync(password, member.password);
         if (isMatch) {
           //need to update their passwordattempt and/or accountlocked
-          // bll.membership.ClearBadAttempt(user.MembershipId);
-          // delete response.Membership.AccountLocked;
-          // delete response.Membership.PasswordAttempt;
+          // bll.account.ClearBadAttempt(user.AccountId);
+          // delete response.Account.AccountLocked;
+          // delete response.Account.PasswordAttempt;
           return done(null, member);
         }
         else {
           if (member.passwordattempt > 5) {
-            bll.membership.LockAccount(member.primarykey);
+            bll.account.LockAccount(member.primarykey);
           }
           else {
-            bll.membership.UpdateBadAttempt(member.primarykey);
+            bll.account.UpdateBadAttempt(member.primarykey);
           }
           return done(null, false, { message: 'Invalid email or password.', status: 'badattempt' });
         }
@@ -87,7 +87,7 @@ exports.isAuthenticated = function (req, res, next) {
   var bytes = cryptojs.AES.decrypt(val, appconfig.secrets.cryptoKey);
   var decryptedCookieVal = bytes.toString(cryptojs.enc.Utf8);
 
-  bll.membership.getMembershipById(decryptedCookieVal).then(function (response) {
+  bll.account.getAccountById(decryptedCookieVal).then(function (response) {
     //PASSPORT REQUIRES A user OJBECT AS LOWERCASE
 
     if (!response.success || !response.users || (response.users && response.users.length == 0)) {
@@ -120,11 +120,11 @@ exports.isAuthenticated = function (req, res, next) {
       email: member.email,
       first_name: member.first_name,
       last_name: member.last_name,
-      membershipid: member.primarykey
+      accountid: member.primarykey
     };
     req.User = req.user;
     //refresh cookie expire window
-    var ciphertext = cryptojs.AES.encrypt(req.user.membershipid.toString(), appconfig.secrets.cryptoKey);
+    var ciphertext = cryptojs.AES.encrypt(req.user.accountid.toString(), appconfig.secrets.cryptoKey);
     res.cookie(appconfig.cookies.authCookieName, encodeURIComponent(ciphertext), { expires: appconfig.cookies.getExpiryDate() });
 
     if (req.isAuthenticated()) return next();

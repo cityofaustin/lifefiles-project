@@ -1,8 +1,8 @@
 var
-  membership=require('./membership')
+  account=require('./account')
   ;
 
 exports.init = function(app) {
-  membership.init(app);
+  account.init(app);
 };
 
