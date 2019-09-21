@@ -9,18 +9,16 @@
   };
 
   function showErrorLabel(elementName) {
-    //pass the DOM element's name attribute value
     var element = document.getElementsByName(elementName);
-    if (!element) {
+    if (element.length==0) {
       throw 'Could not find element by name: ' + elementName;
     }
     element[0].classList.remove('hidden');
   }
 
   function hideErrorLabel(elementName) {
-    //pass the DOM element's name attribute value
     var element = document.getElementsByName(elementName);
-    if (!element) {
+    if (element.length==0) {
       throw 'Could not find element by name: ' + elementName;
     }
     element[0].classList.add('hidden');
