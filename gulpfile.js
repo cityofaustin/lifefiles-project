@@ -42,6 +42,7 @@ function Web_JS(cb) {
     'webclient/js/session.js',
     'webclient/js/datacontext.js',
     'webclient/js/navigation.js',
+    'webclient/js/validation.js',
     'webclient/ui/**/*.js',
     'webclient/js/appboot.js'
   ];

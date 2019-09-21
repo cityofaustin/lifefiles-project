@@ -6,7 +6,8 @@
     url:'/ui/auth/signup/signup.html' , 
     load: signupLoad,
     methods:{
-      signup:signup
+      signup:signup,
+      checkPasswords:checkPasswords
     } 
   });
 
@@ -32,6 +33,16 @@
       mypass.session.startSession(res.data);
       mypass.goto.dashboard();
     }
+  }
+
+  function checkPasswords(label) {
+    if(signupform.elements.confpassword.value != signupform.elements.password.value){
+      mypass.validation.showErrorLabel(label);
+    }
+    else{
+      mypass.validation.hideErrorLabel(label);
+    }
+    
   }
 
 

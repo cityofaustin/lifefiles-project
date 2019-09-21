@@ -18,11 +18,12 @@
       </div>
       <div class="mt">
         <label>Password</label>
-        <input type="text" name='password' type="password">
+        <input name='password' type="password">
       </div>
       <div class="mt">
         <label>Confirm Password</label>
-        <input type="text" name='confpassword' type="password">
+        <input name='confpassword' type="password" onblur="mypass.signup.checkPasswords('lbl-passmatch')">
+        <div class="hidden error mt" name="lbl-passmatch">Passwords must match</div>
       </div>
     </div>
 
