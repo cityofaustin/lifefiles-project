@@ -114,27 +114,18 @@ function Login(req, res, next) {
 
       //NEED TO UPDATE LAST LOGIN DATETIME
       // bll.account.UpdateLastLogin(user.AccountId);
-      //GET ANY USER ROLES
-      // bll.access.GetRolesForAccount({ primarykey: user.primarykey.toString() }, function (getUserRolesRes) {
-      //   if (!getUserRolesRes.success) {
-      //     authResponse.success = false;
-      //     res.status(200).send(authResponse);
-      //     return;
-      //   }
-      //   else {
+      
       var ciphertext = cryptojs.AES.encrypt(user.primarykey.toString(), appconfig.secrets.cryptoKey);
       res.cookie(appconfig.cookies.authCookieName, encodeURIComponent(ciphertext), { expires: appconfig.cookies.getExpiryDate() });
       authResponse.success = true;
       authResponse.data={};
       authResponse.data.status = appconfig.status.auth.loggedIn;
       authResponse.data.email = user.email;
-      // authResponse.createdon = user.createdate;
+      authResponse.data.access_role = user.access_role;
 
       res.status(200).send(authResponse);
       return;
-      // });
     });
-    // });
   })(req, res, next);
 }
 

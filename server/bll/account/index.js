@@ -114,27 +114,27 @@ function DeleteAccount(data) {
 
 
 
-function resetPasswordComplete(req) {
-  return dal.account.resetPasswordComplete(req);
-}
+// function resetPasswordComplete(req) {
+//   return dal.account.resetPasswordComplete(req);
+// }
 
-function getAccountBy_PasswordRestCode(req) {
-  return dal.account.getAccountBy_PasswordRestCode(req);
-}
+// function getAccountBy_PasswordRestCode(req) {
+//   return dal.account.getAccountBy_PasswordRestCode(req);
+// }
 
 
-function UpdateLastLogin(accountId) {
-  return dal.account.UpdateLastLogin(accountId);
-}
+// function UpdateLastLogin(accountId) {
+//   return dal.account.UpdateLastLogin(accountId);
+// }
 
-function LockAccount(accountId) {
-  return dal.account.LockAccount(accountId);
-}
+// function LockAccount(accountId) {
+//   return dal.account.LockAccount(accountId);
+// }
 
-function UpdateBadAttempt(accountId) {
-  return dal.account.UpdateBadAttempt(accountId);
-}
+// function UpdateBadAttempt(accountId) {
+//   return dal.account.UpdateBadAttempt(accountId);
+// }
 
-function ClearBadAttempt(accountId) {
-  return dal.account.ClearBadAttempt(accountId);
-}
+// function ClearBadAttempt(accountId) {
+//   return dal.account.ClearBadAttempt(accountId);
+// }
