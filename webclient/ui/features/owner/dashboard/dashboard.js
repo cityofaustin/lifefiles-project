@@ -20,10 +20,9 @@
     $('.btn-logout').removeClass('hidden');
     var account = mypass.session.getSession();
   
-
-    // userform.elements.email.value = acc.email;
-    // userform.elements.firstname.value = acc.first_name;
-    // userform.elements.lastname.value = acc.last_name;
+    if (account.AccountInfo) {
+      userform.elements.email.value = account.email;
+    }
   }
 
   function editForm() {

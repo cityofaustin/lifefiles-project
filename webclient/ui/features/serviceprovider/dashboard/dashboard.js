@@ -8,7 +8,7 @@
     methods: {
       editForm: editForm,
       save: save,
-      deleteAccount:deleteAccount
+      deleteAccount: deleteAccount
     }
   });
 
@@ -19,11 +19,12 @@
     //ADD ANY PAGE CODE
     $('.btn-logout').removeClass('hidden');
     var account = mypass.session.getSession();
-  
 
-    // userform.elements.email.value = acc.email;
-    // userform.elements.firstname.value = acc.first_name;
-    // userform.elements.lastname.value = acc.last_name;
+    if (account.AccountInfo) {
+      userform.elements.name.value = account.AccountInfo.name;
+      userform.elements.companyname.value = account.AccountInfo.company_name;
+      userform.elements.address.value = account.AccountInfo.address;
+    }
   }
 
   function editForm() {

@@ -25,9 +25,7 @@
         __mypass.goto.login();
       }
       else {
-
         var account = __mypass.session.getSession();
-
         switch (account.account_role) {
           case 1:
             __mypass.goto.admin_dashboard();
@@ -42,7 +40,6 @@
             __mypass.goto.agent_dashboard();
             break;
         }
-        // __mypass.goto.dashboard();
       }
 
     }
