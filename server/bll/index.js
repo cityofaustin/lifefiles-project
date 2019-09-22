@@ -1,5 +1,5 @@
 exports.account=require('./account');
-exports.administrator=require('./administrator');
+exports.administrators=require('./administrators');
 exports.agent=require('./agent');
 exports.dataHelper=require('./dataHelper');
 exports.owner=require('./owner');

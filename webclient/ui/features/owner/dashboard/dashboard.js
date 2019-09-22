@@ -2,8 +2,8 @@
   'use strict';
 
   mypass.registerFeature({
-    name: 'dashboard',
-    url: '/ui/features/dashboard/index.html',
+    name: 'owner_dashboard',
+    url: '/ui/features/owner/dashboard/index.html',
     load: dashboardLoad,
     methods: {
       editForm: editForm,

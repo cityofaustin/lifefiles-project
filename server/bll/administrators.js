@@ -11,7 +11,7 @@ var
 
   function getByAccountId(id) {
     return new Promise((resolve) => {
-      microdb.Tables.administrator.get({'accountid': id }).then(function (res) {
+      microdb.Tables.administrators.get({'accountid': id }).then(function (res) {
         var response = new common.response();
         if (!res.success){
           response.message='error attempting to get by accountid';

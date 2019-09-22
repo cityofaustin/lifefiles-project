@@ -126,7 +126,7 @@ function Login(req, res, next) {
 
       switch (user.account_role) {
         case 1:
-          bll.administrator.getByAccountId(user.primarykey).then(OnGetRole);
+          bll.administrators.getByAccountId(user.primarykey).then(OnGetRole);
           break;
         case 2:
           bll.owner.getByAccountId(user.primarykey).then(OnGetRole);
@@ -140,8 +140,8 @@ function Login(req, res, next) {
       }
 
       function OnGetRole(OnGetRoleRes) {
-        if (OnGetRoleRes.success) {
-          authResponse.data.AccountInfo = OnGetRoleRes.user;
+        if (OnGetRoleRes.success && OnGetRoleRes.user) {
+          authResponse.data.AccountInfo = OnGetRoleRes.user.pop();
         }
         res.status(200).send(authResponse);
         return;

@@ -25,7 +25,24 @@
         __mypass.goto.login();
       }
       else {
-        __mypass.goto.dashboard();
+
+        var account = __mypass.session.getSession();
+
+        switch (account.account_role) {
+          case 1:
+            __mypass.goto.admin_dashboard();
+            break;
+          case 2:
+            __mypass.goto.owner_dashboard();
+            break;
+          case 3:
+            __mypass.goto.service_provider_dashboard();
+            break;
+          case 4:
+            __mypass.goto.agent_dashboard();
+            break;
+        }
+        // __mypass.goto.dashboard();
       }
 
     }

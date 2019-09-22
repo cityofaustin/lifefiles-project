@@ -6,8 +6,8 @@
     name: 'login',
     url: '/ui/auth/login/login.html',
     load: loginLoad,
-    methods:{
-      login:login
+    methods: {
+      login: login
     }
   });
 
@@ -15,9 +15,9 @@
   }
 
   function loginLoad(vt) {
-      //ADD ANY PAGE CODE
-      $('.btn-logout').addClass('hidden');
-    
+    //ADD ANY PAGE CODE
+    $('.btn-logout').addClass('hidden');
+
   }
 
   function login() {
@@ -31,7 +31,25 @@
   function onlogin(res) {
     if (res.success) {
       mypass.session.startSession(res.data);
-      mypass.goto.dashboard();
+      switch (res.data.account_role) {
+        case 1:
+            mypass.goto.admin_dashboard();
+          break;
+        case 2:
+            mypass.goto.owner_dashboard();
+          break;
+        case 3:
+            mypass.goto.service_provider_dashboard();
+          break;
+        case 4:
+            mypass.goto.agent_dashboard();
+          break;
+        default:
+          mypass.goto.dashboard();
+          break;
+
+      }
+
     }
     else {
       var dd = 'SHOW LOGIN ERROR';

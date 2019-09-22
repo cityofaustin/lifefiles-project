@@ -2,13 +2,13 @@
   'use strict';
 
   mypass.registerFeature({
-    name: 'dashboard',
-    url: '/ui/features/dashboard/index.html',
+    name: 'admin_dashboard',
+    url: '/ui/features/admin/dashboard/index.html',
     load: dashboardLoad,
     methods: {
       editForm: editForm,
       save: save,
-      deleteAccount:deleteAccount
+      deleteAccount: deleteAccount
     }
   });
 
@@ -19,11 +19,13 @@
     //ADD ANY PAGE CODE
     $('.btn-logout').removeClass('hidden');
     var account = mypass.session.getSession();
-  
 
-    // userform.elements.email.value = acc.email;
-    // userform.elements.firstname.value = acc.first_name;
-    // userform.elements.lastname.value = acc.last_name;
+    if (account.AccountInfo) {
+      userform.elements.email.value = account.email;
+      userform.elements.name.value = account.AccountInfo.name;
+      userform.elements.organization.value = account.AccountInfo.organization;
+    }
+
   }
 
   function editForm() {
