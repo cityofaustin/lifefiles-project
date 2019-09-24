@@ -33,19 +33,19 @@
       mypass.session.startSession(res.data);
       switch (res.data.account_role) {
         case 1:
-            mypass.goto.admin_dashboard();
+            mypass.goto.admindashboard();
           break;
         case 2:
-            mypass.goto.owner_dashboard();
+            mypass.goto.ownerdashboard();
           break;
         case 3:
             mypass.goto.service_provider_dashboard();
           break;
         case 4:
-            mypass.goto.agent_dashboard();
+            mypass.goto.agentdashboard();
           break;
         default:
-          mypass.goto.dashboard();
+          // mypass.goto.dashboard();
           break;
 
       }

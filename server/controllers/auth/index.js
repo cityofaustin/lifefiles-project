@@ -126,7 +126,7 @@ function Login(req, res, next) {
 
       switch (user.account_role) {
         case 1:
-          bll.administrators.getByAccountId(user.primarykey).then(OnGetRole);
+          bll.administrator.getByAccountId(user.primarykey).then(OnGetRole);
           break;
         case 2:
           bll.owner.getByAccountId(user.primarykey).then(OnGetRole);

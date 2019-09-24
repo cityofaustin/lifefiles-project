@@ -2,7 +2,7 @@
   'use strict';
 
   mypass.registerFeature({
-    name: 'owner_dashboard',
+    name: 'ownerdashboard',
     url: '/ui/features/owner/dashboard/index.html',
     load: dashboardLoad,
     methods: {
@@ -21,7 +21,7 @@
     var account = mypass.session.getSession();
   
     if (account.AccountInfo) {
-      userform.elements.email.value = account.email;
+      userform.elements.name.value = account.AccountInfo.name;
     }
   }
 
@@ -31,11 +31,9 @@
 
   function save() {
     var req = {
-      email: userform.elements.email.value,
-      first_name: userform.elements.firstname.value,
-      last_name: userform.elements.lastname.value
+      name: userform.elements.name.value
     };
-    mypass.datacontext.account.save(req).then(onsave);
+    mypass.datacontext.owner.save(req).then(onsave);
   }
 
   function onsave(res) {
@@ -49,7 +47,7 @@
 
   function deleteAccount() {
     //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
-    mypass.datacontext.account.deleteAccount().then(ondeleteAccount);
+    mypass.datacontext.owner.deleteAccount().then(ondeleteAccount);
   }
 
   function ondeleteAccount(res) {

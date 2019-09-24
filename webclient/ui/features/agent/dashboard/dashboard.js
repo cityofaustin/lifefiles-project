@@ -2,7 +2,7 @@
   'use strict';
 
   mypass.registerFeature({
-    name: 'agent_dashboard',
+    name: 'agentdashboard',
     url: '/ui/features/agent/dashboard/index.html',
     load: dashboardLoad,
     methods: {
@@ -32,11 +32,9 @@
 
   function save() {
     var req = {
-      email: userform.elements.email.value,
-      first_name: userform.elements.firstname.value,
-      last_name: userform.elements.lastname.value
+      name: userform.elements.name.value
     };
-    mypass.datacontext.account.save(req).then(onsave);
+    mypass.datacontext.agent.save(req).then(onsave);
   }
 
   function onsave(res) {
@@ -50,7 +48,7 @@
 
   function deleteAccount() {
     //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
-    mypass.datacontext.account.deleteAccount().then(ondeleteAccount);
+    mypass.datacontext.agent.deleteAccount().then(ondeleteAccount);
   }
 
   function ondeleteAccount(res) {

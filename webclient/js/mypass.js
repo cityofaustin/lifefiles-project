@@ -28,16 +28,16 @@
         var account = __mypass.session.getSession();
         switch (account.account_role) {
           case 1:
-            __mypass.goto.admin_dashboard();
+            __mypass.goto.admindashboard();
             break;
           case 2:
-            __mypass.goto.owner_dashboard();
+            __mypass.goto.ownerdashboard();
             break;
           case 3:
             __mypass.goto.service_provider_dashboard();
             break;
           case 4:
-            __mypass.goto.agent_dashboard();
+            __mypass.goto.agentdashboard();
             break;
         }
       }
