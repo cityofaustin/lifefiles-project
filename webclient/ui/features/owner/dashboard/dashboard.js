@@ -25,8 +25,18 @@
     }
   }
 
-  function editForm() {
-    $('.user-info input').removeAttr('readonly');
+  function editForm(edit) {
+    if(edit==false){
+      $('.user-info input').attr('readonly', 'readonly');
+      mypass.formhelper.hideElement('.btncancel,.btnsave');
+      mypass.formhelper.showElement('.btnedit');
+    }
+    else{
+      $('.user-info input').removeAttr('readonly');
+      mypass.formhelper.hideElement('.btncancel,.btnedit');
+      mypass.formhelper.showElement('.btncancel,.btnsave');
+    }
+    
   }
 
   function save() {

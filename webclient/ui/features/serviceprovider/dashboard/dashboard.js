@@ -8,7 +8,6 @@
     methods: {
       editForm: editForm,
       save: save,
-      // deleteAccount: deleteAccount
     }
   });
 
@@ -27,8 +26,18 @@
     }
   }
 
-  function editForm() {
-    $('.user-info input').removeAttr('readonly');
+  function editForm(edit) {
+    if(edit==false){
+      $('.user-info input').attr('readonly', 'readonly');
+      mypass.formhelper.hideElement('.btncancel,.btnsave');
+      mypass.formhelper.showElement('.btnedit');
+    }
+    else{
+      $('.user-info input').removeAttr('readonly');
+      mypass.formhelper.hideElement('.btncancel,.btnedit');
+      mypass.formhelper.showElement('.btncancel,.btnsave');
+    }
+    
   }
 
   function save() {
@@ -56,19 +65,6 @@
     }
   }
 
-  // function deleteAccount() {
-  //   //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
-  //   mypass.datacontext.serviceprovider.deleteAccount().then(ondeleteAccount);
-  // }
-
-  // function ondeleteAccount(res) {
-  //   if (res.success) {
-  //     mypass.session.logout();
-  //   }
-  //   else {
-  //     //error
-  //   }
-  // }
 
   init();
 

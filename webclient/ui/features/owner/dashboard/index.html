@@ -1,18 +1,18 @@
 <div class="dashboard">
   <h1 class="mv">Owner Dashboard</h1>
 
-  <form class="user-info mt-xl" name="userform">
+  <form class="user-info mt-xl form-group" name="userform">
     <div class="mt">
       <label>Name</label>
-      <input type="text" name="name" readonly>
+      <input type="text" name="name" readonly class="form-control">
     </div>
-    
+
   </form>
 
-  <div class="buttons mt-xl">
-      <!-- <button type="button" class="" onclick="mypass.ownerdashboard.deleteAccount()">Delete</button> -->
-    <button type="button" class="" onclick="mypass.ownerdashboard.editForm()">Edit</button>
-    <button type="button" class="" onclick="mypass.ownerdashboard.save()">Save</button>
+  <div class="buttons mt-xl text-right">
+    <button type="button" class="btn hidden btncancel" onclick="mypass.ownerdashboard.editForm(false)">Cancel</button>
+    <button type="button" class="btn hidden btnsave" onclick="mypass.ownerdashboard.save()">Save</button>
+    <button type="button" class="btn btnedit" onclick="mypass.ownerdashboard.editForm()">Edit</button>
   </div>
 
 </div>
