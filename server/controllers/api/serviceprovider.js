@@ -10,8 +10,8 @@ var
 
 exports.init = function (app) {
   app.post('/serviceprovider/save', passportConf.isAuthenticated, SaveProfile);
+  app.post('/serviceprovider/getall', passportConf.isAuthenticated, OnGetAll);
   // app.post('/serviceprovider/delete', passportConf.isAuthenticated, DeleteAccount);
-  // app.post('/account/changepassword', passportConf.isAuthenticated, ChangePassword);
 };
 
 function SaveProfile(req, res, next) {
@@ -19,6 +19,12 @@ function SaveProfile(req, res, next) {
   data.Profile = req.body.data;
   data.AccountInfo = req.User.AccountInfo;
   bll.serviceprovider.SaveProfile(data).then(function (bllRes) {
+    res.status(200).send(bllRes);
+  });
+}
+
+function OnGetAll(req,res,next) {
+  bll.serviceprovider.OnGetAll().then(function (bllRes) {
     res.status(200).send(bllRes);
   });
 }

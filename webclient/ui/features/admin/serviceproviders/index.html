@@ -1,6 +1,27 @@
 <div class="service-providers">
 
-  View Service Providers
+    <div class="sp-list table-responsive">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Company</th>
+            <th scope="col">Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-bind="row in rows">
+            <td data-bind="row.primarykey"></td>
+            <td data-bind="row.name"></td>
+            <td data-bind="row.company_name"></td>
+            <td data-bind="row.address"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
   
+
+
 </div>

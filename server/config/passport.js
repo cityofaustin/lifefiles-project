@@ -123,12 +123,10 @@ exports.isAuthenticated = function (req, res, next) {
 
     req.user = {
       email: member.email,
-      first_name: member.first_name,
-      last_name: member.last_name,
       accountid: member.primarykey,
-      AccountInfo: JSON.parse(userSessionInfo)
+      AccountInfo: userSessionInfo && userSessionInfo.length > 0 ? JSON.parse(userSessionInfo) : ''
     };
-    
+
     req.User = req.user;
     //refresh cookie expire window
     var ciphertext = cryptojs.AES.encrypt(req.user.accountid.toString(), appconfig.secrets.cryptoKey);

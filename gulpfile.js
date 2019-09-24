@@ -44,6 +44,7 @@ function Web_JS(cb) {
     'webclient/js/navigation.js',
     'webclient/js/validation.js',
     'webclient/js/formhelper.js',
+    'webclient/js/utils.js',
     'webclient/ui/**/*.js',
     'webclient/js/appboot.js'
   ];

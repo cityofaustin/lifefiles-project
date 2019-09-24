@@ -29,8 +29,9 @@
   };
 
   mypass.datacontext.serviceprovider =  {
+    getAll:function(params) {return mypass.postMsg('/serviceprovider/getall', params);},
     save:function(params) {return mypass.postMsg('/serviceprovider/save', params);},
-    deleteAccount:function(params) {return mypass.postMsg('/serviceprovider/delete', params);}
+    delete:function(params) {return mypass.postMsg('/serviceprovider/delete', params);}
   };
 
 
