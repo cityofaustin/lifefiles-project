@@ -96,7 +96,9 @@ function Login(req, res, next) {
   passport.authenticate('local', { session: false }, function (err, user, info) {
     if (err) {
       common.logger.log('err ' + err);
-      return next(err);
+      var authResponse = new AuthResponse();
+      authResponse.success = false;
+      return next(authResponse);
     }
     if (!user) {
       var authResponse = new AuthResponse();
@@ -108,7 +110,9 @@ function Login(req, res, next) {
 
     req.logIn(user, function (err) {
       if (err) {
-        return next(err);
+        var authResponse = new AuthResponse();
+        authResponse.success = false;
+        return next(authResponse);
       }
       var authResponse = new AuthResponse();
 
@@ -132,7 +136,7 @@ function Login(req, res, next) {
           bll.owner.getByAccountId(user.primarykey).then(OnGetRole);
           break;
         case 3:
-          bll.serviceProvider.getByAccountId(user.primarykey).then(OnGetRole);
+          bll.serviceprovider.getByAccountId(user.primarykey).then(OnGetRole);
           break;
         case 4:
           bll.agent.getByAccountId(user.primarykey).then(OnGetRole);
@@ -142,6 +146,11 @@ function Login(req, res, next) {
       function OnGetRole(OnGetRoleRes) {
         if (OnGetRoleRes.success && OnGetRoleRes.user) {
           authResponse.data.AccountInfo = OnGetRoleRes.user.pop();
+
+          var ciphertext = cryptojs.AES.encrypt(JSON.stringify(authResponse.data.AccountInfo), appconfig.secrets.cryptoKey);
+          res.cookie(appconfig.cookies.userSessionInfo, encodeURIComponent(ciphertext), { expires: appconfig.cookies.getExpiryDate() });
+          
+          delete authResponse.data.AccountInfo.primarykey;
         }
         res.status(200).send(authResponse);
         return;

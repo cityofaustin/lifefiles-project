@@ -2,13 +2,13 @@
   'use strict';
 
   mypass.registerFeature({
-    name: 'service_provider_dashboard',
+    name: 'sp_dashboard',
     url: '/ui/features/serviceprovider/dashboard/index.html',
     load: dashboardLoad,
     methods: {
       editForm: editForm,
       save: save,
-      deleteAccount: deleteAccount
+      // deleteAccount: deleteAccount
     }
   });
 
@@ -33,9 +33,9 @@
 
   function save() {
     var req = {
-      email: userform.elements.email.value,
-      first_name: userform.elements.firstname.value,
-      last_name: userform.elements.lastname.value
+      name: userform.elements.name.value,
+      company_name: userform.elements.companyname.value,
+      address: userform.elements.address.value
     };
     mypass.datacontext.serviceprovider.save(req).then(onsave);
   }
@@ -43,25 +43,32 @@
   function onsave(res) {
     if (res.success) {
       $('.user-info input').attr('readonly', 'readonly');
+
+      var account = mypass.session.getSession();
+      account.AccountInfo.name = userform.elements.name.value;
+      account.AccountInfo.company_name = userform.elements.companyname.value;
+      account.AccountInfo.address = userform.elements.address.value;
+      mypass.session.updateSession(account);
+
     }
     else {
       //error
     }
   }
 
-  function deleteAccount() {
-    //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
-    mypass.datacontext.serviceprovider.deleteAccount().then(ondeleteAccount);
-  }
+  // function deleteAccount() {
+  //   //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
+  //   mypass.datacontext.serviceprovider.deleteAccount().then(ondeleteAccount);
+  // }
 
-  function ondeleteAccount(res) {
-    if (res.success) {
-      mypass.session.logout();
-    }
-    else {
-      //error
-    }
-  }
+  // function ondeleteAccount(res) {
+  //   if (res.success) {
+  //     mypass.session.logout();
+  //   }
+  //   else {
+  //     //error
+  //   }
+  // }
 
   init();
 

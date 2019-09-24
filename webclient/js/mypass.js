@@ -34,7 +34,7 @@
             __mypass.goto.ownerdashboard();
             break;
           case 3:
-            __mypass.goto.service_provider_dashboard();
+            __mypass.goto.sp_dashboard();
             break;
           case 4:
             __mypass.goto.agentdashboard();

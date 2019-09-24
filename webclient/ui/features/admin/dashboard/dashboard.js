@@ -43,6 +43,12 @@
   function onsave(res) {
     if (res.success) {
       $('.user-info input').attr('readonly', 'readonly');
+
+      var account = mypass.session.getSession();
+      account.email = userform.elements.email.value;
+      account.AccountInfo.name = userform.elements.name.value;
+      account.AccountInfo.organization = userform.elements.organization.value;
+      mypass.session.updateSession(account);
     }
     else {
       //error

@@ -5,7 +5,8 @@
     startSession: startSession,
     getSession: getSession,
     logout: logout,
-    isAuthenticated: isAuthenticated
+    isAuthenticated: isAuthenticated,
+    updateSession:updateSession
   };
 
   function init() {
@@ -13,6 +14,10 @@
   }
 
   function startSession(info) {
+    mypass.cache.set('account', info);
+  }
+  
+  function updateSession(info) {
     mypass.cache.set('account', info);
   }
 

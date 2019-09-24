@@ -116,12 +116,19 @@ exports.isAuthenticated = function (req, res, next) {
       return;
     }
 
+    // store current user info in enc cookie
+    var encuserSessionInfo = decodeURIComponent(req.cookies[appconfig.cookies.userSessionInfo]);
+    var usibytes = cryptojs.AES.decrypt(encuserSessionInfo, appconfig.secrets.cryptoKey);
+    var userSessionInfo = usibytes.toString(cryptojs.enc.Utf8);
+
     req.user = {
       email: member.email,
       first_name: member.first_name,
       last_name: member.last_name,
-      accountid: member.primarykey
+      accountid: member.primarykey,
+      AccountInfo: JSON.parse(userSessionInfo)
     };
+    
     req.User = req.user;
     //refresh cookie expire window
     var ciphertext = cryptojs.AES.encrypt(req.user.accountid.toString(), appconfig.secrets.cryptoKey);

@@ -14,6 +14,7 @@ exports.secrets = {
 
 exports.cookies = {
   authCookieName: 'mpa',
+  userSessionInfo:'usi',
   getExpiryDate: function () {
     return new Date(Date.now() + 60 * 60 * 1000);
   },

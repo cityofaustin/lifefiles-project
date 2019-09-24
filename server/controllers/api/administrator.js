@@ -16,7 +16,7 @@ exports.init = function (app) {
 function SaveProfile(req, res, next) {
   var data = {};
   data.Profile = req.body.data;
-  data.OwnerAccountId = req.User.accountid;
+  data.AccountInfo = req.User.AccountInfo;
   bll.administrator.SaveProfile(data).then(function (bllRes) {
     res.status(200).send(bllRes);
   });

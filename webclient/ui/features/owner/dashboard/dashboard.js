@@ -8,7 +8,7 @@
     methods: {
       editForm: editForm,
       save: save,
-      deleteAccount:deleteAccount
+      // deleteAccount:deleteAccount
     }
   });
 
@@ -39,25 +39,28 @@
   function onsave(res) {
     if (res.success) {
       $('.user-info input').attr('readonly', 'readonly');
+      var account = mypass.session.getSession();
+      account.AccountInfo.name = userform.elements.name.value;
+      mypass.session.updateSession(account);
     }
     else {
       //error
     }
   }
 
-  function deleteAccount() {
-    //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
-    mypass.datacontext.owner.deleteAccount().then(ondeleteAccount);
-  }
+  // function deleteAccount() {
+  //   //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
+  //   mypass.datacontext.owner.deleteAccount().then(ondeleteAccount);
+  // }
 
-  function ondeleteAccount(res) {
-    if (res.success) {
-      mypass.session.logout();
-    }
-    else {
-      //error
-    }
-  }
+  // function ondeleteAccount(res) {
+  //   if (res.success) {
+  //     mypass.session.logout();
+  //   }
+  //   else {
+  //     //error
+  //   }
+  // }
 
   init();
 

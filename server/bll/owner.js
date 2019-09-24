@@ -30,7 +30,7 @@ var
   
 function SaveProfile(data) {
   return new Promise((resolve) => {
-    data.Profile.primarykey = data.OwnerAccountId;
+    data.Profile.primarykey = data.AccountInfo.primarykey; 
     microdb.Tables.owner.saveUpdate(data.Profile).then(function (saveres) {
       var response = new common.response();
       response.success = true;
