@@ -1,25 +1,26 @@
 <div class="dashboard">
   <h1 class="mv">Administrator Dashboard</h1>
 
-  <form class="user-info mt-xl" name="userform">
+  <form class="user-info mt-xl form-group" name="userform">
     <div class="mt">
       <label>Email Address</label>
-      <input type="text" name="email" readonly>
+      <input type="text" name="email" readonly class="form-control">
     </div>
     <div class="mt">
       <label>Name</label>
-      <input type="text" name="name" readonly>
+      <input type="text" name="name" readonly class="form-control">
     </div>
     <div class="mt">
       <label>Organization</label>
-      <input type="text" name="organization" readonly>
+      <input type="text" name="organization" readonly class="form-control">
     </div>
   </form>
 
-  <div class="buttons mt-xl">
-     
-    <button type="button" class="btn" onclick="mypass.admindashboard.editForm()">Edit</button>
-    <button type="button" class="btn" onclick="mypass.admindashboard.save()">Save</button>
+  <div class="buttons mt-xl text-right">
+    <button type="button" class="btn hidden btncancel" onclick="mypass.admindashboard.editForm(false)">Cancel</button> 
+    <button type="button" class="btn hidden btnsave" onclick="mypass.admindashboard.save()">Save</button>
+    <button type="button" class="btn btnedit" onclick="mypass.admindashboard.editForm()">Edit</button>
+    
   </div>
 
 </div>
