@@ -9,7 +9,8 @@
       editForm: editForm,
       save: save,
       load: loadDashboard,
-      addNew: addNew
+      addNew: addNew,
+      cancel:cancel
     }
   });
 
@@ -71,7 +72,10 @@
     }
   }
 
-
+function cancel() {
+  mypass.formhelper.hideElement('.sp-view');
+  mypass.formhelper.showElement('.sp-list');
+}
 
 
 })(mypass);
