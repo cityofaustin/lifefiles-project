@@ -24,7 +24,7 @@ function SaveProfile(req, res, next) {
 }
 
 function OnGetAll(req,res,next) {
-  bll.serviceprovider.OnGetAll().then(function (bllRes) {
+  bll.serviceprovider.GetAll().then(function (bllRes) {
     res.status(200).send(bllRes);
   });
 }

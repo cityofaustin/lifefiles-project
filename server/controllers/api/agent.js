@@ -10,6 +10,7 @@ var
 
 exports.init = function (app) {
   app.post('/agent/save', passportConf.isAuthenticated, SaveProfile);
+  app.post('/agent/getall', passportConf.isAuthenticated, OnGetAll);
   // app.post('/agent/delete', passportConf.isAuthenticated, DeleteAccount);
   // app.post('/account/changepassword', passportConf.isAuthenticated, ChangePassword);
 };
@@ -19,6 +20,12 @@ function SaveProfile(req, res, next) {
   data.Profile = req.body.data;
   data.AccountInfo = req.User.AccountInfo;
   bll.agent.SaveProfile(data).then(function (bllRes) {
+    res.status(200).send(bllRes);
+  });
+}
+
+function OnGetAll(req,res,next) {
+  bll.agent.GetAll().then(function (bllRes) {
     res.status(200).send(bllRes);
   });
 }

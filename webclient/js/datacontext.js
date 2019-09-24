@@ -19,6 +19,7 @@
   };
 
   mypass.datacontext.agent =  {
+    getAll:function(params) {return mypass.postMsg('/agent/getall', params);},
     save:function(params) {return mypass.postMsg('/agent/save', params);},
     deleteAccount:function(params) {return mypass.postMsg('/agent/delete', params);}
   };

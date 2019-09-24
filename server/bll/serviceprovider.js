@@ -9,7 +9,7 @@ var microdb = require('../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
 
 exports.getByAccountId = getByAccountId;
 exports.SaveProfile = SaveProfile;
-exports.OnGetAll = OnGetAll;
+exports.GetAll = GetAll;
 
 function getByAccountId(id) {
   return new Promise((resolve) => {
@@ -46,7 +46,7 @@ function SaveProfile(data) {
   });
 }
 
-function OnGetAll() {
+function GetAll() {
   return new Promise((resolve) => {
     microdb.Tables.serviceprovider.get().then(function (res) {
       var response = new common.response();
