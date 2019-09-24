@@ -1,0 +1,23 @@
+<div class="user-edit-form">
+
+    <form class="user-info mt-xl form-group" name="userform">
+      <div class="mt">
+        <label>Email Address</label>
+        <input type="text" name="email" readonly class="form-control">
+      </div>
+      <div class="mt">
+        <label>Name</label>
+        <input type="text" name="name" readonly class="form-control">
+      </div>
+      <div class="mt">
+        <label>Organization</label>
+        <input type="text" name="organization" readonly class="form-control">
+      </div>
+    </form>
+
+    <div class="buttons mt-xl text-right">
+      <button type="button" class="btn hidden btncancel" onclick="mypass.admindashboard.edit.editForm(false)">Cancel</button>
+      <button type="button" class="btn hidden btnsave" onclick="mypass.admindashboard.edit.save()">Save</button>
+      <button type="button" class="btn btnedit" onclick="mypass.admindashboard.edit.editForm()">Edit</button>
+    </div>
+  </div>

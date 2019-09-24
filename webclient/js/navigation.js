@@ -4,7 +4,8 @@
   var features = {};
   var __currentPage;
   mypass.navigation={
-    addFeature:addFeature
+    addFeature:addFeature,
+    getChildhtml:getChildhtml
   };
 
   mypass.goto={};
@@ -18,7 +19,7 @@
     };
   }
 
-  function loadPage(frag) {
+   function loadPage(frag) {
     getModule(frag).then(function (res) {
       $('.main-wrapper').empty();
       $('.main-wrapper').append(res.template);
@@ -42,6 +43,18 @@
           resolve(mod);
         });
       }
+    });
+  }
+
+  function getChildhtml(url) {
+    return new Promise((resolve) => {
+        $.ajax({
+          url: url,
+          dataType: "html"
+        }).then(function (res) {
+          resolve(res);
+        });
+      
     });
   }
 

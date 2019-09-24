@@ -13,6 +13,7 @@
 
     var __mypass = this;
     this.registerFeature = registerFeature;
+    this.registerFeatureChild=registerFeatureChild;
 
     function init() {
       window.addEventListener('mypass.booted', onAppBoot);
@@ -51,6 +52,13 @@
     function registerFeature(feat) {
       __mypass.navigation.addFeature(feat);
       __mypass[feat.name]=feat.methods;
+    }
+
+    function registerFeatureChild(feat) {
+      __mypass[feat.parent][feat.name]=feat.methods;
+      __mypass.navigation.getChildhtml(feat.url).then(function(res){
+        __mypass[feat.parent][feat.name].template=res;
+      });
     }
 
     __mypass.postMsg = postMsg;
