@@ -1,27 +1,54 @@
 <div class="service-providers">
 
-    <div class="sp-list table-responsive">
-      <table class="table table-sm">
-        <thead>
-          <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Name</th>
-            <th scope="col">Company</th>
-            <th scope="col">Address</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td data-bind="primarykey"></td>
-            <td data-bind="name"></td>
-            <td data-bind="company_name"></td>
-            <td data-bind="address"></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="tools">
+    <a onclick="mypass.admindashboard.serviceproviders.addNew()" class="pull-right">Add</a>
+  </div>
 
-  
+
+  <div class="sp-list table-responsive">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Company</th>
+          <th scope="col">Address</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-bind="primarykey"></td>
+          <td data-bind="name"></td>
+          <td data-bind="company_name"></td>
+          <td data-bind="address"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+<div class="sp-view hidden"> 
+  <form class="user-info mt-xl form-group" name="spform">
+    <div class="mt">
+      <label>Name</label>
+      <input type="text" name="name" readonly class="form-control">
+    </div>
+    <div class="mt">
+      <label>Company Name</label>
+      <input type="text" name="companyname" readonly class="form-control">
+    </div>
+    <div class="mt">
+      <label>Address</label>
+      <input type="text" name="address" readonly class="form-control">
+    </div>
+  </form>
+
+  <div class="buttons mt-xl text-right">
+      <button type="button" class="btn hidden btncancel" onclick="mypass.admindashboard.serviceproviders.editForm(false)">Cancel</button> 
+      <button type="button" class="btn hidden btnsave" onclick="mypass.admindashboard.serviceproviders.save()">Save</button>
+    </div>
+</div>
+
+
 
 
 </div>

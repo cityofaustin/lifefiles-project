@@ -10,6 +10,7 @@ var microdb = require('../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
 exports.getByAccountId = getByAccountId;
 exports.SaveProfile = SaveProfile;
 exports.GetAll = GetAll;
+exports.AddSP=AddSP;
 
 function getByAccountId(id) {
   return new Promise((resolve) => {
@@ -36,6 +37,25 @@ function SaveProfile(data) {
       var response = new common.response();
       response.success = true;
       if (saveres.success && saveres.data && saveres.data.updatedRows) {
+        response.success = true;
+      }
+      else {
+        response.success = false;
+      }
+      resolve(response);
+    });
+  });
+}
+
+function AddSP(data) {
+  return new Promise((resolve) => {
+    // data.Profile.primarykey = data.AccountInfo.primarykey;
+    delete data.Profile.isnew;
+
+    microdb.Tables.serviceprovider.saveNew(data.Profile).then(function (saveres) {
+      var response = new common.response();
+      response.success = true;
+      if (saveres.success && saveres.data && saveres.data.addedRows) {
         response.success = true;
       }
       else {

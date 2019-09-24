@@ -18,12 +18,22 @@ function SaveProfile(req, res, next) {
   var data = {};
   data.Profile = req.body.data;
   data.AccountInfo = req.User.AccountInfo;
-  bll.serviceprovider.SaveProfile(data).then(function (bllRes) {
-    res.status(200).send(bllRes);
-  });
+
+  if (req.body.data.isnew) {
+    bll.serviceprovider.AddSP(data).then(function (bllRes) {
+      res.status(200).send(bllRes);
+    });
+  }
+  else {
+    bll.serviceprovider.SaveProfile(data).then(function (bllRes) {
+      res.status(200).send(bllRes);
+    });
+  }
+
 }
 
-function OnGetAll(req,res,next) {
+
+function OnGetAll(req, res, next) {
   bll.serviceprovider.GetAll().then(function (bllRes) {
     res.status(200).send(bllRes);
   });

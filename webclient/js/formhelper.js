@@ -24,12 +24,13 @@
 
       $(tableClassName + ' tbody').empty();
       $(tableClassName + ' tbody').append(rowTemplateHlder);
-      var temp = $(rowTemplate).clone();
+      
       for (var index = 0; index < dataRows.length; index++) {
+        var temp = $(rowTemplate).clone();
         const element = dataRows[index];
         var chrd = temp.children();
-        for (var index = 0; index < chrd.length; index++) {
-          var child = chrd[index];
+        for (var index2 = 0; index2 < chrd.length; index2++) {
+          var child = chrd[index2];
           var prop = child.getAttribute('data-bind');
           child.innerText = element[prop];
         }
