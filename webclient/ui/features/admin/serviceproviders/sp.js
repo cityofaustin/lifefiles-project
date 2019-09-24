@@ -62,10 +62,9 @@
   function onsave(res) {
     if (res.success) {
       $('.sp-view .user-info input').attr('readonly', 'readonly');
-
-      // account.email = spform.elements.email.value;
-      // account.AccountInfo.name = spform.elements.name.value;
-      // account.AccountInfo.organization = spform.elements.organization.value;
+      mypass.formhelper.hideElement('.sp-view');
+      mypass.formhelper.showElement('.sp-list');
+      mypass.datacontext.serviceprovider.getAll().then(OnGetSps);
     }
     else {
       //error
