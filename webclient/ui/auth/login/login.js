@@ -20,12 +20,35 @@
 
   }
 
+  function validate() {
+    if(signupform.elements.confpassword.value != signupform.elements.password.value){
+      mypass.validation.showErrorLabel(label);
+    }
+    else{
+      mypass.validation.hideErrorLabel(label);
+    }
+    
+  }
+
   function login() {
+    mypass.validation.hideErrorLabel(['lbl-email','lbl-pass']);
+
     var req = {
-      email: loginForm.elements.email.value,
+      email: loginForm.elements.email.value.trim(),
       password: loginForm.elements.password.value
     };
-    mypass.datacontext.auth.login(req).then(onlogin);
+
+    var emailChk = req.email.match(/^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i);
+    if(!req.email || !emailChk){
+      mypass.validation.showErrorLabel('lbl-email');
+    }
+    else if(!req.password){
+      mypass.validation.showErrorLabel('lbl-pass');
+    }
+    else{
+      mypass.datacontext.auth.login(req).then(onlogin);
+    }
+    
   }
 
   function onlogin(res) {

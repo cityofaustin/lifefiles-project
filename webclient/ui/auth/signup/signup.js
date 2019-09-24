@@ -19,13 +19,32 @@
   }
 
   function signup(evt) {
+    mypass.validation.hideErrorLabel(['lbl-email','lbl-first','lbl-last','lbl-pass','lbl-passmatch']);
+
     var req={
         email:signupform.elements.email.value,
         first:signupform.elements.firstname.value,
         last:signupform.elements.lastname.value,
         password:signupform.elements.password.value
     };
-    mypass.datacontext.auth.register(req).then(onregister);
+    var emailChk = req.email.match(/^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i);
+
+    if(!req.email || !emailChk){
+      mypass.validation.showErrorLabel('lbl-email');
+    }
+    else if(!req.first){
+      mypass.validation.showErrorLabel('lbl-first');
+    }
+    else if(!req.last){
+      mypass.validation.showErrorLabel('lbl-last');
+    }
+    else if(!req.password){
+      mypass.validation.showErrorLabel('lbl-pass');
+    }
+    else{
+      mypass.datacontext.auth.register(req).then(onregister);
+    }
+    
   }
 
   function onregister(res) {

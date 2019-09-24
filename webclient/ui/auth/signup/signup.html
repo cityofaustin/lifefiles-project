@@ -2,34 +2,36 @@
 
   <h2 class="h3 m0 mb-xl text-center">Sign Up</h2>
 
-  <form class="form" name="signupform">
+  <form class="form form-group" name="signupform">
     <div>
       <div class="mt">
-        <label>Email Address</label>
-        <input type="text" name="email">
+        <label for="email">Email Address
+          <span class="hidden error " name="lbl-email"> is required</span>
+        </label>
+        <input type="text" name="email" required class="form-control">
       </div>
       <div class="mt">
-        <label>First Name</label>
-        <input type="text" name="firstname">
+        <label for="firstname">First Name<span class="hidden error " name="lbl-first"> is required</span></label>
+        <input type="text" name="firstname" required class="form-control">
       </div>
       <div class="mt">
-        <label>Last Name</label>
-        <input type="text" name="lastname">
+        <label for="lastname">Last Name<span class="hidden error " name="lbl-last"> is required</span></label>
+        <input type="text" name="lastname" required class="form-control">
       </div>
       <div class="mt">
-        <label>Password</label>
-        <input name='password' type="password">
+        <label for="password">Password<span class="hidden error " name="lbl-pass"> is required</span></label>
+        <input name='password' type="password" required class="form-control">
       </div>
       <div class="mt">
         <label>Confirm Password</label>
-        <input name='confpassword' type="password" onblur="mypass.signup.checkPasswords('lbl-passmatch')">
+        <input name='confpassword' type="password" onblur="mypass.signup.checkPasswords('lbl-passmatch')" required class="form-control">
         <div class="hidden error mt" name="lbl-passmatch">Passwords must match</div>
       </div>
     </div>
 
     <div class="mt-xl">
-      <button type="button" class="create-acct mb-xl btn btn-default" onclick="mypass.signup.signup()" >Sign Up</button>
-      <button type="button" class="login  btn btn-default" onclick="mypass.goto.login()">Login</button>
+      <button type="button" class="create-acct mb-xl btn" onclick="mypass.signup.signup()" >Sign Up</button>
+      <button type="button" class="login  btn " onclick="mypass.goto.login()">Login</button>
     </div>
 
   </form>

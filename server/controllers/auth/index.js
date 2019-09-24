@@ -28,7 +28,9 @@ function Register(req, res, next) {
   req.register = req.body.data;
   // req.register.userip = req.ip; //if we want to get users ip address...be sure database accounts for it if needed
 
-  var errors = !req.register.email || !req.register.first || !req.register.last || !req.register.password;
+  var emailchk = req.register.email.match(/^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i);
+
+  var errors = !req.register.email || !req.register.first || !req.register.last || !req.register.password || !emailchk;
   if (errors) {
     var authResponse = new AuthResponse();
     authResponse.success = false;
