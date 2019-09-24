@@ -6,78 +6,29 @@
     url: '/ui/features/admin/dashboard/index.html',
     load: dashboardLoad,
     methods: {
-      // editForm: editForm,
-      // save: save,
-      showInfo:showInfo
+      showInfo: showInfo,
+      showServiceProviders: showServiceProviders,
+      showAgents: showAgents
     }
   });
 
-  function init() {
+  function dashboardLoad(evt) {
+    $('.btn-logout').removeClass('hidden');
+    mypass.admindashboard.edit.load('.admin-dashboard .main');
   }
 
-  function dashboardLoad(evt) {
-    //ADD ANY PAGE CODE
-    $('.btn-logout').removeClass('hidden');
+  function showServiceProviders() {
+    mypass.admindashboard.serviceproviders.load('.admin-dashboard .main');
+  }
 
-    // .admin-dashboard .main
-
-
-    mypass.admindashboard.edit.load('.admin-dashboard .main');
-
-    // var account = mypass.session.getSession();
-    // if (account.AccountInfo) {
-    //   userform.elements.email.value = account.email;
-    //   userform.elements.name.value = account.AccountInfo.name;
-    //   userform.elements.organization.value = account.AccountInfo.organization;
-    // }
-
+  function showAgents() {
+    mypass.admindashboard.agents.load('.admin-dashboard .main');
   }
 
   function showInfo() {
-    
+    mypass.admindashboard.edit.load('.admin-dashboard .main');
   }
 
-  // function editForm(edit) {
-  //   if(edit==false){
-  //     $('.user-info input').attr('readonly', 'readonly');
-  //     mypass.formhelper.hideElement('.btncancel,.btnsave');
-  //     mypass.formhelper.showElement('.btnedit');
-  //   }
-  //   else{
-  //     $('.user-info input').removeAttr('readonly');
-  //     mypass.formhelper.hideElement('.btncancel,.btnedit');
-  //     mypass.formhelper.showElement('.btncancel,.btnsave');
-  //   }
-    
-  // }
 
-
-  // function save() {
-  //   var req = {
-  //     email: userform.elements.email.value,
-  //     name: userform.elements.name.value,
-  //     organization: userform.elements.organization.value
-  //   };
-  //   mypass.datacontext.administrator.save(req).then(onsave);
-  // }
-
-  // function onsave(res) {
-  //   if (res.success) {
-  //     $('.user-info input').attr('readonly', 'readonly');
-
-  //     var account = mypass.session.getSession();
-  //     account.email = userform.elements.email.value;
-  //     account.AccountInfo.name = userform.elements.name.value;
-  //     account.AccountInfo.organization = userform.elements.organization.value;
-  //     mypass.session.updateSession(account);
-  //   }
-  //   else {
-  //     //error
-  //   }
-  // }
-
-
-
-  init();
 
 })(mypass);

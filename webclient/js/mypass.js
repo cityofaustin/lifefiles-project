@@ -5,7 +5,11 @@
 
   function mypass() {
     var dataCache;
-    
+    var featureCache = {
+      features: [],
+      childfeatures: []
+    }; //helps with dynamic module loading
+
     var myapp = {
       baseURL: 'http://localhost',
       port: ':9005',
@@ -13,7 +17,7 @@
 
     var __mypass = this;
     this.registerFeature = registerFeature;
-    this.registerFeatureChild=registerFeatureChild;
+    this.registerFeatureChild = registerFeatureChild;
 
     function init() {
       window.addEventListener('mypass.booted', onAppBoot);
@@ -21,6 +25,23 @@
 
     function onAppBoot(evt) {
       window.addEventListener(__mypass.Events.APP_NAV.loggedout, onLogout);
+
+      for (var index = 0; index < featureCache.features.length; index++) {
+        const feat = featureCache.features[index];
+        __mypass.navigation.addFeature(feat);
+        __mypass[feat.name] = feat.methods;
+      }
+      featureCache.features = [];
+
+      for (var index = 0; index < featureCache.childfeatures.length; index++) {
+        const feat = featureCache.childfeatures[index];
+        __mypass[feat.parent][feat.name] = feat.methods;
+        __mypass.navigation.getChildhtml(feat.url).then(function (res) {
+          __mypass[feat.parent][feat.name].template = res;
+        });
+      }
+
+      featureCache.childfeatures = [];
 
       if (!__mypass.session.isAuthenticated()) {
         __mypass.goto.login();
@@ -50,15 +71,13 @@
     }
 
     function registerFeature(feat) {
-      __mypass.navigation.addFeature(feat);
-      __mypass[feat.name]=feat.methods;
+      featureCache.features.push(feat);
+
     }
 
     function registerFeatureChild(feat) {
-      __mypass[feat.parent][feat.name]=feat.methods;
-      __mypass.navigation.getChildhtml(feat.url).then(function(res){
-        __mypass[feat.parent][feat.name].template=res;
-      });
+      featureCache.childfeatures.push(feat);
+
     }
 
     __mypass.postMsg = postMsg;
