@@ -12,7 +12,15 @@
     }
   });
 
-  function dashboardLoad(evt) {
+  function init() {
+    $('.admin-dashboard .nav a').on('click', function (e) {
+      e.preventDefault();
+      $('.admin-dashboard .nav a').removeClass('active');
+      $(this).addClass('active');
+    });
+  }
+
+  function dashboardLoad() {
     $('.btn-logout').removeClass('hidden');
     mypass.admindashboard.edit.load('.admin-dashboard .main');
   }
@@ -29,6 +37,6 @@
     mypass.admindashboard.edit.load('.admin-dashboard .main');
   }
 
-
+  init();
 
 })(mypass);
