@@ -129,6 +129,12 @@ function Login(req, res, next) {
       authResponse.data.status = appconfig.status.auth.loggedIn;
       authResponse.data.email = user.email;
       authResponse.data.account_role = user.account_role;
+      if(user.first_name){
+        authResponse.data.first_name = user.first_name;
+      }
+      if(user.last_name){
+        authResponse.data.last_name = user.last_name;
+      }
 
       switch (user.account_role) {
         case 1:
@@ -143,17 +149,19 @@ function Login(req, res, next) {
         case 4:
           bll.agent.getByAccountId(user.primarykey).then(OnGetRole);
           break;
+        default:
+          OnGetRole();
+          break;
       }
 
       function OnGetRole(OnGetRoleRes) {
-        if (OnGetRoleRes.success && OnGetRoleRes.user) {
+        if (OnGetRoleRes && OnGetRoleRes.success && OnGetRoleRes.user) {
           authResponse.data.AccountInfo = OnGetRoleRes.user.pop();
-
           var ciphertext = cryptojs.AES.encrypt(JSON.stringify(authResponse.data.AccountInfo), appconfig.secrets.cryptoKey);
           res.cookie(appconfig.cookies.userSessionInfo, encodeURIComponent(ciphertext), { expires: appconfig.cookies.getExpiryDate() });
-          
           delete authResponse.data.AccountInfo.primarykey;
         }
+
         res.status(200).send(authResponse);
         return;
       }

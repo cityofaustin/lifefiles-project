@@ -68,7 +68,7 @@
             mypass.goto.agentdashboard();
           break;
         default:
-          // mypass.goto.dashboard();
+          mypass.goto.dashboard();
           break;
 
       }

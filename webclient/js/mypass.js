@@ -61,6 +61,9 @@
           case 4:
             __mypass.goto.agentdashboard();
             break;
+          default:
+            __mypass.goto.dashboard();
+            break;
         }
       }
 
