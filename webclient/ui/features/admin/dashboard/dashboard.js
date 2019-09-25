@@ -13,6 +13,8 @@
   });
 
   function init() {
+
+    
     $('.admin-dashboard .nav a').on('click', function (e) {
       e.preventDefault();
       $('.admin-dashboard .nav a').removeClass('active');
@@ -37,6 +39,6 @@
     mypass.admindashboard.edit.load('.admin-dashboard .main');
   }
 
-  init();
+  setTimeout(init,300);
 
 })(mypass);

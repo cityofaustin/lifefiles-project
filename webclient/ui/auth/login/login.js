@@ -12,11 +12,17 @@
   });
 
   function init() {
+    $( ".login input[name='password']" ).keyup(function(evt) {
+      if(evt.keyCode==13){
+        mypass.login.login();
+      }
+    });
   }
 
   function loginLoad(vt) {
     //ADD ANY PAGE CODE
     $('.btn-logout').addClass('hidden');
+  
 
   }
 
@@ -81,6 +87,6 @@
   }
 
 
-  init();
+  setTimeout(init,300);
 
 })(mypass);
