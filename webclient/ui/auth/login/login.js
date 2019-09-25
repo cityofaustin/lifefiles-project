@@ -87,6 +87,6 @@
   }
 
 
-  setTimeout(init,300);
+  setTimeout(init,1200);
 
 })(mypass);

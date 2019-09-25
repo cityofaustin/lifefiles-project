@@ -39,6 +39,6 @@
     mypass.admindashboard.edit.load('.admin-dashboard .main');
   }
 
-  setTimeout(init,800);
+  setTimeout(init,1200);
 
 })(mypass);
