@@ -14,22 +14,33 @@
     }
   });
 
+  var __hasData;
 
-  function loadDashboard(parentElement) {
+  function loadDashboard(parentElement,nofetch) {
     $('.btn-logout').removeClass('hidden');
     $(parentElement).empty();
     $(parentElement).append(mypass.admindashboard.serviceproviders.template);
+    if(!nofetch){
+      getData();
+    }
+    __hasData=false;
+  }
+
+  function getData() {
     mypass.datacontext.serviceprovider.getAll().then(OnGetSps);
   }
 
 
   function OnGetSps(res) {
     if (res.success) {
+      __hasData=true;
+      mypass.formhelper.showElement('.service-providers .navbar');
       mypass.formhelper.bindTableRows('.sp-list', res.Rows);
     }
   }
 
   function addNew() {
+    mypass.formhelper.hideElement('.service-providers .navbar');
     mypass.formhelper.hideElement('.sp-list');
     mypass.formhelper.showElement('.sp-view');
     editForm();
@@ -73,8 +84,12 @@
   }
 
 function cancel() {
+  if(!__hasData){
+    getData();
+  }
   mypass.formhelper.hideElement('.sp-view');
   mypass.formhelper.showElement('.sp-list');
+  mypass.formhelper.showElement('.service-providers .navbar');
 }
 
 

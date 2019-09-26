@@ -22,7 +22,7 @@
   function addSP() {
     $('.admin-dashboard .nav a').removeClass('active');
     $('.admin-dashboard .nav a.sp').addClass('active');
-    mypass.admindashboard.serviceproviders.load('.admin-dashboard .main');
+    mypass.admindashboard.serviceproviders.load('.admin-dashboard .main',true);
     mypass.admindashboard.serviceproviders.addNew();
   }
 

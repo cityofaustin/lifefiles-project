@@ -1,15 +1,16 @@
 <div class="service-providers">
 
 
-    <nav class="navbar navbar-light" >
-        <ul class="nav mr-auto">
-          <li class="nav-item"><button type="button" onclick="mypass.admindashboard.serviceproviders.addNew()" class="btn btn-primary btn-sm">Add</button></li>
-        </ul>  
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2 btn-sm" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0 btn-sm" type="submit">Search</button>
-          </form>
-      </nav>
+  <nav class="navbar navbar-light p0">
+    <ul class="nav mr-auto">
+      <li class="nav-item"><button type="button" onclick="mypass.admindashboard.serviceproviders.addNew()"
+          class="btn btn-primary btn-sm">New</button></li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2 btn-sm" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0 btn-sm" type="submit">Search</button>
+    </form>
+  </nav>
 
 
   <div class="sp-list table-responsive mt-xl">
@@ -33,27 +34,29 @@
     </table>
   </div>
 
-<div class="sp-view hidden"> 
-  <form class="user-info mt-xl form-group" name="spform">
-    <div class="mt">
-      <label>Name</label>
-      <input type="text" name="name" readonly class="form-control">
-    </div>
-    <div class="mt">
-      <label>Company Name</label>
-      <input type="text" name="companyname" readonly class="form-control">
-    </div>
-    <div class="mt">
-      <label>Address</label>
-      <input type="text" name="address" readonly class="form-control">
-    </div>
-  </form>
+  <div class="sp-view hidden">
+    <form class="user-info mt-xl form-group" name="spform">
+      <div class="mt">
+        <label>Name</label>
+        <input type="text" name="name" readonly class="form-control">
+      </div>
+      <div class="mt">
+        <label>Company Name</label>
+        <input type="text" name="companyname" readonly class="form-control">
+      </div>
+      <div class="mt">
+        <label>Address</label>
+        <input type="text" name="address" readonly class="form-control">
+      </div>
+    </form>
 
-  <div class="buttons mt-xl text-right">
-      <button type="button" class="btn btn-primary hidden btncancel" onclick="mypass.admindashboard.serviceproviders.cancel()">Cancel</button> 
-      <button type="button" class="btn btn-primary hidden btnsave" onclick="mypass.admindashboard.serviceproviders.save()">Save</button>
+    <div class="buttons mt-xl text-right">
+      <button type="button" class="btn btn-primary hidden btncancel"
+        onclick="mypass.admindashboard.serviceproviders.cancel()">Cancel</button>
+      <button type="button" class="btn btn-primary hidden btnsave"
+        onclick="mypass.admindashboard.serviceproviders.save()">Save</button>
     </div>
-</div>
+  </div>
 
 
 
