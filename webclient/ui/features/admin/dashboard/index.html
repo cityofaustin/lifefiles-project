@@ -1,12 +1,21 @@
 <div class="admin-dashboard">
-  <h3 class="mv bb">Administrator Dashboard</h3>
+  <h5 class="mv bb h5">Administrator Dashboard</h5>
 
 
-  <ul class="nav justify-content-end nav-pills">
-    <li class="nav-item"><a class="nav-link" onclick="mypass.admindashboard.showServiceProviders()">Service Providers</a></li>
-    <li class="nav-item"><a class="nav-link"  onclick="mypass.admindashboard.showAgents()">Agents</a></li>
-    <li class="nav-item"><a class="nav-link active"  onclick="mypass.admindashboard.showInfo()">Admin Info</a></li>
-  </ul>
+  <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+    <span class="navbar-brand">
+      <i class="fa fa-home" onclick="mypass.admindashboard.showMain()"></i>
+    </span>
+    <ul class="nav mr-auto">
+      <li class="nav-item"><a class="nav-link sp" onclick="mypass.admindashboard.showServiceProviders()">Service Providers</a></li>
+      <li class="nav-item"><a class="nav-link agent"  onclick="mypass.admindashboard.showAgents()">Agents</a></li>
+      
+    </ul>  
+    <div class="form-inline ">
+        <i class="fa fa-cog" onclick="mypass.admindashboard.showInfo()"></i>
+    </div>
+  </nav>
+  
 
   <div class="main mt-xl">
   </div>

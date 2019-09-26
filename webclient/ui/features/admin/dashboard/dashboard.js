@@ -8,7 +8,8 @@
     methods: {
       showInfo: showInfo,
       showServiceProviders: showServiceProviders,
-      showAgents: showAgents
+      showAgents: showAgents,
+      showMain:showMain
     }
   });
 
@@ -24,7 +25,7 @@
 
   function dashboardLoad() {
     $('.btn-logout').removeClass('hidden');
-    mypass.admindashboard.edit.load('.admin-dashboard .main');
+    mypass.admindashboard.main.load('.admin-dashboard .main');
   }
 
   function showServiceProviders() {
@@ -37,6 +38,11 @@
 
   function showInfo() {
     mypass.admindashboard.edit.load('.admin-dashboard .main');
+  }
+
+  function showMain() {
+    $('.admin-dashboard .nav a').removeClass('active');
+    mypass.admindashboard.main.load('.admin-dashboard .main');
   }
 
   setTimeout(init,1200);
