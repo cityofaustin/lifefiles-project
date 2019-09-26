@@ -63,8 +63,10 @@
 
   function save() {
     var req = {
+      email: spform.elements.email.value,
+      first_name: spform.elements.firstname.value,
+      last_name: spform.elements.lastname.value,
       company_name: spform.elements.companyname.value,
-      name: spform.elements.name.value,
       address: spform.elements.address.value,
       isnew: true
     };
