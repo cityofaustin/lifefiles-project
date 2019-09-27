@@ -10,6 +10,7 @@ var
 
 var isProduction = false;
 
+exports.default = gulp.series(Server_All,Web_JS,Web_HTML,Web_CSS,Web_IMG,Web_Vendor);
 
 exports.Server_All = Server_All;
 function Server_All(cb) {
@@ -143,6 +144,7 @@ function Web_IMG(cb) {
       cb();
     }
 }
+
 
 
 function handleError(err) {
