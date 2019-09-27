@@ -15,6 +15,8 @@ Getting Started
 
 
 
+See the README.md files for respective notes in the server and webclient folders.
+
 
 
 

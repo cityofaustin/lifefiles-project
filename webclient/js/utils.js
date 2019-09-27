@@ -1,7 +1,10 @@
+/*
+general utility functions
+*/
+
 (function (mypass) {
   'use strict';
 
-  //USED FOR ALL FORMS OF VALIDATION
 
   mypass.utils = {
     StringBuilder: StringBuilder

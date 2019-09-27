@@ -1,3 +1,4 @@
+//a browser cache service for storing app data
 (function (mypass) {
   'use strict';
 

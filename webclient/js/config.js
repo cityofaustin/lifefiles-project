@@ -1,3 +1,4 @@
+//any app configs
 (function (mypass) {
   'use strict';
 

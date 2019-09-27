@@ -1,3 +1,8 @@
+/*
+The master app module for containment of all modules and registering app features. 
+Also handles ajax server calls for fetching module html on demand.
+This allows for nice object referencing e.g. mypass.[feature].[method]
+*/
 'use strict';
 (function () {
 
@@ -20,10 +25,17 @@
     this.registerFeatureChild = registerFeatureChild;
 
     function init() {
-      window.addEventListener('mypass.booted', onAppBoot);
+      window.addEventListener('mypass.booted', onAppBoot); 
+      /*
+      mypass.booted Event is thrown by appboot.js to notify when all code is loaded
+      this helps set things off properly.
+      */
+      
     }
 
     function onAppBoot(evt) {
+      //now start loading all features into main application so the features are accessible to app
+
       window.addEventListener(__mypass.Events.APP_NAV.loggedout, onLogout);
 
       for (var index = 0; index < featureCache.features.length; index++) {
@@ -48,6 +60,7 @@
       }
       else {
         var account = __mypass.session.getSession();
+        //per the user's role we send them to the appropriate page
         switch (account.account_role) {
           case 1:
             __mypass.goto.admindashboard();

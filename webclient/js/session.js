@@ -1,3 +1,6 @@
+/*
+local session management
+*/
 (function (mypass) {
   'use strict';
 

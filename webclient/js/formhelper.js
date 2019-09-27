@@ -1,7 +1,12 @@
+/* 
+- helps for dynamic building of DOM elements
+- place all reuseable methods here and call in feature modules for UI manipulation
+- can also be used for all form validation
+*/
+
 (function (mypass) {
   'use strict';
-
-  //USED FOR ALL FORMS OF VALIDATION
+ 
 
   mypass.formhelper = {
     showElement: showElement,

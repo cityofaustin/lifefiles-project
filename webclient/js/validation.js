@@ -1,7 +1,9 @@
+/*
+a ui form validation helper
+*/
+
 (function (mypass) {
   'use strict';
-
-  //USED FOR ALL FORMS OF VALIDATION
 
   mypass.validation = {
     showErrorLabel: showErrorLabel,

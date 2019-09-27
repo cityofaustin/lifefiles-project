@@ -1,3 +1,6 @@
+/*
+handles app navigation for loading pages
+*/
 (function (mypass) {
   'use strict';
 

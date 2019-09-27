@@ -1,3 +1,6 @@
+//this serves as a data layer for the app. Place all api routing here.
+//keeping api routes in one place helps alot
+
 (function (mypass) {
   'use strict';
 
