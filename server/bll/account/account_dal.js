@@ -1,26 +1,26 @@
-
 var
   util = require("util"),
-  common = require("../common"),
+  common = require("../../common"),
   env = require('node-env-file')
    ;
 
-  env('./envVars.txt');
-  var microdb = require('../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
+   env('./envVars.txt');
+   var microdb = require('../../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
+
 
 exports.getByEmail = getByEmail;
 exports.createAccount = createAccount;
 exports.getAccountById = getAccountById;
 exports.SaveProfile = SaveProfile;
 exports.DeleteAccount=DeleteAccount;
+exports.resetPasswordComplete = resetPasswordComplete;
+exports.UpdateLastLogin = UpdateLastLogin;
+exports.LockAccount = LockAccount;
+exports.UpdateBadAttempt = UpdateBadAttempt;
+exports.ClearBadAttempt = ClearBadAttempt;
+exports.getAccountBy_PasswordRestCode = getAccountBy_PasswordRestCode;
 
-// exports.accountEmailConfirm = accountEmailConfirm;
-// exports.resetPasswordComplete = resetPasswordComplete;
-// exports.UpdateLastLogin = UpdateLastLogin;
-// exports.LockAccount = LockAccount;
-// exports.UpdateBadAttempt = UpdateBadAttempt;
-// exports.ClearBadAttempt = ClearBadAttempt;
-// exports.getAccountBy_PasswordRestCode = getAccountBy_PasswordRestCode;
+
 
 function getByEmail(email) {
   return new Promise((resolve) => {
@@ -113,27 +113,27 @@ function DeleteAccount(data) {
 
 
 
-// function resetPasswordComplete(req) {
-//   return dal.account.resetPasswordComplete(req);
-// }
+function resetPasswordComplete(req) {
+  throw 'Not implemented yet';
+}
 
-// function getAccountBy_PasswordRestCode(req) {
-//   return dal.account.getAccountBy_PasswordRestCode(req);
-// }
+function getAccountBy_PasswordRestCode(req) {
+  throw 'Not implemented yet';
+}
 
 
-// function UpdateLastLogin(accountId) {
-//   return dal.account.UpdateLastLogin(accountId);
-// }
+function UpdateLastLogin(accountId) {
+  throw 'Not implemented yet';
+}
 
-// function LockAccount(accountId) {
-//   return dal.account.LockAccount(accountId);
-// }
+function LockAccount(accountId) {
+  throw 'Not implemented yet';
+}
 
-// function UpdateBadAttempt(accountId) {
-//   return dal.account.UpdateBadAttempt(accountId);
-// }
+function UpdateBadAttempt(accountId) {
+  throw 'Not implemented yet';
+}
 
-// function ClearBadAttempt(accountId) {
-//   return dal.account.ClearBadAttempt(accountId);
-// }
+function ClearBadAttempt(accountId) {
+  throw 'Not implemented yet';
+}

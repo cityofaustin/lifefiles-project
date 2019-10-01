@@ -1,11 +1,11 @@
 var
   util = require("util"),
-  common = require("../common"),
+  common = require("../../common"),
   env = require('node-env-file')
    ;
 
   env('./envVars.txt');
-  var microdb = require('../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
+  var microdb = require('../../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
 
   exports.getByAccountId=getByAccountId;
   exports.SaveProfile=SaveProfile;

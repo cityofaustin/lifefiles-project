@@ -1,3 +1,7 @@
+
+/*
+HERE WE ONLY EXPOSE THE BLL - BUSINESS LOGIC LAYER OBJECTS
+*/
 exports.account=require('./account');
 exports.administrator=require('./administrator');
 exports.agent=require('./agent');
