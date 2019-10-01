@@ -39,3 +39,4 @@ Folders
 - config: any app configs
 - controllers: the url route handlers
 - microdb: a copy of the open source microdb api nodejs client
+- services: any services that plug into the app e.g. permanent.org api service
