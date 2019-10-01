@@ -33,20 +33,20 @@ exports.SETTINGS = {
   local: {
     host: 'localhost',
     user: 'dbuser',
-    password: 'Aaa111!',
+    password: 'aaaaaaaaaa',
     database: 'mypass'
   },
   production: {
     host: 'rds.amazonaws.com',
     user: 'dbuser',
-    password: 'aaaaa',
+    password: 'aaaaaaaaaa',
     database: 'mypass',
     ssl: 'Amazon RDS'
   },
   development: {
     host: '.rds.amazonaws.com',
     user: 'dbuser',
-    password: 'aaaa',
+    password: 'aaaaaaaaaa',
     database: 'mypass',
     ssl: 'Amazon RDS'
   }

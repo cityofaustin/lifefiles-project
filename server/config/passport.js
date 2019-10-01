@@ -65,19 +65,19 @@ passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'passwor
 
   }));
 
+
+  // exports.isAuthenticated checks that the user has logged into the site and is allowed to access a URL resource
 exports.isAuthenticated = function (req, res, next) {
 
   if (!req.cookies || (req.cookies && !req.cookies[appconfig.cookies.authCookieName])) {
     var authRetUrl;
     if (req.body.data) {
-      // authRetUrl = req.body.RequestData.location.length > 3 ? '/login?url=' + req.body.RequestData.location : '/login';
       var authResponse = new AuthResponse();
       authResponse.success = false;
       authResponse.authRetUrl = '/';
       res.status(200).send(authResponse);
     }
     else {
-      // authRetUrl = req.url.length > 3 ? '/login?url=' + req.url : '/login';
       res.redirect('/');
     }
     return;
