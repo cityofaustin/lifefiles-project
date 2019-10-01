@@ -11,13 +11,8 @@ var Singleton = (function (apikey, opts) {
   var instance;
   var httpService;
 
-  if (process.env.NODE_ENV == 'local') {
-    httpService = require('http');
-  }
-  else {
-    httpService = require('https');
-  }
-
+  httpService = require('https');
+  
   function Microdb(apikey, opts) {
     opts = opts || {};
     var env = opts.env || process.env;
@@ -38,7 +33,6 @@ var Singleton = (function (apikey, opts) {
       init:'mdb.init'
     };
 
-    // this.getTables = getTables;
     this.describeTables = describeTables;
     this.Events = mdbevents;
     this.Init = false;
@@ -256,9 +250,7 @@ var Singleton = (function (apikey, opts) {
 
     function TableRow(columns) {
       var thisrow = this;
-      //    this.Columns = [];
       columns.forEach(function (col) {
-        // var c = new Column(col);
         var name = col.Label.toLowerCase().replace(' ', '_');
         Object.defineProperty(thisrow, name, {
           value: new Column(col),
@@ -272,11 +264,8 @@ var Singleton = (function (apikey, opts) {
     function ColumnHeader(col) {
       var __col = col;
 
-
-      //need to simplify the columns to a standard format so thres no confusion
       this.Name = col.Label;
       this.FormattedName = col.Label.toLowerCase().replace(' ', '_');
-
       this.Value = col.Value || '';
       this.DataType = col.DataType;
       this.DisplayOrder = col.DisplayOrder;
@@ -291,23 +280,7 @@ var Singleton = (function (apikey, opts) {
     function Column(col) {
       var thisCol = this;
       var __col = col;
-      // this.Name = col.Label;
       this.Value = col.Value || '';
-      // this.Id = col.Id;
-      // this.ColKey = col.ColKey;
-
-      // this.DisplayOrder = col.DisplayOrder;
-      // this.DataType=col.DataType;
-      // this.Length=col.Length;
-      // this.NotNull=col.NotNull;
-      // this.TimeTracking=col.TimeTracking;
-      // this.VirtualTypeId=col.VirtualTypeId;
-      // this.config=col.config;
-      // this.getId = getId;
-      // function getId() {
-      //   return _Id;
-      // }
-
       return this;
     }
 
