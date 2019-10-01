@@ -29,7 +29,13 @@ MICRODB_MYPASS_DB_APIKEY=your_secret_api_key
 > The envVars.txt is usually kept secure but as a reminder...
 > The Microdb API key is a private key to be kept secure.
 > MICRODB_MYPASS_DB_APIKEY=your_secret_api_key
+> DO NOT CHECK IN THIS CODE TO A PUBLIC REPO WITH YOUR LIVE MICRODB_MYPASS_DB_APIKEY KEY SET 
+> OTHERWISE YOU'LL NEED TO REGENERATE A NEW API KEY
 
 
 Folders
 - bll: The business logic layer
+- common: used by various classes
+- config: any app configs
+- controllers: the url route handlers
+- microdb: a copy of the open source microdb api nodejs client
