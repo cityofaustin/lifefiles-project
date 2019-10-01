@@ -173,8 +173,8 @@ function Login(req, res, next) {
 
 function logout(req, res, next) {
 
-  req.session.oauthRequestToken = null;
-  req.session.accessToken = null;
+  // req.session.oauthRequestToken = null;
+  // req.session.accessToken = null;
 
   res.clearCookie(appconfig.cookies.authCookieName);
   req.logout();

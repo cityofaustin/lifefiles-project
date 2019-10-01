@@ -60,7 +60,7 @@ if (app.get('env') === 'production') {
   };
 }
 
-app.use(session(sessConfig)); //BASIC SESSIONS THAT WE DONT NEED BUT CAN USE 
+//app.use(session(sessConfig)); //BASIC SESSIONS THAT WE DONT NEED BUT CAN USE 
 app.use(passport.initialize()); 
 //PASSPORT IS A HELPFUL MOD FOR HANDLING AUTHENTICATION AND IS VERY HELP FOR EXTENDING AUTHENTICATION
 //SCENARIOS SUCH AS LOGIN WITH GOOGLE ACCOUNT
