@@ -7,7 +7,7 @@ var
   fs = require('fs'),
   http = require('http'),
   env = require('node-env-file'),
-  controllers = require('./controllers'),
+  controllers = require('./controllers'), //OUR CONTROLLERS THAT LISTEN FOR MESSAGES ON URLS
   appconfig=require('./appconfig'),
   common=require('./common'),
   cookieParser = require('cookie-parser'),
@@ -19,23 +19,21 @@ var
   ;
 
   
-// view engine setup
+// VIEW ENGINE SETUP...LISTENS FOR HTML FILE REQUESTS AND RETURNS THE HTML FILES
 var fs = require('fs');
 app.engine('html', function (filePath, options, callback) {
-  // define the template engine
   //console.log('app.engine(html...'+filePath);
   fs.readFile(filePath, function (err, content) {
     if (err) return callback(new Error(err));
-    // this is an extremely simple template engine
-    var rendered = content.toString();
+    // THIS IS AN EXTREMELY SIMPLE TEMPLATE ENGINE
+    var rendered = content.toString();  //SEND BACK THE HTML FILE
     return callback(null, rendered);
   });
 });
-app.set('views', '../webclient/ui');
+app.set('views', '../webclient/ui');  //WHERE TO LOOK FOR HTML FILES
 app.set('view engine', 'html');
 
-app.use(favicon(path.join(__dirname, '../webclient/images/', 'favicon.ico')));
-app.use(express.static('../webclient/'));
+app.use(favicon(path.join(__dirname, '../webclient/images/', 'favicon.ico')));  //WHERE TO FIND IMAGE FILES
 app.use(express.static('../webclient/'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -45,6 +43,9 @@ app.use(compress());
 app.use(helmet());
 app.disable('x-powered-by');
 
+// WE DONT RELY ON SESSIONS BUT THIS IS BASIC SESSION SETUP DATA
+//IF APP IS DEPLOYED IN A LOAD BALANCED ENVIRONMENT FOR MULTIPLE SERVER INSTANCES THEN EITHER REMOVE SESSION CODE
+//OR ATTACH A SESSION DATA STORE 
 var sessConfig={
   secret: 'wowkdendje8j3e7dhry54fi4n4',
   resave: false,
@@ -53,19 +54,20 @@ var sessConfig={
 };
 
 if (app.get('env') === 'production') {
-  app.set('trust proxy', 1); // trust first proxy
+  app.set('trust proxy', 1); // trust first proxy...FOR REVERSE PROXY DEPLOYMENTS SUCH AS FOR USE WITH NGINX WEB SERVERS
   sessConfig.cookie={
     secure:true
   };
 }
 
-app.use(session(sessConfig));
-app.use(passport.initialize());
-//app.use(passport.session());
+app.use(session(sessConfig)); //BASIC SESSIONS THAT WE DONT NEED BUT CAN USE 
+app.use(passport.initialize()); 
+//PASSPORT IS A HELPFUL MOD FOR HANDLING AUTHENTICATION AND IS VERY HELP FOR EXTENDING AUTHENTICATION
+//SCENARIOS SUCH AS LOGIN WITH GOOGLE ACCOUNT
 
-controllers.init(app);
+controllers.init(app);  //ATTACH OUR CONTROLERS
 
-env('./envVars.txt');
+env('./envVars.txt'); //LOAD ENVIRONMENT VARIABLES
 
 var port = normalizePort(process.env.SERVER_PORT);
 app.set('port', port);

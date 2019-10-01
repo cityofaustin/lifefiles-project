@@ -1,3 +1,7 @@
+/*
+Handles calls for changing a user's account data.
+*/
+
 var
   bll = require("../../bll"),
   logger = require('../../common/logger'),
