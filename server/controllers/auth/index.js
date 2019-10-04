@@ -97,7 +97,7 @@ function Login(req, res, next) {
 
   passport.authenticate('local', { session: false }, function (err, user, info) {
     if (err) {
-      common.logger.log('err ' + err);
+      common.logger.log('err ' + util.inspect(err));
       var authResponse = new AuthResponse();
       authResponse.success = false;
       return next(authResponse);
@@ -112,6 +112,7 @@ function Login(req, res, next) {
 
     req.logIn(user, function (err) {
       if (err) {
+        common.logger.log('err ' + util.inspect(err));
         var authResponse = new AuthResponse();
         authResponse.success = false;
         return next(authResponse);

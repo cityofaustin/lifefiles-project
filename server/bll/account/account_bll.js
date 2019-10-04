@@ -1,13 +1,11 @@
+/*
+ACCOUNT SPECIFIC BUSINESS LOGIC
+*/
 
 var
-  util = require("util"),
-  common = require("../../common"),
-  env = require('node-env-file'),
   account_dal = require('./account_dal')
    ;
 
-  env('./envVars.txt');
-  var microdb = require('../../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
 
 exports.getByEmail = getByEmail;
 exports.createAccount = createAccount;

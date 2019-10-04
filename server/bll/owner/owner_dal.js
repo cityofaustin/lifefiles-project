@@ -1,3 +1,8 @@
+/*
+OWNER SPECIFIC DATA ACCESS
+*/
+
+
 var
   util = require("util"),
   common = require("../../common"),

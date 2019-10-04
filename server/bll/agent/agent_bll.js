@@ -1,12 +1,10 @@
+/*
+AGENT SPECIFIC BUSINESS LOGIC
+*/
+
 var
-  util = require("util"),
-  common = require("../../common"),
-  env = require('node-env-file'),
   agent_dal=require('./agent_dal')
   ;
-
-env('./envVars.txt');
-var microdb = require('../../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
 
 exports.getByAccountId = getByAccountId;
 exports.SaveProfile = SaveProfile;
