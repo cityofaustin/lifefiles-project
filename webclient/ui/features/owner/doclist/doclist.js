@@ -14,6 +14,7 @@
 
   var ajaxFiles;
   var fileCtr = 0;
+  var uploadError,uploadErrorMsg;
 
 
   function init() {  }
@@ -40,9 +41,9 @@
 
   
   function SetUpFilePicker() {
-    vm.UploadError = false;
-    vm.UploadErrorMsg = '';
-    vm.FileTags = [];
+    uploadError = false;
+    uploadErrorMsg = '';
+    
     $(".filepicker-wrapper").empty();
     $('.filepicker-wrapper').append('<input id="ajaxpicker" type="file" class="hidden" accept="*.*" multiple/>');
     $('#ajaxpicker').change(function (changeEvent) {
@@ -78,8 +79,8 @@
         SetUpFilePicker();
         // $rootScope.$emit(common.APP_EVENTS.EndProcess);
         return;
-
       }
+
       var data = new FormData();
       data.append('thefile', file);
       data.append('FileName', file.name);
@@ -87,7 +88,7 @@
       fileCtr++;
 
       $.ajax({
-        url: '/api/upload/storefile',
+        url: '/upload',
         type: 'POST',
         data: data,
         cache: false,
@@ -98,8 +99,8 @@
         },
         success: function (data, sts, xhr) {
           if (data && !data.success) {
-            // vm.UploadError = true;
-            // vm.UploadErrorMsg = 'There was an error uploading your file. Please check the file and try again.';
+            uploadError = true;
+            uploadErrorMsg = 'There was an error uploading your file. Please check the file and try again.';
           }
           else {
             SendFiles();

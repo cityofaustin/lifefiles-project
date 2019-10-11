@@ -1,36 +1,32 @@
 <div class="doclist">
 
   <div class="list">
-      <div class="doc-list table-responsive mt-xl">
-          <table class="table table-sm">
-            <thead>
-              <tr>
-                <th scope="col" class="hidden"></th>
-                <th scope="col">Title</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td data-bind="primarykey" class="hidden"></td>
-                <td data-bind="documentname"></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+    <div class="doc-list table-responsive">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th scope="col" class="hidden"></th>
+            <th scope="col">Title</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-bind="primarykey" class="hidden"></td>
+            <td data-bind="documentname"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <div class="rt">
-      <div class="cursor-pointer p-sm " ng-click="CTRL.AddFileClick();">
-          <i class="fa fa-upload mr"></i><span>Upload File</span>
-        </div>
-        <div class="filepicker-wrapper"></div>
+  <div class="rt text-center">
+    <a class="cursor-pointer p-sm " onclick="mypass.ownerdashboard.doclist.uploadFile();">
+      <i class="fa fa-upload mr"></i><span>Upload</span>
+    </a>
+    <div class="filepicker-wrapper"></div>
 
   </div>
 
-  <!-- <div class="buttons mt-xl text-right">
-    <button type="button" class="btn btn-primary hidden btncancel"  onclick="mypass.ownerdashboard.edit.editForm(false)">Cancel</button>
-    <button type="button" class="btn btn-primary hidden btnsave" onclick="mypass.ownerdashboard.edit.save()">Save</button>
-    <button type="button" class="btn btn-primary btnedit" onclick="mypass.ownerdashboard.edit.editForm()">Edit</button>
-  </div> -->
+  
 
 </div>

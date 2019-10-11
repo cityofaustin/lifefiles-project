@@ -4,6 +4,7 @@ var
   serviceprovider=require('./serviceprovider'),
   administrator=require('./administrator'),
   agent=require('./agent')
+  upload=require('./upload')
   ;
 
 exports.init = function(app) {
@@ -12,5 +13,6 @@ exports.init = function(app) {
   serviceprovider.init(app);
   administrator.init(app);
   agent.init(app);
+  upload.init(app);
 };
 
