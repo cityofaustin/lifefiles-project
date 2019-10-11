@@ -84,7 +84,9 @@
       var data = new FormData();
       data.append('thefile', file);
       data.append('FileName', file.name);
-      data.append('FileType', file.type);
+      data.append('MIMEType', file.type);
+      data.append('FileType', mypass.utils.FileTypes.OWNER.TYPE_1);
+
       fileCtr++;
 
       $.ajax({

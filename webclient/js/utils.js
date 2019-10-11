@@ -6,10 +6,19 @@ general utility functions
   'use strict';
 
 
-  mypass.utils = {
-    StringBuilder: StringBuilder
+  var fileTypes={
+    OWNER:{
+      TYPE_1:'1'
+    }
   };
 
+  
+  mypass.utils = {
+    StringBuilder: StringBuilder,
+    FileTypes:fileTypes
+  };
+
+  
   function StringBuilder(){
 
     this.theString=null;

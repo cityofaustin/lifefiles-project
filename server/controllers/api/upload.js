@@ -24,9 +24,12 @@ function OnUpload(req, res, next) {
       var data = {
         FileName: req.body.FileName,
         FileType: req.body.FileType,
+        MIMEType: req.body.MIMEType,
         OriginalName: req.files[x].originalname,
         User: req.User
       };
+
+      // req.User.AccountInfo.userrole // tells us their role so we know how to handle the file
 
       var dd = '';
       //if we switch to buffers only and not write temp file to disk
