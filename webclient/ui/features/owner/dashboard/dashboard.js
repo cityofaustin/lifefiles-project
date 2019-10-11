@@ -7,17 +7,22 @@
     load: dashboardLoad,
     methods: {
       showInfo: showInfo,
-      showMain:showMain
+      showMain:showMain,
+      showDocs:showDocs
     }
   });
 
   function init() {
+    $('.ownerdashboard .nav a').on('click', function (e) {
+      e.preventDefault();
+      clearnav();
+      $(this).addClass('active');
+    });
   }
 
   function dashboardLoad(evt) {
     $('.btn-logout').removeClass('hidden');
     mypass.ownerdashboard.main.load('.ownerdashboard .main');
-  
   }
 
   function showInfo() {
@@ -25,11 +30,21 @@
   }
 
   function showMain() {
-    $('.ownerdashboard .nav a').removeClass('active');
+    clearnav();
     mypass.ownerdashboard.main.load('.ownerdashboard .main');
   }
 
+  function showDocs() {
+    clearnav();
+    // viewdocs
+    mypass.ownerdashboard.doclist.load('.ownerdashboard .main');
+  }
 
-  init();
+  function clearnav() {
+    $('.ownerdashboard .nav a').removeClass('active');
+  }
+
+
+  setTimeout(init,1200);
 
 })(mypass);

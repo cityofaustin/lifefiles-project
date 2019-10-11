@@ -1,3 +1,4 @@
+
 (function (mypass) {
   'use strict';
 
