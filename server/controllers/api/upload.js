@@ -8,7 +8,7 @@ var
   multer = require('multer')
   ;
 
-var uploadHandlerReportTemplate = multer({ dest: __dirname });
+var uploadHandlerReportTemplate = multer({ dest: __dirname + '../../uploadtmp' });
 // var uploadHandlerReportTemplate=multer();  // if we want to use streaming 
 
 exports.init = function (app) {
@@ -18,43 +18,20 @@ exports.init = function (app) {
 function OnUpload(req, res, next) {
 
   //todo: add validation
-  //var response = new common.response();
-  //var filecounter = 0;
-
-  var data = {};
-  data.File = req.body.FileName;
-  data.FileType = req.body.FileType;
-  // data.AccountInfo = req.User.AccountInfo;
-  // bll.owner.SaveProfile(data).then(function (bllRes) {
-  //   res.status(200).send(bllRes);
-  // });
-
-
-  // var data = {
-  //   DbId: req.body.DbId,
-  //   FileName: req.body.FileName,
-  //   FolderId:req.body.FolderId,
-  //   FileType:req.body.FileType,
-  //   User: req.User
-  // };
-
+  var response = new common.response();
   if (req.files && req.files.length > 0) {
-    for (var x in req.files) {
-      //var buffer = req.files[x].buffer;   //if we switch to buffers only and not write temp file to disk
-      data.File = req.files[x].buffer;
-      data.OriginalName = req.files[x].originalname;
+    for (var x = 0; x < req.files.length; x++) {
+      var data = {
+        FileName: req.body.FileName,
+        FileType: req.body.FileType,
+        OriginalName: req.files[x].originalname,
+        User: req.User
+      };
 
-      // if (req.body.FileId) {
-      //   data.FileId = req.body.FileId;
-      //   bll.files.FileUpdate(data, function (templateUpdateRes) {
-      //     logger.log('bll.files.FileUpdate with file done');
-      //     //res.status(200).send(outdata);
-      //     //response.success = true;
-      //     res.status(200).send(templateUpdateRes);
-      //     return;
-      //   });
-      // }
-      // else {
+      var dd = '';
+      //if we switch to buffers only and not write temp file to disk
+      // data.File = req.files[x].buffer;  
+
       //   bll.files.FileInsert(data, function (tempInsertRes) {
       //     logger.log('bll.files.FileInsert done');
       //     //res.status(200).send(outdata);
@@ -64,17 +41,10 @@ function OnUpload(req, res, next) {
       //   });
       // }
     }
-    var response = new common.response();
-    response.success=true;
+    response.success = true;
     res.status(200).send(response);
   }
-  // else if (req.body.FileId) {
-    // data.FileId = req.body.FileId;
-    // bll.files.FileUpdate(data, function (templateUpdateRes) {
-    //   res.status(200).send(templateUpdateRes);
-    //   return;
-    // });
-  // }
+
 
 }
 
