@@ -6,9 +6,8 @@
     url: '/ui/features/owner/dashboard/index.html',
     load: dashboardLoad,
     methods: {
-      editForm: editForm,
-      save: save,
-      // deleteAccount:deleteAccount
+      showInfo: showInfo,
+      showMain:showMain
     }
   });
 
@@ -16,61 +15,20 @@
   }
 
   function dashboardLoad(evt) {
-    //ADD ANY PAGE CODE
     $('.btn-logout').removeClass('hidden');
-    var account = mypass.session.getSession();
+    mypass.ownerdashboard.main.load('.ownerdashboard .main');
   
-    if (account.AccountInfo) {
-      userform.elements.name.value = account.AccountInfo.name;
-    }
   }
 
-  function editForm(edit) {
-    if(edit==false){
-      $('.user-info input').attr('readonly', 'readonly');
-      mypass.formhelper.hideElement('.btncancel,.btnsave');
-      mypass.formhelper.showElement('.btnedit');
-    }
-    else{
-      $('.user-info input').removeAttr('readonly');
-      mypass.formhelper.hideElement('.btncancel,.btnedit');
-      mypass.formhelper.showElement('.btncancel,.btnsave');
-    }
-    
+  function showInfo() {
+    mypass.ownerdashboard.edit.load('.ownerdashboard .main');
   }
 
-  function save() {
-    var req = {
-      name: userform.elements.name.value
-    };
-    mypass.datacontext.owner.save(req).then(onsave);
+  function showMain() {
+    $('.ownerdashboard .nav a').removeClass('active');
+    mypass.ownerdashboard.main.load('.ownerdashboard .main');
   }
 
-  function onsave(res) {
-    if (res.success) {
-      $('.user-info input').attr('readonly', 'readonly');
-      var account = mypass.session.getSession();
-      account.AccountInfo.name = userform.elements.name.value;
-      mypass.session.updateSession(account);
-    }
-    else {
-      //error
-    }
-  }
-
-  // function deleteAccount() {
-  //   //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
-  //   mypass.datacontext.owner.deleteAccount().then(ondeleteAccount);
-  // }
-
-  // function ondeleteAccount(res) {
-  //   if (res.success) {
-  //     mypass.session.logout();
-  //   }
-  //   else {
-  //     //error
-  //   }
-  // }
 
   init();
 

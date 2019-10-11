@@ -1,20 +1,21 @@
-<div class="dashboard">
+<div class="ownerdashboard">
   <h5 class="mv bb h5">Owner Dashboard</h5>
 
-  <form class="user-info mt-xl form-group" name="userform">
-    <div class="mt">
-      <label>Name</label>
-      <input type="text" name="name" readonly class="form-control">
+  <nav class="navbar navbar-light p-sm pr-lg">
+    <span class="navbar-brand">
+      <i class="fa fa-home" onclick="mypass.ownerdashboard.showMain()"></i>
+    </span>
+    <ul class="nav mr-auto">
+    </ul>  
+    <div class="form-inline ">
+        <i class="fa fa-cog" onclick="mypass.ownerdashboard.showInfo()"></i>
     </div>
-
-  </form>
-
-  <div class="buttons mt-xl text-right">
-    <button type="button" class="btn btn-primary hidden btncancel" onclick="mypass.ownerdashboard.editForm(false)">Cancel</button>
-    <button type="button" class="btn btn-primary hidden btnsave" onclick="mypass.ownerdashboard.save()">Save</button>
-    <button type="button" class="btn btn-primary btnedit" onclick="mypass.ownerdashboard.editForm()">Edit</button>
+  </nav>
+  
+  <div class="main mt-xl">
   </div>
+ 
 
-</div>
+
 
 </div>
