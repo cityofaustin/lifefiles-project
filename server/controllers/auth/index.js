@@ -139,28 +139,30 @@ function Login(req, res, next) {
 
       switch (user.account_role) {
         case 1:
-          bll.administrator.getByAccountId(user.primarykey).then(OnGetRole);
+          bll.administrator.getByAccountId(user.primarykey).then(function(rr){OnGetRole(rr,user.account_role)});
           break;
         case 2:
-          bll.owner.getByAccountId(user.primarykey).then(OnGetRole);
+          bll.owner.getByAccountId(user.primarykey).then(function(rr){OnGetRole(rr,user.account_role)});
           break;
         case 3:
-          bll.serviceprovider.getByAccountId(user.primarykey).then(OnGetRole);
+          bll.serviceprovider.getByAccountId(user.primarykey).then(function(rr){OnGetRole(rr,user.account_role)});
           break;
         case 4:
-          bll.agent.getByAccountId(user.primarykey).then(OnGetRole);
+          bll.agent.getByAccountId(user.primarykey).then(function(rr){OnGetRole(rr,user.account_role)});
           break;
         default:
           OnGetRole();
           break;
       }
 
-      function OnGetRole(OnGetRoleRes) {
+      function OnGetRole(OnGetRoleRes,userrole) {
         if (OnGetRoleRes && OnGetRoleRes.success && OnGetRoleRes.user) {
           authResponse.data.AccountInfo = OnGetRoleRes.user.pop();
+          authResponse.data.AccountInfo.userrole=userrole;
           var ciphertext = cryptojs.AES.encrypt(JSON.stringify(authResponse.data.AccountInfo), appconfig.secrets.cryptoKey);
           res.cookie(appconfig.cookies.userSessionInfo, encodeURIComponent(ciphertext), { expires: appconfig.cookies.getExpiryDate() });
           delete authResponse.data.AccountInfo.primarykey;
+          delete authResponse.data.AccountInfo.userrole;
         }
 
         res.status(200).send(authResponse);
