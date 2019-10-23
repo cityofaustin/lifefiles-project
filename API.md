@@ -6,7 +6,7 @@ Where full URLs are provided in responses they will be rendered as service is ru
 
 Open endpoints require no Authentication.
 
-* [Login](http://localhost) : `POST /api/login`
+* [Login](/login.md) : `POST /api/login`
 
 ## Endpoints that require Authentication
 
