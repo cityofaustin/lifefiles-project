@@ -2,17 +2,16 @@
 var
   util = require("util"),
   eventEmitter = require('events').EventEmitter,
-  env = require('node-env-file')
+  env = require('node-env-file'),
+  request = require('request'),
+  fs = require('fs')
   ;
 
 var Singleton = (function (apikey, opts) {
   env('./envVars.txt');
 
   var instance;
-  var httpService;
 
-  httpService = require('https');
-  
   function Microdb(apikey, opts) {
     opts = opts || {};
     var env = opts.env || process.env;
@@ -23,14 +22,13 @@ var Singleton = (function (apikey, opts) {
     var app_instance = this;
     var VERSION = '1.0.0';
     var _API_KEY = apikey;
-    var _STATUS = 'ok';
     var handlers = {
       onLoaded: null
     };
     var _DbId;
     var mdbevents = {
       initfailed: 'mdb.initfailed',
-      init:'mdb.init'
+      init: 'mdb.init'
     };
 
     this.describeTables = describeTables;
@@ -60,7 +58,7 @@ var Singleton = (function (apikey, opts) {
         var keys = Object.keys(app_instance.Tables);
         for (var index = 0; index < keys.length; index++) {
           var tblname = keys[index];
-          const element = app_instance.Tables[tblname];
+          var element = app_instance.Tables[tblname];
           tables.push(
             {
               name: element.Name,
@@ -79,64 +77,83 @@ var Singleton = (function (apikey, opts) {
       }
       return new Promise((resolve) => {
         var clientResponse = new Response();
-        var contentType = "application/json;charset=UTF-8";
-        var segments = [];
-        var Request = {
-          'data': msg,
-          'apiKey': _API_KEY,
+        var url = (process.env.NODE_ENV == 'local') ? 'http://' : 'https://';
+        url = url + process.env.API_HOST + ':' + process.env.API_PORT + '/' + route;
+
+        var reqOptions = {
+          preambleCRLF: true,
+          postambleCRLF: true,
+          url: url
         };
 
+        prepForm(reqOptions, msg, _API_KEY);
+        request.post(reqOptions, serverResponse);
 
-        var options = {
-          hostname: process.env.API_HOST,
-          port: process.env.API_PORT,
-          path: '/' + route,
-          method: 'POST',
-          headers: {
-            'Content-Type': contentType,
-            'Content-Length': Buffer.byteLength(JSON.stringify(Request))
+        function serverResponse(err, httpRes, apiResponse) {
+          if (err) {
+            clientResponse.success = false;
+            resolve(clientResponse);
+            return;
           }
-        };
 
-        if (_STATUS == 'suspended') {
-          clientResponse.message = 'account suspended';
-          clientResponse.success = false;
+          if (httpRes.statusCode === 200) {
+            var resObj = JSON.parse(apiResponse);
+            clientResponse.message = resObj.message;
+            clientResponse.success = resObj.success;
+            clientResponse.data = resObj.data;
+          }
+          else {
+            clientResponse.httpcode = httpRes.statusCode;
+            clientResponse.success = false;
+
+          }
           resolve(clientResponse);
         }
-
-        var req = httpService.request(options, (httpRes) => {
-          httpRes.setEncoding('utf8');
-          httpRes.on('data', (responseData) => {
-            if (httpRes.statusCode === 200) {
-              clientResponse.data += responseData;
-            }
-            else {
-              clientResponse.httpcode = httpRes.statusCode;
-              _STATUS = 'suspended';
-              clientResponse.success = false;
-              resolve(clientResponse);
-            }
-          });
-          httpRes.on('end', () => {
-            if (clientResponse.data) {
-              var resObj = JSON.parse(clientResponse.data);
-              clientResponse.message = resObj.message;
-              clientResponse.success = resObj.success;
-              clientResponse.data = resObj.data;
-            }
-            resolve(clientResponse);
-          })
-        });
-
-        req.on('error', (e) => {
-          clientResponse.success = false;
-          resolve(clientResponse);
-        });
-        // write data to request body
-        req.write(JSON.stringify(Request));
-        req.end();
-
       });
+    }
+
+    function prepForm(reqOptions, msg, _API_KEY) {
+      var formData;
+
+      var ismultipart = reqOptions.url.includes('/insert') || reqOptions.url.includes('/update');
+
+      if (ismultipart && msg.data && msg.data.length > 0 && msg.data[0].constructor.name == 'TableRow') {
+
+        formData = { payload: msg };
+        var keys = Object.keys(formData.payload.data[0]);
+        var prop;
+        for (var di = 0; di < keys.length; di++) {
+          prop = keys[di];
+          if (formData.payload.data[0][prop].File) {
+            var ff = formData.payload.data[0][prop].File;
+            // formData.payload.data[0][prop] = { Value: '', FileMap: ff.fileInfo.filename, IsFile: '1' };
+            var sss = formData.payload.data[0][prop];
+            formData[ff.fileInfo.filename] = {
+              'value': fs.createReadStream(ff.fileInfo.path),
+              'options': {
+                'filename': ff.fileInfo.filename,
+                'contentType': ff.fileInfo.mimetype
+              }
+            };
+            delete formData.payload.data[0][prop].File;
+          }
+        }
+      }
+
+      if (formData) {
+        formData.payload = JSON.stringify(formData.payload);
+        formData.apiKey = _API_KEY;
+        formData.isjson = '1';
+        reqOptions.formData = formData;
+
+      }
+      else {
+        reqOptions.form = {
+          'payload': msg,
+          'apiKey': _API_KEY
+        };
+      }
+
     }
 
     function genSchema(res) {
@@ -180,9 +197,9 @@ var Singleton = (function (apikey, opts) {
       this.saveNew = saveNew;
       this.saveUpdate = saveUpdate;
       this.saveDelete = saveDelete;
-
-      this.getEmptyRow = getEmptyRow;
       this.get = getTableData;
+      this.getAttachment = getAttachment;
+      this.getEmptyRow = getEmptyRow;
 
       __schema.Columns.forEach(function (col) {
         __table.ColumnHeaders.push(new ColumnHeader(col));
@@ -193,33 +210,69 @@ var Singleton = (function (apikey, opts) {
         return row;
       }
 
+      function prepRequest(data,useBatchId) {
+        if(!data){
+          return data;
+        }
+
+        if (!Array.isArray(data)) {
+          data = [data];
+        }
+        var req = new Request(__table.Id);
+        for (var index = 0; index < data.length; index++) {
+          var element = data[index];
+          var row = getEmptyRow();
+          row = maprows(row, element);
+          if(useBatchId){
+            row.batchid = index + 1;
+          }
+          req.data.push(row);
+        }
+        return req;
+      }
+
       function saveNew(data) {
-        var row = getEmptyRow();
-        row = maprows(row, data);
-        row.IsNew = true;
-        return saveTableData(this.Id, [row]);
+        var req = prepRequest(data,true);
+        return postMsg('data/insert', req);
       }
 
       function saveUpdate(data) {
-        var row = getEmptyRow();
-        row = maprows(row, data);
-        row.IsUpdate = true;
-        return saveTableData(this.Id, [row]);
+        var req = prepRequest(data,true);
+        return postMsg('data/update', req);
       }
 
       function saveDelete(data) {
-        var row = getEmptyRow();
-        row = maprows(row, data);
-        row.IsDelete = true;
-        return saveTableData(this.Id, [row]);
+        var req = prepRequest(data);
+        return postMsg('data/delete', req);
       }
 
       function maprows(row, data) {
-        var keys = Object.keys(data);
-        for (var i = 0; i < keys.length; i++) {
-          var col = keys[i];
+        var rowkeys = Object.keys(row);
+        var datakeys = Object.keys(data);
+
+        //only use the columns given by client
+        for (var rk = 0; rk < rowkeys.length; rk++) {
+          var col = rowkeys[rk];
+          if (!data.hasOwnProperty(rowkeys[rk])) {
+              delete row[rowkeys[rk]];
+          }
+        }
+
+        for (var i = 0; i < datakeys.length; i++) {
+          var col = datakeys[i];
           if (row.hasOwnProperty(col)) {
-            row[col].Value = data[col];
+            if (data[col] instanceof Microdb.prototype.File) {
+              row[col].File = data[col];
+              row[col].FileMap = {
+                filename: data[col].fileInfo.filename,
+                originalname: data[col].fileInfo.originalname,
+                fieldname: data[col].fileInfo.fieldname
+              };
+            }
+            else {
+              row[col].Value = data[col];
+            }
+
           }
         }
         if (data.primarykey && data.primarykey > 0) {
@@ -229,24 +282,26 @@ var Singleton = (function (apikey, opts) {
       }
 
       function getTableData(data) {
-        var req = {
-          DbId: _DbId,
-          TblId: __table.Id,
-          query: data
-        };
+        var req;
+        if(data){
+          req = prepRequest(data);
+        }
+        else{
+         req = new Request(__table.Id);
+        }
         return postMsg('data/get', req);
       }
 
-      function saveTableData(tblid, data) {
-        var req = {
-          DbId: _DbId,
-          TblId: tblid,
-          data: data
-        };
-        return postMsg('data/save', req);
+      function getAttachment(data) {
+        if(!data){
+          return new Promise(function(resolve,reject) {reject();});
+        }
+        var req = prepRequest(data);
+        return postMsg('attachment/get', req);
       }
 
     }
+
 
     function TableRow(columns) {
       var thisrow = this;
@@ -255,7 +310,8 @@ var Singleton = (function (apikey, opts) {
         Object.defineProperty(thisrow, name, {
           value: new Column(col),
           enumerable: true,
-          configurable: false
+          configurable: true,
+          writable: true
         });
       });
       return this;
@@ -284,6 +340,18 @@ var Singleton = (function (apikey, opts) {
       return this;
     }
 
+    function Request(tblid, data) {
+      this.DbId = _DbId;
+      this.TblId = tblid || 0;
+
+      if (data && !Array.isArray(data)) {
+        this.data = [data];
+      }
+      else {
+        this.data = [];
+      }
+    }
+
     function Response(response) {
       this.success;
       this.error;
@@ -298,6 +366,10 @@ var Singleton = (function (apikey, opts) {
 
     init();
   }
+
+  Microdb.prototype.File = function (info) {
+    this.fileInfo = info;
+  };
 
   util.inherits(Microdb, eventEmitter);
 
