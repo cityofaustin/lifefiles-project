@@ -9,7 +9,7 @@ var
    ;
 
    env('./envVars.txt');
-   var microdb = require('../../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
+   var microdb = require('../../services/microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
 
 
 exports.getByEmail = getByEmail;

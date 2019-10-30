@@ -5,7 +5,7 @@ WHICH IS USED IN THE APP
 
 var  env = require('node-env-file');
 env('./envVars.txt');
-var microdb = require('../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
+var microdb = require('../services/microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
 microdb.on(microdb.Events.init,mdbLoaded);
 
 var __AccountRoles;
