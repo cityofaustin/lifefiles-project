@@ -73,7 +73,7 @@ function Web_Vendor(cb) {
   gulp.src(srcpaths).on("error", handleError).pipe(gulp.dest('publish/webclient/vendor/'));
 
   var srcpaths = [
-    'webclient/vendor/bootstrap/dist*/**',
+    'webclient/vendor/bootstrap/*/**',
   ];
 
   gulp.src(srcpaths).on("error", handleError).pipe(gulp.dest('publish/webclient/vendor/bootstrap/'));
