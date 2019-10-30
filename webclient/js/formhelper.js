@@ -36,12 +36,25 @@
       for (var index = 0; index < dataRows.length; index++) {
         var temp = $(rowTemplate).clone();
         const element = dataRows[index];
-        var chrd = temp.children();
+        // var chrd = temp.children();
+        var chrd = $(temp).find('[data-bind]');
         for (var index2 = 0; index2 < chrd.length; index2++) {
           var child = chrd[index2];
-          var prop = child.getAttribute('data-bind');
-          child.innerText = element[prop];
+          if(child.hasAttribute('data-bind')){
+            var prop = child.getAttribute('data-bind');
+            child.innerText = element[prop];
+          }
         }
+
+        var chrdKey = $(temp).find('[data-key]');
+        for (var index2 = 0; index2 < chrdKey.length; index2++) {
+          var child = chrdKey[index2];
+          if(child.hasAttribute('data-key')){
+            var prop = child.getAttribute('data-key');
+            child.setAttribute('data-key',element[prop]);
+          }
+        }
+
         $(tableClassName + ' tbody').append(temp);
       }
     }

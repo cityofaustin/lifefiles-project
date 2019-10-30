@@ -10,7 +10,8 @@
       save: save,
       load: loadDashboard,
       addNew: addNew,
-      cancel:cancel
+      cancel:cancel,
+      delete:deleteRow
     }
   });
 
@@ -35,7 +36,7 @@
     if (res.success) {
       __hasData=true;
       mypass.formhelper.showElement('.service-providers .navbar');
-      mypass.formhelper.bindTableRows('.sp-list', res.Rows);
+      mypass.formhelper.bindTableRows('.sp-list', res.data);
     }
   }
 
@@ -92,6 +93,13 @@ function cancel() {
   mypass.formhelper.hideElement('.sp-view');
   mypass.formhelper.showElement('.sp-list');
   mypass.formhelper.showElement('.service-providers .navbar');
+}
+
+function deleteRow(ctrl) {
+  var req={
+    spkey:ctrl.getAttribute('data-key')
+  };
+  mypass.datacontext.serviceprovider.delete(req).then(getData);
 }
 
 

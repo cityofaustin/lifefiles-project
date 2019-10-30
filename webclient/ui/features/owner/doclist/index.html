@@ -7,16 +7,27 @@
           <tr>
             <th scope="col" class="hidden"></th>
             <th scope="col">Title</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td data-bind="primarykey" class="hidden"></td>
             <td data-bind="documentname"></td>
+            <td><i class="fa fa-file" data-key="primarykey" onclick="mypass.ownerdashboard.doclist.getfile(this)"></i>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
+
+    <div class="img-viewer hidden">
+      <div class="frm p-lg">
+        <div> <i class="fa fa-close pull-right mb" onclick="mypass.ownerdashboard.doclist.closeViewer()"></i></div>
+        <img id="theimg">
+      </div>
+    </div>
+
   </div>
 
   <div class="rt text-center">
@@ -27,6 +38,8 @@
 
   </div>
 
-  
+
+
+
 
 </div>
