@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/microdb/microdb-api-nodejs-client/issues"
   },
-  "homepage": "https://github.com/microdb/microdb-api-nodejs-client#readme"
+  "homepage": "https://github.com/microdb/microdb-api-nodejs-client#readme",
+  "dependencies": {
+    "request": "^2.88.0",
+    "node-env-file": "^0.1.8"
+  }
 }

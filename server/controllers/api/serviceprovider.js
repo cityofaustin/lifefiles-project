@@ -11,7 +11,7 @@ var
 exports.init = function (app) {
   app.post('/serviceprovider/save', passportConf.isAuthenticated, SaveProfile);
   app.post('/serviceprovider/getall', passportConf.isAuthenticated, OnGetAll);
-  // app.post('/serviceprovider/delete', passportConf.isAuthenticated, DeleteAccount);
+  app.post('/serviceprovider/delete', passportConf.isAuthenticated, DeleteSP);
 };
 
 function SaveProfile(req, res, next) {
@@ -39,14 +39,14 @@ function OnGetAll(req, res, next) {
   });
 }
 
-// function DeleteAccount(req, res, next) {
-//   //FOR DEMO PURPOSES ONLY...WONT USE IN PRODUCTION
-//   var data = {};
-//   // data.Profile = req.body.data;
-//   data.primarykey = req.User.accountid;
-//   bll.serviceprovider.DeleteAccount(data).then(function (bllRes) {
-//     res.status(200).send(bllRes);
-//   });
-// }
+function DeleteSP(req, res, next) {
+  var data = {
+    primarykey: req.body.data.spkey,
+    userid: req.User.accountid
+  };
+  bll.serviceprovider.DeleteSP(data).then(function (bllRes) {
+    res.status(200).send(bllRes);
+  });
+}
 
 

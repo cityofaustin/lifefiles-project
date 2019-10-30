@@ -3,47 +3,50 @@
   'use strict';
 
   mypass.registerFeatureChild({
-    parent:'ownerdashboard',
+    parent: 'ownerdashboard',
     name: 'doclist',
     url: '/ui/features/owner/doclist/index.html',
     methods: {
       load: loadScreen,
-      uploadFile:uploadFile
+      uploadFile: uploadFile,
+      getfile: getfile,
+      closeViewer:closeViewer
     }
   });
 
   var ajaxFiles;
   var fileCtr = 0;
-  var uploadError,uploadErrorMsg;
+  var uploadError, uploadErrorMsg;
+  var theDocs;
 
 
-  function init() {  }
+  function init() { }
 
   function loadScreen(parentElement) {
     $('.btn-logout').removeClass('hidden');
     $(parentElement).empty();
     $(parentElement).append(mypass.ownerdashboard.doclist.template);
     SetUpFilePicker();
+    getDocs();
   }
 
   function getDocs() {
-    // mypass.datacontext.serviceprovider.getAll().then(OnGetDocs);
+    mypass.datacontext.owner.getdocs().then(OnGetDocs);
   }
 
 
   function OnGetDocs(res) {
     if (res.success) {
-      __hasData=true;
-      // mypass.formhelper.showElement('.service-providers .navbar');
-      mypass.formhelper.bindTableRows('.doc-list', res.Rows);
+      theDocs = res.data;
+      mypass.formhelper.bindTableRows('.doc-list', res.data);
     }
   }
 
-  
+
   function SetUpFilePicker() {
     uploadError = false;
     uploadErrorMsg = '';
-    
+
     $(".filepicker-wrapper").empty();
     $('.filepicker-wrapper').append('<input id="ajaxpicker" type="file" class="hidden" accept="*.*" multiple/>');
     $('#ajaxpicker').change(function (changeEvent) {
@@ -103,8 +106,12 @@
           if (data && !data.success) {
             uploadError = true;
             uploadErrorMsg = 'There was an error uploading your file. Please check the file and try again.';
+            SetUpFilePicker();
           }
-          else {
+          else if (data && data.success) {
+            // data.addedRows = tempInsertRes.addedRows;
+            // data.filename = tempInsertRes.filename;
+            // data.originalname = tempInsertRes.originalname;
             SendFiles();
           }
         }
@@ -117,6 +124,43 @@
       // $rootScope.$emit(common.APP_EVENTS.EndProcess);
     }
 
+  }
+
+  function getfile(ctrl) {
+    var req = {
+      primarykey: ctrl.getAttribute('data-key')
+    };
+
+    var file = _.filter(theDocs, { primarykey: req.primarykey * 1 });
+    if (file.length > 0) {
+      file = file.pop();
+    }
+    req.thefile = file.thefile;
+    mypass.datacontext.owner.getfile(req).then(onGetFile);
+  }
+
+  function onGetFile(res) {
+    if (res.success) {
+      var file = res.data;
+        // var link = document.createElement('a');
+        // link.download = file.originalname;
+        // link.href = URL.createObjectURL(new Blob([new Uint8Array(file.file.data)]));
+        // $('.attachment-dl').append(link);
+        // link.click();
+
+        // var img = document.createElement('IMG');
+        $('#theimg').attr('src',URL.createObjectURL(new Blob([new Uint8Array(file.file.data)])));
+        
+
+        // $('.img-viewer').append();
+        $('.img-viewer').removeClass('hidden');
+    }
+
+  }
+
+  function closeViewer() {
+    $('.img-viewer').addClass('hidden');
+    $('#theimg').attr('src','');
   }
 
 

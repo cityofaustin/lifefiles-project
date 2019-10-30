@@ -22,7 +22,7 @@
 
   function OnGetSps(res) {
     if (res.success) {
-      mypass.formhelper.bindTableRows('.agent-list',res.Rows);
+      mypass.formhelper.bindTableRows('.agent-list',res.data);
     }
   }
 

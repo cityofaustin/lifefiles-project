@@ -10,7 +10,7 @@ var
   ;
 
 env('./envVars.txt');
-var microdb = require('../../microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
+var microdb = require('../../services/microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
 
 exports.getByAccountId = getByAccountId;
 exports.SaveProfile = SaveProfile;
@@ -60,7 +60,7 @@ function GetAll() {
         response.success = false;
       }
       else {
-        response.Rows = res.data && res.data.Rows ? res.data.Rows : [];
+        response.data = res.data && res.data.Rows ? res.data.Rows : [];
         response.success = true;
       }
       resolve(response);
