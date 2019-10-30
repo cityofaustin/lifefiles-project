@@ -8,8 +8,8 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "C:\\projects\\mypass\\publish\\server\\app.js",
-            "cwd": "C:\\projects\\mypass\\publish\\server\\"
+            "program": "C:\\projects\\cityofaustin\\mypass-app\\publish\\server\\app.js",
+            "cwd": "C:\\projects\\cityofaustin\\mypass-app\\publish\\server\\"
         },
         {
             "type": "node",
