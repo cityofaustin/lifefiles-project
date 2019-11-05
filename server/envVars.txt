@@ -2,6 +2,4 @@ SERVER_PORT=9005
 NODE_ENV=production
 ENABLE_LOGGING=true
 LOGFILENAME=app_log.log
-API_HOST=api.microdb.co
-API_PORT=443
 MICRODB_MYPASS_DB_APIKEY=your_secret_api_key_here
