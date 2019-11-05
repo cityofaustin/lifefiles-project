@@ -13,7 +13,7 @@ var
   ;
 
 env('./envVars.txt');
-var microdb = require('../../services/microdb')(process.env.MICRODB_MYPASS_DB_APIKEY);
+var microdb = require('microdb-api')(process.env.MICRODB_MYPASS_DB_APIKEY);
 
 exports.getByAccountId = getByAccountId;
 exports.SaveProfile = SaveProfile;
