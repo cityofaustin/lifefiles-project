@@ -1,0 +1,2 @@
+MICRODB_APIKEY=your_api_key
+OutputCodeFolder=microdb_output
