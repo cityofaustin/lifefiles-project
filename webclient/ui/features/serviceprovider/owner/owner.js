@@ -64,12 +64,7 @@
 
   function save() {
     var req = {
-      email: ownerform.elements.email.value,
-      first_name: ownerform.elements.firstname.value,
-      last_name: ownerform.elements.lastname.value,
-      company_name: ownerform.elements.companyname.value,
-      address: ownerform.elements.address.value,
-      isnew: true
+      name: ownerform.elements.name.value
     };
     mypass.datacontext.owner.save(req).then(onsave);
   }
