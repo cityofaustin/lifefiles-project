@@ -21,8 +21,8 @@
   function addOwner() {
     $('.sp-dashboard .nav a').removeClass('active');
     $('.sp-dashboard .nav a.sp').addClass('active');
-    mypass.sp_dashboard.serviceproviders.load('.sp-dashboard .main',true);
-    // mypass.sp_dashboard.serviceproviders.addNew();
+    mypass.sp_dashboard.owner.load('.sp-dashboard .main',true);
+    mypass.sp_dashboard.owner.addNew();
   }
 
   

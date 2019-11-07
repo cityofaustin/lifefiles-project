@@ -26,7 +26,7 @@
   }
 
   function showOwners() {
-    mypass.sp_dashboard.owners.load('.sp-dashboard .main');
+    mypass.sp_dashboard.owner.load('.sp-dashboard .main');
   }
 
   function showInfo() {

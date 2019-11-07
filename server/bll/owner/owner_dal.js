@@ -20,7 +20,7 @@ exports.getFile = getFile;
 exports.getAll=GetAll;
 
 function getByAccountId(id) {
-  return new Promise((resolve) => {
+  return new Promise(function(resolve)  {
     microdb.Tables.owner.get({ 'accountid': id }).then(function (res) {
       var response = new common.response();
       if (!res.success) {
@@ -38,7 +38,7 @@ function getByAccountId(id) {
 
 
 function SaveProfile(data) {
-  return new Promise((resolve) => {
+  return new Promise(function(resolve)  {
     data.Profile.primarykey = data.AccountInfo.primarykey;
     microdb.Tables.owner.saveUpdate(data.Profile).then(function (saveres) {
       var response = new common.response();
@@ -55,7 +55,7 @@ function SaveProfile(data) {
 }
 
 function saveDocument(data) {
-  return new Promise((resolve) => {
+  return new Promise(function(resolve)  {
     var response = new common.response();
 
     // var data = {
@@ -90,7 +90,7 @@ function saveDocument(data) {
 }
 
 function getDocs(data) {
-  return new Promise((resolve) => {
+  return new Promise(function(resolve)  {
     var response = new common.response();
     microdb.Tables.ownerdocument.get(data).then(function (getres) {
       response.success = true;
@@ -124,7 +124,7 @@ function getFile(data) {
 }
 
 function GetAll() {
-  return new Promise((resolve) => {
+  return new Promise(function(resolve) {
     microdb.Tables.owner.get().then(function (res) {
       var response = new common.response();
       if (!res.success) {

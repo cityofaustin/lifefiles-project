@@ -10,21 +10,21 @@
       save: save,
       load: loadDashboard,
       addNew: addNew,
-      cancel:cancel,
-      delete:deleteRow
+      cancel: cancel,
+      delete: deleteRow
     }
   });
 
   var __hasData;
 
-  function loadDashboard(parentElement,nofetch) {
+  function loadDashboard(parentElement, nofetch) {
     $('.btn-logout').removeClass('hidden');
     $(parentElement).empty();
     $(parentElement).append(mypass.sp_dashboard.owner.template);
-    if(!nofetch){
+    if (!nofetch) {
       getData();
     }
-    __hasData=false;
+    __hasData = false;
   }
 
   function getData() {
@@ -34,7 +34,7 @@
 
   function OnGetOwners(res) {
     if (res.success) {
-      __hasData=true;
+      __hasData = true;
       mypass.formhelper.showElement('.owner .navbar');
       mypass.formhelper.bindTableRows('.owner-list', res.data);
     }
@@ -86,21 +86,21 @@
     }
   }
 
-function cancel() {
-  if(!__hasData){
-    getData();
+  function cancel() {
+    if (!__hasData) {
+      getData();
+    }
+    mypass.formhelper.hideElement('.owner-view');
+    mypass.formhelper.showElement('.owner-list');
+    mypass.formhelper.showElement('.owner .navbar');
   }
-  mypass.formhelper.hideElement('.owner-view');
-  mypass.formhelper.showElement('.owner-list');
-  mypass.formhelper.showElement('.owner .navbar');
-}
 
-function deleteRow(ctrl) {
-  var req={
-    ownerkey:ctrl.getAttribute('data-key')
-  };
-  mypass.datacontext.owner.deleteAccount(req).then(getData);
-}
+  function deleteRow(ctrl) {
+    var req = {
+      ownerkey: ctrl.getAttribute('data-key')
+    };
+    mypass.datacontext.owner.deleteAccount(req).then(getData);
+  }
 
 
 })(mypass);

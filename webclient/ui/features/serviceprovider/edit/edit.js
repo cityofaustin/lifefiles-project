@@ -20,7 +20,7 @@
     $('.btn-logout').removeClass('hidden');
 
     $(parentElement).empty();
-    $(parentElement).append(mypass.admindashboard.edit.template);
+    $(parentElement).append(mypass.sp_dashboard.edit.template);
 
     var account = mypass.session.getSession();
 
