@@ -24,12 +24,12 @@ ENABLE_LOGGING=true
 LOGFILENAME=app_log.log
 API_HOST=api.microdb.co
 API_PORT=443
-MICRODB_MYPASS_DB_APIKEY=your_secret_api_key
+MICRODB_APIKEY=your_secret_api_key
 
 > The envVars.txt is usually kept secure but as a reminder...
 > The Microdb API key is a private key to be kept secure.
-> MICRODB_MYPASS_DB_APIKEY=your_secret_api_key
-> DO NOT CHECK IN THIS CODE TO A PUBLIC REPO WITH YOUR LIVE MICRODB_MYPASS_DB_APIKEY KEY SET 
+> MICRODB_APIKEY=your_secret_api_key
+> DO NOT CHECK IN THIS CODE TO A PUBLIC REPO WITH YOUR LIVE MICRODB_APIKEY KEY SET 
 > OTHERWISE YOU'LL NEED TO REGENERATE A NEW API KEY
 
 
