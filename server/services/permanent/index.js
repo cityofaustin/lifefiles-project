@@ -33,12 +33,12 @@ function permanent() {
     }
   };
 
-  this.archiveGet = archiveGet;
-  this.archiveInsert = archiveInsert;
-  this.archiveUpdate = archiveUpdate;
-  this.archiveDelete = archiveDelete;
-  this.archiveFileGet = archiveFileGet;
-  this.archiveFileAdd = archiveFileAdd;
+  this.getArchive = getArchive;
+  this.createArchive = createArchive;
+  this.updateArchive = updateArchive;
+  this.deleteArchive = deleteArchive;
+  this.getFile = getFile;
+  this.addFile = addFile;
 
 
   function init() {
@@ -54,32 +54,32 @@ function permanent() {
   }
 
 
-  function archiveGet(data) {
+  function getArchive(data) {
     var req = prepRequest(data, true);
     return postMsg(routes.archive.get, req);
   }
 
-  function archiveInsert(data) {
+  function createArchive(data) {
     var req = prepRequest(data, true);
     return postMsg(routes.archive.insert, req);
   }
 
-  function archiveUpdate(data) {
+  function updateArchive(data) {
     var req = prepRequest(data, true);
     return postMsg(routes.archive.update, req);
   }
 
-  function archiveDelete(data) {
+  function deleteArchive(data) {
     var req = prepRequest(data, true);
     return postMsg(routes.archive.delete, req);
   }
 
-  function archiveFileGet(data) {
+  function getFile(data) {
     var req = prepRequest(data, true);
     return postMsg(routes.archive.fileget, req);
   }
 
-  function archiveFileAdd(data) {
+  function addFile(data) {
     var req = prepRequest(data, true);
     return postMsg(routes.archive.fileadd, req);
   }

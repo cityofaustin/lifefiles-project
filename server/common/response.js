@@ -6,6 +6,7 @@ function response(response) {
   this.error;
   this.message = '';
   this.httpcode;
+  this.data={};
 
   if (response) {
     this.success = response.success;

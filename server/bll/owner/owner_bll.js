@@ -4,8 +4,12 @@ OWNER SPECIFIC BUSINESS LOGIC
 
 var
   owner_dal = require('./owner_dal'),
-  common = require("../../common")
+  common = require("../../common"),
+  env = require('node-env-file')
   ;
+
+env('./envVars.txt');
+var microdb = require('microdb-api')(process.env.MICRODB_APIKEY);
 
 exports.getByAccountId = getByAccountId;
 exports.saveProfile = saveProfile;
@@ -61,5 +65,35 @@ function getAll() {
 }
 
 function addOwner(data) {
-  return owner_dal.addOwner(data);
+  return new Promise(function (resolve) {
+    var response = new common.response();
+    if (!data.Profile.name) {
+      response.success = false;
+      response.message = 'Owner name is required';
+      resolve(response);
+    }
+    else {
+      //check if owner exists
+      microdb.Tables.owner.get(data.Profile).then(function (res) {
+        if (res.success) {
+          if (res.data && res.data.Rows.length > 0) {
+            response.success = false;
+            response.message = 'Owner exists';
+            resolve(response);
+          }
+          else {
+            owner_dal.addOwner(data).then(resolve);
+          }
+        }
+        else {
+          // var err = res.error;
+          response.success = false;
+          response.message = 'error';
+          resolve(response);
+        }
+      });
+
+    }
+  });
+
 }

@@ -6,7 +6,8 @@ OWNER SPECIFIC DATA ACCESS
 var
   util = require("util"),
   common = require("../../common"),
-  env = require('node-env-file')
+  env = require('node-env-file'),
+  permanent = require('../../services/permanent')
   ;
 
 env('./envVars.txt');
@@ -144,20 +145,40 @@ function getAll() {
 function addOwner(data) {
   return new Promise(function (resolve) {
     var response = new common.response();
-    response.success = true;
-    resolve(response);
 
-    // microdb.Tables.owner.get().then(function (res) {
-    //   var response = new common.response();
-    //   if (!res.success) {
-    //     response.message = 'error attempting to get by all';
-    //     response.success = false;
-    //   }
-    //   else {
-    //     response.data = res.data && res.data.Rows ? res.data.Rows : [];
-    //     response.success = true;
-    //   }
-    //   resolve(response);
-    // });
+    microdb.Tables.owner.saveNew(data.Profile).then(function (res) {
+      if (res.success && res.data && res.data.addedRows) {
+        response.data.insertId = res.data.addedRows[0].insertId;
+
+        permanent.createArchive(data.Profile).then(function (permres) {
+          if (permres.success) {
+            var owner = {
+              primarykey: response.data.insertId,
+              permanent_archive_number: permres.PA_Number
+            };
+            microdb.Tables.owner.saveUpdate(data.Profile).then(function (upres) {
+              // if (upres.success) {
+              // }
+              // else {
+              // }
+              response.success = upres.success;
+              resolve(response);
+
+            });
+
+
+          }
+
+
+        });
+      }
+      else {
+        // var err = res.error;
+        response.success = false;
+        response.message = 'error adding Owner';
+        resolve(response);
+      }
+    });
+
   });
 }
