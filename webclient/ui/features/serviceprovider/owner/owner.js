@@ -64,8 +64,10 @@
 
   function save() {
     var req = {
-      name: ownerform.elements.name.value
+      name: ownerform.elements.name.value,
+      isnew: true
     };
+
     mypass.datacontext.owner.save(req).then(onsave);
   }
 

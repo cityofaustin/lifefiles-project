@@ -13,14 +13,15 @@ env('./envVars.txt');
 var microdb = require('microdb-api')(process.env.MICRODB_APIKEY);
 
 exports.getByAccountId = getByAccountId;
-exports.SaveProfile = SaveProfile;
+exports.saveProfile = saveProfile;
 exports.saveDocument = saveDocument;
 exports.getDocs = getDocs;
 exports.getFile = getFile;
-exports.getAll=GetAll;
+exports.getAll = getAll;
+exports.addOwner = addOwner;
 
 function getByAccountId(id) {
-  return new Promise(function(resolve)  {
+  return new Promise(function (resolve) {
     microdb.Tables.owner.get({ 'accountid': id }).then(function (res) {
       var response = new common.response();
       if (!res.success) {
@@ -37,8 +38,8 @@ function getByAccountId(id) {
 }
 
 
-function SaveProfile(data) {
-  return new Promise(function(resolve)  {
+function saveProfile(data) {
+  return new Promise(function (resolve) {
     data.Profile.primarykey = data.AccountInfo.primarykey;
     microdb.Tables.owner.saveUpdate(data.Profile).then(function (saveres) {
       var response = new common.response();
@@ -55,7 +56,7 @@ function SaveProfile(data) {
 }
 
 function saveDocument(data) {
-  return new Promise(function(resolve)  {
+  return new Promise(function (resolve) {
     var response = new common.response();
 
     // var data = {
@@ -90,7 +91,7 @@ function saveDocument(data) {
 }
 
 function getDocs(data) {
-  return new Promise(function(resolve)  {
+  return new Promise(function (resolve) {
     var response = new common.response();
     microdb.Tables.ownerdocument.get(data).then(function (getres) {
       response.success = true;
@@ -123,8 +124,8 @@ function getFile(data) {
   });
 }
 
-function GetAll() {
-  return new Promise(function(resolve) {
+function getAll() {
+  return new Promise(function (resolve) {
     microdb.Tables.owner.get().then(function (res) {
       var response = new common.response();
       if (!res.success) {
@@ -137,5 +138,26 @@ function GetAll() {
       }
       resolve(response);
     });
+  });
+}
+
+function addOwner(data) {
+  return new Promise(function (resolve) {
+    var response = new common.response();
+    response.success = true;
+    resolve(response);
+
+    // microdb.Tables.owner.get().then(function (res) {
+    //   var response = new common.response();
+    //   if (!res.success) {
+    //     response.message = 'error attempting to get by all';
+    //     response.success = false;
+    //   }
+    //   else {
+    //     response.data = res.data && res.data.Rows ? res.data.Rows : [];
+    //     response.success = true;
+    //   }
+    //   resolve(response);
+    // });
   });
 }

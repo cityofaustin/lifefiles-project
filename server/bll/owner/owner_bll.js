@@ -8,30 +8,31 @@ var
   ;
 
 exports.getByAccountId = getByAccountId;
-exports.SaveProfile = SaveProfile;
+exports.saveProfile = saveProfile;
 exports.saveDocument = saveDocument;
-exports.GetDocs = GetDocs;
-exports.GetFile = GetFile;
-exports.GetAll = GetAll;
+exports.getDocs = getDocs;
+exports.getFile = getFile;
+exports.getAll = getAll;
+exports.addOwner = addOwner;
 
 function getByAccountId(id) {
   return owner_dal.getByAccountId(id);
 }
 
 
-function SaveProfile(data) {
-  return owner_dal.SaveProfile(data);
+function saveProfile(data) {
+  return owner_dal.saveProfile(data);
 }
 
 function saveDocument(data) {
   return owner_dal.saveDocument(data);
 }
 
-function GetDocs(data) {
+function getDocs(data) {
   return owner_dal.getDocs(data);
 }
 
-function GetFile(data) {
+function getFile(data) {
   return new Promise(function (resolve) {
     var response = new common.response();
     if (!data || (data && !data.thefile)) {
@@ -54,7 +55,11 @@ function GetFile(data) {
   });
 }
 
-function GetAll() {
+function getAll() {
   //check your business rules is current user can perform action
-  return owner_dal.GetAll();
+  return owner_dal.getAll();
+}
+
+function addOwner(data) {
+  return owner_dal.addOwner(data);
 }

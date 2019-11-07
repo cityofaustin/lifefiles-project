@@ -30,16 +30,24 @@ function SaveProfile(req, res, next) {
   var data = {};
   data.Profile = req.body.data;
   data.AccountInfo = req.User.AccountInfo;
-  bll.owner.SaveProfile(data).then(function (bllRes) {
-    res.status(200).send(bllRes);
-  });
+
+  if (req.body.data.isnew) {
+    bll.owner.addOwner(data).then(function (bllRes) {
+      res.status(200).send(bllRes);
+    });
+  }
+  else {
+    bll.owner.saveProfile(data).then(function (bllRes) {
+      res.status(200).send(bllRes);
+    });
+  }
 }
 
 function GetDocs(req, res, next) {
   var data = {
     ownerid: req.User.AccountInfo.primarykey
   };
-  bll.owner.GetDocs(data).then(function (bllRes) {
+  bll.owner.getDocs(data).then(function (bllRes) {
     res.status(200).send(bllRes);
   });
 }
@@ -49,13 +57,13 @@ function GetFile(req, res, next) {
     primarykey: req.body.data.primarykey,
     thefile: req.body.data.thefile
   };
-  bll.owner.GetFile(data).then(function (bllRes) {
+  bll.owner.getFile(data).then(function (bllRes) {
     res.status(200).send(bllRes);
   });
 }
 
 function OnGetAll(req, res, next) {
-  bll.owner.GetAll().then(function (bllRes) {
+  bll.owner.getAll().then(function (bllRes) {
     res.status(200).send(bllRes);
   });
 }
