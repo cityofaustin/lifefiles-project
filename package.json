@@ -32,7 +32,7 @@
     "jszip": "^3.2.2",
     "lodash": "^4.17.15",
     "lusca": "^1.6.1",
-    "microdb-api": "^1.0.2",
+    "microdb-api": "^1.0.3",
     "mime-types": "^2.1.24",
     "moment": "^2.24.0",
     "morgan": "^1.9.1",

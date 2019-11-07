@@ -36,6 +36,6 @@
     "request": "^2.88.0",
     "serve-favicon": "^2.5.0",
     "uuid": "^3.3.3",
-    "microdb-api": "^1.0.2"
+    "microdb-api": "^1.0.3"
   }
 }
