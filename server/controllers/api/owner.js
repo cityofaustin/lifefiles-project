@@ -18,6 +18,14 @@ exports.init = function (app) {
   app.post('/owner/getdocs', passportConf.isAuthenticated, GetDocs);
   app.post('/owner/getfile', passportConf.isAuthenticated, GetFile);
   app.post('/owner/getall', passportConf.isAuthenticated, OnGetAll);
+  app.post('/owner/get', passportConf.isAuthenticated, OnGetOwner);
+
+// exports.getArchive = getArchive;
+// exports.insertArchive = insertArchive;
+// exports.updateArchive = updateArchive;
+// exports.deleteArchive = deleteArchive;
+// exports.getFile = getFile;
+// exports.addFile = addFile;
 
 
   //IF WE DECIDE TO HANDLE FILE POSTS IN RESPECTIVE CONTROLLERS AND NOT USE A GENERICE UPLOAD SERVICE
@@ -64,6 +72,15 @@ function GetFile(req, res, next) {
 
 function OnGetAll(req, res, next) {
   bll.owner.getAll().then(function (bllRes) {
+    res.status(200).send(bllRes);
+  });
+}
+
+function OnGetOwner(req, res, next) {
+  var data = {
+    primarykey: req.body.data.primarykey,
+  };
+  bll.owner.getOwner(data).then(function (bllRes) {
     res.status(200).send(bllRes);
   });
 }

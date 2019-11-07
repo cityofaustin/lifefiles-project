@@ -11,7 +11,8 @@
       load: loadDashboard,
       addNew: addNew,
       cancel: cancel,
-      delete: deleteRow
+      delete: deleteRow,
+      edit: editOwner
     }
   });
 
@@ -94,9 +95,22 @@
 
   function deleteRow(ctrl) {
     var req = {
-      ownerkey: ctrl.getAttribute('data-key')
+      primarykey: ctrl.getAttribute('data-key')
     };
     mypass.datacontext.owner.deleteAccount(req).then(getData);
+  }
+
+  function editOwner(ctrl) {
+    var req = {
+      primarykey: ctrl.getAttribute('data-key')
+    };
+    mypass.datacontext.owner.getOwner(req).then(onGetOwner);
+  }
+
+  function onGetOwner(res) {
+    if (res.success) {
+
+    }
   }
 
 

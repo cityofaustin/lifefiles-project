@@ -18,6 +18,7 @@ exports.getDocs = getDocs;
 exports.getFile = getFile;
 exports.getAll = getAll;
 exports.addOwner = addOwner;
+exports.getOwner = getOwner;
 
 function getByAccountId(id) {
   return owner_dal.getByAccountId(id);
@@ -93,6 +94,21 @@ function addOwner(data) {
         }
       });
 
+    }
+  });
+
+}
+
+function getOwner(data) {
+  return new Promise(function (resolve) {
+    var response = new common.response();
+    if (!data.primarykey) {
+      response.success = false;
+      response.message = 'Owner primarykey is required';
+      resolve(response);
+    }
+    else {
+      owner_dal.getOwner(data).then(resolve);
     }
   });
 

@@ -20,6 +20,7 @@ exports.getDocs = getDocs;
 exports.getFile = getFile;
 exports.getAll = getAll;
 exports.addOwner = addOwner;
+exports.getOwner = getOwner;
 
 function getByAccountId(id) {
   return new Promise(function (resolve) {
@@ -154,22 +155,17 @@ function addOwner(data) {
           if (permres.success) {
             var owner = {
               primarykey: response.data.insertId,
-              permanent_archive_number: permres.PA_Number
+              permanent_archive_number: permres.data.PA_Number
             };
-            microdb.Tables.owner.saveUpdate(data.Profile).then(function (upres) {
+            microdb.Tables.owner.saveUpdate(owner).then(function (upres) {
               // if (upres.success) {
               // }
               // else {
               // }
               response.success = upres.success;
               resolve(response);
-
             });
-
-
           }
-
-
         });
       }
       else {
@@ -179,6 +175,34 @@ function addOwner(data) {
         resolve(response);
       }
     });
+  });
+}
 
+
+function getOwner(data) {
+  return new Promise(function (resolve) {
+    var response = new common.response();
+    microdb.Tables.owner.get({ "primarykey": data.primarykey }).then(function (res) {
+      if (res.success && res.data && res.data.Rows.length > 0) {
+        response.success = true;
+        response.data.Owner = res.data.Rows[0];
+        var docReq = {
+          ownerid: data.primarykey
+        };
+        microdb.Tables.ownerdocument.get(docReq).then(function (getres) {
+          response.data.Docs = getres.data && getres.data.Rows ? getres.data.Rows : [];
+          //do we fetch from permanent?
+          //     permanent.createArchive(data.Profile).then(function (permres) {
+          resolve(response);
+        });
+      }
+      else {
+        // var err = res.error;
+        response.success = false;
+        response.message = 'Owner not found';
+        resolve(response);
+      }
+
+    });
   });
 }

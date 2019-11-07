@@ -32,7 +32,8 @@
     save:function(params) {return mypass.postMsg('/owner/save', params);},
     deleteAccount:function(params) {return mypass.postMsg('/owner/delete', params);},
     getdocs:function(params) {return mypass.postMsg('/owner/getdocs', params);},
-    getfile:function(params) {return mypass.postMsg('/owner/getfile', params);}
+    getfile:function(params) {return mypass.postMsg('/owner/getfile', params);},
+    getOwner:function(params) {return mypass.postMsg('/owner/get', params);}
   };
 
   mypass.datacontext.serviceprovider =  {
