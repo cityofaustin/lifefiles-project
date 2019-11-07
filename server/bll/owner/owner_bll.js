@@ -12,6 +12,7 @@ exports.SaveProfile = SaveProfile;
 exports.saveDocument = saveDocument;
 exports.GetDocs = GetDocs;
 exports.GetFile = GetFile;
+exports.GetAll = GetAll;
 
 function getByAccountId(id) {
   return owner_dal.getByAccountId(id);
@@ -51,4 +52,9 @@ function GetFile(data) {
       });
     }
   });
+}
+
+function GetAll() {
+  //check your business rules is current user can perform action
+  return owner_dal.GetAll();
 }

@@ -1,0 +1,74 @@
+<div class="owner">
+
+
+  <nav class="navbar navbar-light p0">
+    <ul class="nav mr-auto">
+      <li class="nav-item"><button type="button" onclick="mypass.sp_dashboard.owner.addNew()"
+          class="btn btn-primary btn-sm">New</button></li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2 btn-sm" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0 btn-sm" type="submit">Search</button>
+    </form>
+  </nav>
+
+
+  <div class="owner-list table-responsive mt-xl">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Company</th>
+          <th scope="col">Address</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td data-bind="primarykey"></td>
+          <td data-bind="name"></td>
+          <td data-bind="company_name"></td>
+          <td data-bind="address"></td>
+          <td ><i class="fa fa-close" data-key="primarykey" onclick="mypass.sp_dashboard.owner.delete(this)" ></i></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="owner-view hidden m-auto">
+    <form class="user-info mt-xl form-group" name="ownerform">
+        <div class="mt">
+            <label>Email</label>
+            <input type="text" name="email" readonly class="form-control">
+          </div>
+      <div class="mt">
+        <label>First Name</label>
+        <input type="text" name="firstname" readonly class="form-control">
+      </div>
+      <div class="mt">
+          <label>Last Name</label>
+          <input type="text" name="lastname" readonly class="form-control">
+        </div>
+      <div class="mt">
+        <label>Company Name</label>
+        <input type="text" name="companyname" readonly class="form-control">
+      </div>
+      <div class="mt">
+        <label>Address</label>
+        <input type="text" name="address" readonly class="form-control">
+      </div>
+    </form>
+
+    <div class="buttons mt-xl text-right">
+      <button type="button" class="btn btn-primary hidden btncancel"
+        onclick="mypass.sp_dashboard.owner.cancel()">Cancel</button>
+      <button type="button" class="btn btn-primary hidden btnsave"
+        onclick="mypass.sp_dashboard.owner.save()">Save</button>
+    </div>
+  </div>
+
+
+
+
+</div>

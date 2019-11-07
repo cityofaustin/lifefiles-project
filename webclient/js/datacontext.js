@@ -28,6 +28,7 @@
   };
 
   mypass.datacontext.owner =  {
+    getAll:function(params) {return mypass.postMsg('/owner/getall', params);},
     save:function(params) {return mypass.postMsg('/owner/save', params);},
     deleteAccount:function(params) {return mypass.postMsg('/owner/delete', params);},
     getdocs:function(params) {return mypass.postMsg('/owner/getdocs', params);},

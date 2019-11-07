@@ -14,8 +14,6 @@
   });
 
   function init() {
-
-    
     $('.admin-dashboard .nav a').on('click', function (e) {
       e.preventDefault();
       $('.admin-dashboard .nav a').removeClass('active');

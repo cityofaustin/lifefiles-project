@@ -1,27 +1,21 @@
-<div class="sp_dashboard">
+<div class="sp-dashboard">
   <h5 class="mv bb h5">Service Provider Dashboard</h5>
 
-  <form class="user-info mt-xl form-group" name="userform">
-    <div class="mt">
-      <label>Name</label>
-      <input type="text" name="name" readonly class="form-control">
+  <nav class="navbar navbar-light p-sm pr-lg">
+    <span class="navbar-brand">
+      <i class="fa fa-home" onclick="mypass.sp_dashboard.showMain()"></i>
+    </span>
+    <ul class="nav mr-auto">
+      <li class="nav-item"><a class="nav-link owners" onclick="mypass.sp_dashboard.showOwners()">Owners</a></li>
+      <!-- <li class="nav-item"><a class="nav-link agent" onclick="mypass.sp_dashboard.showAgents()">Agents</a></li> -->
+    </ul>
+    <div class="form-inline ">
+      <i class="fa fa-cog" onclick="mypass.sp_dashboard.showInfo()"></i>
     </div>
-    <div class="mt">
-      <label>Company Name</label>
-      <input type="text" name="companyname" readonly class="form-control">
-    </div>
-    <div class="mt">
-      <label>Address</label>
-      <input type="text" name="address" readonly class="form-control">
-    </div>
-  </form>
+  </nav>
 
-  <div class="buttons mt-xl text-right">
-      <button type="button" class="btn btn-primary hidden btncancel" onclick="mypass.sp_dashboard.editForm(false)">Cancel</button> 
-      <button type="button" class="btn btn-primary hidden btnsave" onclick="mypass.sp_dashboard.save()">Save</button>
-      <button type="button" class="btn btn-primary btnedit" onclick="mypass.sp_dashboard.editForm()">Edit</button>
-    </div>
 
-</div>
+  <div class="main mt-xl">
+  </div>
 
 </div>

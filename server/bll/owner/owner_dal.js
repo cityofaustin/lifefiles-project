@@ -10,13 +10,14 @@ var
   ;
 
 env('./envVars.txt');
-var microdb = require('microdb-api')(process.env.MICRODB_MYPASS_DB_APIKEY);
+var microdb = require('microdb-api')(process.env.MICRODB_APIKEY);
 
 exports.getByAccountId = getByAccountId;
 exports.SaveProfile = SaveProfile;
 exports.saveDocument = saveDocument;
 exports.getDocs = getDocs;
 exports.getFile = getFile;
+exports.getAll=GetAll;
 
 function getByAccountId(id) {
   return new Promise((resolve) => {
@@ -116,6 +117,23 @@ function getFile(data) {
       }
       else {
         response.success = false;
+      }
+      resolve(response);
+    });
+  });
+}
+
+function GetAll() {
+  return new Promise((resolve) => {
+    microdb.Tables.owner.get().then(function (res) {
+      var response = new common.response();
+      if (!res.success) {
+        response.message = 'error attempting to get by all';
+        response.success = false;
+      }
+      else {
+        response.data = res.data && res.data.Rows ? res.data.Rows : [];
+        response.success = true;
       }
       resolve(response);
     });

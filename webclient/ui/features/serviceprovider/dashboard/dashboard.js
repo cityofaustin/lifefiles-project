@@ -6,64 +6,40 @@
     url: '/ui/features/serviceprovider/dashboard/index.html',
     load: dashboardLoad,
     methods: {
-      editForm: editForm,
-      save: save,
+      showInfo: showInfo,
+      showOwners: showOwners,
+      showMain:showMain
     }
   });
 
   function init() {
+    $('.sp-dashboard .nav a').on('click', function (e) {
+      e.preventDefault();
+      $('.sp-dashboard .nav a').removeClass('active');
+      $(this).addClass('active');
+    });
   }
 
-  function dashboardLoad(evt) {
-    //ADD ANY PAGE CODE
+  function dashboardLoad() {
     $('.btn-logout').removeClass('hidden');
-    var account = mypass.session.getSession();
-
-    if (account.AccountInfo) {
-      userform.elements.name.value = account.AccountInfo.name;
-      userform.elements.companyname.value = account.AccountInfo.company_name;
-      userform.elements.address.value = account.AccountInfo.address;
-    }
+    mypass.sp_dashboard.main.load('.sp-dashboard .main');
   }
 
-  function editForm(edit) {
-    if(edit==false){
-      $('.user-info input').attr('readonly', 'readonly');
-      mypass.formhelper.hideElement('.btncancel,.btnsave');
-      mypass.formhelper.showElement('.btnedit');
-    }
-    else{
-      $('.user-info input').removeAttr('readonly');
-      mypass.formhelper.hideElement('.btncancel,.btnedit');
-      mypass.formhelper.showElement('.btncancel,.btnsave');
-    }
-    
+  function showOwners() {
+    mypass.sp_dashboard.owners.load('.sp-dashboard .main');
   }
 
-  function save() {
-    var req = {
-      name: userform.elements.name.value,
-      company_name: userform.elements.companyname.value,
-      address: userform.elements.address.value
-    };
-    mypass.datacontext.serviceprovider.save(req).then(onsave);
+  function showInfo() {
+    mypass.sp_dashboard.edit.load('.sp-dashboard .main');
   }
 
-  function onsave(res) {
-    if (res.success) {
-      $('.user-info input').attr('readonly', 'readonly');
-
-      var account = mypass.session.getSession();
-      account.AccountInfo.name = userform.elements.name.value;
-      account.AccountInfo.company_name = userform.elements.companyname.value;
-      account.AccountInfo.address = userform.elements.address.value;
-      mypass.session.updateSession(account);
-
-    }
-    else {
-      //error
-    }
+  function showMain() {
+    $('.sp-dashboard .nav a').removeClass('active');
+    mypass.sp_dashboard.main.load('.sp-dashboard .main');
   }
+
+  setTimeout(init,1200);
+
 
 
   init();
