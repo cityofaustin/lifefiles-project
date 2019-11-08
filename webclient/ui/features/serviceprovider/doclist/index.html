@@ -1,0 +1,45 @@
+<div class="doclist">
+
+  <div class="list">
+    <div class="doc-list table-responsive">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th scope="col" class="hidden"></th>
+            <th scope="col">Title</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-bind="primarykey" class="hidden"></td>
+            <td data-bind="documentname"></td>
+            <td><i class="fa fa-file" data-key="primarykey" onclick="mypass.sp_dashboard.doclist.getfile(this)"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="img-viewer hidden">
+      <div class="frm p-lg">
+        <div> <i class="fa fa-close pull-right mb" onclick="mypass.sp_dashboard.doclist.closeViewer()"></i></div>
+        <img id="theimg">
+      </div>
+    </div>
+
+  </div>
+
+  <div class="rt text-center">
+    <a class="cursor-pointer p-sm " onclick="mypass.sp_dashboard.doclist.uploadFile();">
+      <i class="fa fa-upload mr"></i><span>Upload</span>
+    </a>
+    <div class="filepicker-wrapper"></div>
+
+  </div>
+
+
+
+
+
+</div>

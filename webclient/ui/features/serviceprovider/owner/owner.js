@@ -6,7 +6,6 @@
     name: 'owner',
     url: '/ui/features/serviceprovider/owner/index.html',
     methods: {
-      editForm: editForm,
       save: save,
       load: loadDashboard,
       addNew: addNew,
@@ -48,7 +47,7 @@
     editForm();
   }
 
-  function editForm(edit) {
+  function editForm(edit, data) {
     if (edit == false) {
       $('.owner-view .user-info input').attr('readonly', 'readonly');
       mypass.formhelper.hideElement('.btncancel,.btnsave');
@@ -58,6 +57,12 @@
       $('.owner-view .user-info input').removeAttr('readonly');
       mypass.formhelper.hideElement('.btncancel,.btnedit');
       mypass.formhelper.showElement('.btncancel,.btnsave');
+    }
+
+    if (data) {
+      ownerform.elements.name.value = data.Owner.name;
+
+      mypass.sp_dashboard.doclist.load('.docs', data);
     }
 
   }
@@ -109,7 +114,10 @@
 
   function onGetOwner(res) {
     if (res.success) {
-
+      mypass.formhelper.hideElement('.owner .navbar');
+      mypass.formhelper.hideElement('.owner-list');
+      mypass.formhelper.showElement('.owner-view');
+      editForm(false, res.data);
     }
   }
 
