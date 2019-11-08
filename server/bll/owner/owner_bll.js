@@ -30,7 +30,30 @@ function saveProfile(data) {
 }
 
 function saveDocument(data) {
-  return owner_dal.saveDocument(data);
+  return new Promise(function (resolve) {
+    var response = new common.response();
+    var isvalid = false;
+
+    if (!data || (data && (!data.fileInfo || !data.FileName))) {
+      response.success = false;
+      response.message = 'no file info';
+      resolve(response);
+    }
+    else {
+      var doc = {
+        documentname: data.FileName,
+        thefile: new microdb.File(data.fileInfo)
+      };
+      if (data.ownerkey > 0) {
+        doc.ownerid = data.ownerkey; // is someone posting on owners behalf
+      }
+      else {
+        doc.ownerid = data.User.AccountInfo.primarykey; //is owner posting file
+      }
+      owner_dal.saveDocument(doc).then(resolve);
+    }
+  });
+
 }
 
 function getDocs(data) {

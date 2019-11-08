@@ -57,23 +57,10 @@ function saveProfile(data) {
   });
 }
 
-function saveDocument(data) {
+function saveDocument(doc) {
   return new Promise(function (resolve) {
     var response = new common.response();
 
-    // var data = {
-    //   FileName: req.body.FileName,
-    //   FileType: req.body.FileType,
-    //   MIMEType: req.body.MIMEType,
-    //   fileInfo: req.files[x],
-    //   User: req.User
-    // };
-
-    var doc = {
-      ownerid: data.User.AccountInfo.primarykey, //ownerid
-      documentname: data.FileName,
-      thefile: new microdb.File(data.fileInfo)
-    };
 
     microdb.Tables.ownerdocument.saveNew(doc).then(function (saveres) {
       response.success = true;

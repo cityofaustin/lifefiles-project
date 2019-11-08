@@ -17,8 +17,8 @@ exports.init = function (app) {
 };
 
 function OnUpload(req, res, next) {
-  //todo: add validation
   var response = new common.response();
+  var isvalid = false;
 
   if (!req.files) {
     response.success = false;
@@ -26,40 +26,45 @@ function OnUpload(req, res, next) {
     return;
   }
 
-
-  for (var x = 0; x < req.files.length; x++) {
-    var data = {
-      FileName: req.body.FileName,
-      FileType: req.body.FileType,
-      MIMEType: req.body.MIMEType,
-      fileInfo: req.files[x],
-      User: req.User
-    };
-
-
-    //if we switch to buffers only and not write temp file to disk
-    // data.File = req.files[x].buffer;
-
-    if (req.User.AccountInfo.userrole == 2) {
-      //this is an owner posting a file...so we put it into ownerdocument table
-      bll.owner.saveDocument(data).then(function (tempInsertRes) {
-        if (!tempInsertRes.success) {
-          logger.log('api.upload err ' + util.inspect(tempInsertRes));
-          response.success = false;
-        }
-        else {
-          response.addedRows = tempInsertRes.addedRows;
-          response.filename = tempInsertRes.filename;
-          response.originalname = tempInsertRes.originalname;
-          response.success = true;
-        }
-        res.status(200).send(response);
-        return;
-      });
-    }
-
+  var data = {};
+  if (req.User.AccountInfo.userrole == 2) {
+    //an owner posting file
+    data.User = req.User;
+    isvalid = true;
+  }
+  else if (req.User.AccountInfo.userrole == 3 && req.body.ownerkey > 0) {
+    //a service provider posting file
+    data.ownerkey = req.body.ownerkey;
+    isvalid = true;
   }
 
+  if (!isvalid) {
+    response.success = false;
+    res.status(200).send(response);
+    return;
+  }
+
+  for (var x = 0; x < req.files.length; x++) {
+    data.FileName = req.body.FileName;
+    data.FileType = req.body.FileType;
+    data.MIMEType = req.body.MIMEType;
+    data.fileInfo = req.files[x];  //if we switch to buffers only // data.File = req.files[x].buffer;
+
+    bll.owner.saveDocument(data).then(function (tempInsertRes) {
+      if (!tempInsertRes.success) {
+        logger.log('api.upload err ' + util.inspect(tempInsertRes));
+        response.success = false;
+      }
+      else {
+        response.addedRows = tempInsertRes.addedRows;
+        response.filename = tempInsertRes.filename;
+        response.originalname = tempInsertRes.originalname;
+        response.success = true;
+        res.status(200).send(response);
+        return;
+      }
+    });
+  }
 
 }
 
