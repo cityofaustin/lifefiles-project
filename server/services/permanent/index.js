@@ -24,17 +24,18 @@ function permanent() {
 
   var routes = {
     archive: {
-      get: '/archive/get',
-      insert: '/archive/insert',
-      update: '/archive/update',
-      delete: '/archive/delete',
-      fileget: '/archive/getfile',
-      fileadd: '/archive/addfile'
+      get: '/archive/get/',
+      insert: '/archive/insert/',
+      update: '/archive/update/',
+      delete: '/archive/delete/',
+      fileget: '/archive/getfile/',
+      fileadd: '/archive/addfile/'
     }
   };
 
-  this.getArchive = getArchive;
   this.createArchive = createArchive;
+
+  this.getArchive = getArchive;
   this.updateArchive = updateArchive;
   this.deleteArchive = deleteArchive;
   this.getFile = getFile;
@@ -42,15 +43,7 @@ function permanent() {
 
 
   function init() {
-    // getTables().then(function (gtRes) {
-    //   if (!gtRes.success) {
-    //     app_instance.emit(apievents.InitFailed);
-    //   }
-    //   else {
-    //     app_instance.Init = true;
-    //     app_instance.emit(apievents.init);
-    //   }
-    // });
+    
   }
 
 
@@ -91,8 +84,9 @@ function permanent() {
     }
     return new Promise(function (resolve) {
       var clientResponse = new Response();
-      var url = process.env.NODE_ENV == 'local' ? 'http://localhost:9002' : 'https://api.permanent.org:443/';
-      url = url + route;
+      // var url = process.env.NODE_ENV == 'local' ? 'http://localhost:9002' : 'https://api.permanent.org:443/';
+      // url = url + route;
+      var url = 'http://localhost:9002'+ route;
 
       var reqOptions = {
         preambleCRLF: true,
@@ -128,39 +122,31 @@ function permanent() {
 
   function prepForm(reqOptions, msg) {
     var formData;
-
     var ismultipart = reqOptions.url.includes(routes.archive.fileadd);
 
     if (ismultipart && msg.data && msg.data.length > 0 ) {
-      // && msg.data[0].constructor.name == 'TableRow'
-
       formData = { payload: msg };
       var keys = Object.keys(formData.payload.data[0]);
       var prop;
       for (var di = 0; di < keys.length; di++) {
         prop = keys[di];
-        if (formData.payload.data[0][prop].File) {
-          var ff = formData.payload.data[0][prop].File;
-          // formData.payload.data[0][prop] = { Value: '', FileMap: ff.fileInfo.filename, IsFile: '1' };
-          var sss = formData.payload.data[0][prop];
-          formData[ff.fileInfo.filename] = {
-            'value': fs.createReadStream(ff.fileInfo.path),
+        if (formData.payload.data[0][prop] instanceof permanent.prototype.File) {
+          var file = formData.payload.data[0][prop];
+          formData[file.fileInfo.filename] = {
+            'value': fs.createReadStream(file.fileInfo.path),
             'options': {
-              'filename': ff.fileInfo.filename,
-              'contentType': ff.fileInfo.mimetype
+              'filename': file.fileInfo.filename,
+              'contentType': file.fileInfo.mimetype
             }
           };
-          delete formData.payload.data[0][prop].File;
+          delete formData.payload.data[0][prop];
         }
       }
-    }
 
-    if (formData) {
       formData.payload = JSON.stringify(formData.payload);
       formData.apiKey = _API_KEY;
       formData.isjson = '1';
       reqOptions.formData = formData;
-
     }
     else {
       reqOptions.form = {
@@ -176,56 +162,45 @@ function permanent() {
     if (!data) {
       return data;
     }
-
-    if (!Array.isArray(data)) {
-      data = [data];
-    }
     var req = new Request();
-    // for (var index = 0; index < data.length; index++) {
-    //   var element = data[index];
-    //   var row = getEmptyRow();
-    //   row = maprows(row, element);
-
-    //   req.data.push(row);
-    // }
     req.data.push(data);
     return req;
   }
 
-  function maprows(row, data) {
-    var rowkeys = Object.keys(row);
-    var datakeys = Object.keys(data);
+  // function maprows(row, data) {
+  //   var rowkeys = Object.keys(row);
+  //   var datakeys = Object.keys(data);
 
-    //only use the columns given by client
-    for (var rk = 0; rk < rowkeys.length; rk++) {
-      var col = rowkeys[rk];
-      if (!data.hasOwnProperty(rowkeys[rk])) {
-        delete row[rowkeys[rk]];
-      }
-    }
+  //   //only use the columns given by client
+  //   for (var rk = 0; rk < rowkeys.length; rk++) {
+  //     var col = rowkeys[rk];
+  //     if (!data.hasOwnProperty(rowkeys[rk])) {
+  //       delete row[rowkeys[rk]];
+  //     }
+  //   }
 
-    for (var i = 0; i < datakeys.length; i++) {
-      var col2 = datakeys[i];
-      if (row.hasOwnProperty(col2)) {
-        if (data[col2] instanceof Microdb.prototype.File) {
-          row[col2].File = data[col2];
-          row[col2].FileMap = {
-            filename: data[col2].fileInfo.filename,
-            originalname: data[col2].fileInfo.originalname,
-            fieldname: data[col2].fileInfo.fieldname
-          };
-        }
-        else {
-          row[col2].Value = data[col2];
-        }
+  //   for (var i = 0; i < datakeys.length; i++) {
+  //     var col2 = datakeys[i];
+  //     if (row.hasOwnProperty(col2)) {
+  //       if (data[col2] instanceof permanent.prototype.File) {
+  //         row[col2].File = data[col2];
+  //         row[col2].FileMap = {
+  //           filename: data[col2].fileInfo.filename,
+  //           originalname: data[col2].fileInfo.originalname,
+  //           fieldname: data[col2].fileInfo.fieldname
+  //         };
+  //       }
+  //       else {
+  //         row[col2].Value = data[col2];
+  //       }
 
-      }
-    }
-    if (data.primarykey && data.primarykey > 0) {
-      row.primarykey.Value = data.primarykey;
-    }
-    return row;
-  }
+  //     }
+  //   }
+  //   if (data.primarykey && data.primarykey > 0) {
+  //     row.primarykey.Value = data.primarykey;
+  //   }
+  //   return row;
+  // }
 
 
 

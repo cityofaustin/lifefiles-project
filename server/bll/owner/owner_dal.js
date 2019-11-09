@@ -60,22 +60,32 @@ function saveProfile(data) {
 function saveDocument(doc) {
   return new Promise(function (resolve) {
     var response = new common.response();
-
-
-    microdb.Tables.ownerdocument.saveNew(doc).then(function (saveres) {
-      response.success = true;
-      if (saveres.success && saveres.data && saveres.data.addedRows) {
+    
+    permanent.addFile(doc).then(function (saveres) {
+      if (saveres.success && saveres.data) {
         response.success = true;
-        response.addedRows = saveres.data.addedRows;
-        response.originalname = saveres.data.originalname;
-        response.filename = saveres.data.filename;
-
+        // response.addedRows = saveres.data.addedRows;
+        // response.originalname = saveres.data.originalname;
+        // response.filename = saveres.data.filename;
       }
       else {
         response.success = false;
       }
       resolve(response);
     });
+
+    // microdb.Tables.ownerdocument.saveNew(doc).then(function (saveres) {
+    //   if (saveres.success && saveres.data && saveres.data.addedRows) {
+    //     response.success = true;
+    //     response.addedRows = saveres.data.addedRows;
+    //     response.originalname = saveres.data.originalname;
+    //     response.filename = saveres.data.filename;
+    //   }
+    //   else {
+    //     response.success = false;
+    //   }
+    //   resolve(response);
+    // });
   });
 }
 
@@ -142,7 +152,7 @@ function addOwner(data) {
           if (permres.success) {
             var owner = {
               primarykey: response.data.insertId,
-              permanent_archive_number: permres.data.PA_Number
+              permanent_archive_number: permres.data.pa_number
             };
             microdb.Tables.owner.saveUpdate(owner).then(function (upres) {
               // if (upres.success) {

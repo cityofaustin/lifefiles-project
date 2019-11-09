@@ -5,7 +5,8 @@ OWNER SPECIFIC BUSINESS LOGIC
 var
   owner_dal = require('./owner_dal'),
   common = require("../../common"),
-  env = require('node-env-file')
+  env = require('node-env-file'),
+  permanent = require('../../services/permanent')
   ;
 
 env('./envVars.txt');
@@ -38,20 +39,51 @@ function saveDocument(data) {
       response.success = false;
       response.message = 'no file info';
       resolve(response);
+      return;
     }
-    else {
-      var doc = {
-        documentname: data.FileName,
-        thefile: new microdb.File(data.fileInfo)
-      };
-      if (data.ownerkey > 0) {
-        doc.ownerid = data.ownerkey; // is someone posting on owners behalf
+
+    //for saving to microdb
+    // var doc = {
+    //   documentname: data.FileName,
+    //   file: new microdb.File(data.fileInfo)
+    // };
+    // if (data.ownerkey > 0) {
+    //   doc.ownerid = data.ownerkey; // is someone posting on owners behalf
+    // }
+    // else {
+    //   doc.ownerid = data.User.AccountInfo.primarykey; //is owner posting file
+    // }
+    // owner_dal.saveDocument(doc).then(resolve);
+
+    //for saving to permanent
+    var ownerpk = data.ownerkey > 0 ? data.ownerkey : data.User.AccountInfo.primarykey;
+
+    microdb.Tables.owner.get({ "primarykey": ownerpk }).then(function (geto) {
+      if (!geto.success || geto.data && geto.data.Rows.length < 1) {
+        response.success = false;
+        response.message = 'no owner found';
+        resolve(response);
       }
       else {
-        doc.ownerid = data.User.AccountInfo.primarykey; //is owner posting file
+        var owner = geto.data.Rows[0];
+        if (!owner.permanent_archive_number) {
+          response.success = false;
+          response.message = 'no permanent archive number found for owner';
+          resolve(response);
+        }
+        else {
+          var doc = {
+            file: new permanent.File(data.fileInfo),
+            archive_number: owner.permanent_archive_number,
+            originalname:data.fileInfo.originalname,
+            filehandle:data.fileInfo.filename
+          };
+          owner_dal.saveDocument(doc).then(resolve);
+        }
       }
-      owner_dal.saveDocument(doc).then(resolve);
-    }
+    });
+
+
   });
 
 }
