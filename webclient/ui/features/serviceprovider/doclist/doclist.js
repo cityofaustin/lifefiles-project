@@ -74,14 +74,12 @@
     }
 
     if (fileCtr <= ajaxFiles.length - 1) {
-      // $rootScope.$emit(common.APP_EVENTS.BeginProcess);
       var file = ajaxFiles[fileCtr];
 
       if (file.size > 10485760) {
         //limit file size to 10 mb ...1048576 = 1mb
         fileCtr = 0;
         SetUpFilePicker();
-        // $rootScope.$emit(common.APP_EVENTS.EndProcess);
         return;
       }
 
@@ -123,7 +121,6 @@
       fileCtr = 0;
       getDocs();
       SetUpFilePicker();
-      // $rootScope.$emit(common.APP_EVENTS.EndProcess);
     }
 
   }
@@ -144,17 +141,15 @@
   function onGetFile(res) {
     if (res.success) {
       var file = res.data;
+        //if want to download file...do this...
         // var link = document.createElement('a');
         // link.download = file.originalname;
         // link.href = URL.createObjectURL(new Blob([new Uint8Array(file.file.data)]));
         // $('.attachment-dl').append(link);
         // link.click();
 
-        // var img = document.createElement('IMG');
+        //show image in a pop up
         $('#theimg').attr('src',URL.createObjectURL(new Blob([new Uint8Array(file.file.data)])));
-        
-
-        // $('.img-viewer').append();
         $('.img-viewer').removeClass('hidden');
     }
 
