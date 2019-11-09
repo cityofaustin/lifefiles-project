@@ -25,7 +25,7 @@ function permanent() {
   var routes = {
     archive: {
       get: '/archive/get/',
-      insert: '/archive/insert/',
+      create: '/archive/create/',
       update: '/archive/update/',
       delete: '/archive/delete/',
       fileget: '/archive/getfile/',
@@ -54,7 +54,7 @@ function permanent() {
 
   function createArchive(data) {
     var req = prepRequest(data, true);
-    return postMsg(routes.archive.insert, req);
+    return postMsg(routes.archive.create, req);
   }
 
   function updateArchive(data) {
