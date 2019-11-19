@@ -60,32 +60,32 @@ function saveProfile(data) {
 function saveDocument(doc) {
   return new Promise(function (resolve) {
     var response = new common.response();
-    
-    permanent.addFile(doc).then(function (saveres) {
-      if (saveres.success && saveres.data) {
-        response.success = true;
-        // response.addedRows = saveres.data.addedRows;
-        // response.originalname = saveres.data.originalname;
-        // response.filename = saveres.data.filename;
-      }
-      else {
-        response.success = false;
-      }
-      resolve(response);
-    });
 
-    // microdb.Tables.ownerdocument.saveNew(doc).then(function (saveres) {
-    //   if (saveres.success && saveres.data && saveres.data.addedRows) {
+    // permanent.addFile(doc).then(function (saveres) {
+    //   if (saveres.success && saveres.data) {
     //     response.success = true;
-    //     response.addedRows = saveres.data.addedRows;
-    //     response.originalname = saveres.data.originalname;
-    //     response.filename = saveres.data.filename;
+    //     // response.addedRows = saveres.data.addedRows;
+    //     // response.originalname = saveres.data.originalname;
+    //     // response.filename = saveres.data.filename;
     //   }
     //   else {
     //     response.success = false;
     //   }
     //   resolve(response);
     // });
+
+    microdb.Tables.ownerdocument.saveNew(doc).then(function (saveres) {
+      if (saveres.success && saveres.data && saveres.data.addedRows) {
+        response.success = true;
+        response.addedRows = saveres.data.addedRows;
+        response.originalname = saveres.data.originalname;
+        response.filename = saveres.data.filename;
+      }
+      else {
+        response.success = false;
+      }
+      resolve(response);
+    });
   });
 }
 
@@ -186,12 +186,23 @@ function getOwner(data) {
         var docReq = {
           ownerid: data.primarykey
         };
+
         microdb.Tables.ownerdocument.get(docReq).then(function (getres) {
           response.data.Docs = getres.data && getres.data.Rows ? getres.data.Rows : [];
-          //do we fetch from permanent?
-          //     permanent.createArchive(data.Profile).then(function (permres) {
           resolve(response);
         });
+
+        //if needed get archive info from permanent
+        if (!response.data.Owner.permanent_archive_number) {
+          var permreq={
+            archive_number:response.data.Owner.permanent_archive_number
+          };
+          permanent.getArchive(permreq).then(function (permres) {
+            var dddd=permres;
+          });
+        }
+        
+
       }
       else {
         // var err = res.error;
