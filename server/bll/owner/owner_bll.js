@@ -45,7 +45,7 @@ function saveDocument(data) {
     //for saving to microdb
     var doc = {
       documentname: data.FileName,
-      file: new microdb.File(data.fileInfo)
+      thefile: new microdb.File(data.fileInfo)
     };
     if (data.ownerkey > 0) {
       doc.ownerid = data.ownerkey; // is someone posting on owners behalf

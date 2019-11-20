@@ -147,23 +147,25 @@ function addOwner(data) {
     microdb.Tables.owner.saveNew(data.Profile).then(function (res) {
       if (res.success && res.data && res.data.addedRows) {
         response.data.insertId = res.data.addedRows[0].insertId;
+        response.success = true;
+        resolve(response);
 
-        permanent.createArchive(data.Profile).then(function (permres) {
-          if (permres.success) {
-            var owner = {
-              primarykey: response.data.insertId,
-              permanent_archive_number: permres.data.pa_number
-            };
-            microdb.Tables.owner.saveUpdate(owner).then(function (upres) {
-              // if (upres.success) {
-              // }
-              // else {
-              // }
-              response.success = upres.success;
-              resolve(response);
-            });
-          }
-        });
+        // permanent.createArchive(data.Profile).then(function (permres) {
+        //   if (permres.success) {
+        //     var owner = {
+        //       primarykey: response.data.insertId,
+        //       permanent_archive_number: permres.data.pa_number
+        //     };
+        //     microdb.Tables.owner.saveUpdate(owner).then(function (upres) {
+        //       // if (upres.success) {
+        //       // }
+        //       // else {
+        //       // }
+        //       response.success = upres.success;
+        //       resolve(response);
+        //     });
+        //   }
+        // });
       }
       else {
         // var err = res.error;
@@ -193,14 +195,14 @@ function getOwner(data) {
         });
 
         //if needed get archive info from permanent
-        if (!response.data.Owner.permanent_archive_number) {
-          var permreq={
-            archive_number:response.data.Owner.permanent_archive_number
-          };
-          permanent.getArchive(permreq).then(function (permres) {
-            var dddd=permres;
-          });
-        }
+        // if (!response.data.Owner.permanent_archive_number) {
+        //   var permreq={
+        //     archive_number:response.data.Owner.permanent_archive_number
+        //   };
+        //   permanent.getArchive(permreq).then(function (permres) {
+        //     var dddd=permres;
+        //   });
+        // }
         
 
       }
