@@ -23,16 +23,22 @@ function permanent() {
   this.Init = false;
 
   var routes = {
-    archive: {
-      get: '/archive/get/',
-      create: '/archive/create/',
-      update: '/archive/update/',
-      delete: '/archive/delete/',
-      fileget: '/archive/getfile/',
-      fileadd: '/archive/addfile/'
+    archive:{
+      get: '/archive/get',
+      create: '/archive/create',
+      update: '/archive/update'
+    },
+    record:{
+      get: '/record/get',
+      add:'/record/add'
+    },
+    folder:{
+      get: '/folder/get',
+      add:'/folder/add'
     }
   };
 
+  
   this.createArchive = createArchive;
 
   this.getArchive = getArchive;
@@ -69,12 +75,12 @@ function permanent() {
 
   function getFile(data) {
     var req = prepRequest(data, true);
-    return postMsg(routes.archive.fileget, req);
+    return postMsg(routes.record.get, req);
   }
 
   function addFile(data) {
     var req = prepRequest(data, true);
-    return postMsg(routes.archive.fileadd, req);
+    return postMsg(routes.record.add, req);
   }
 
   function postMsg(route, msg) {
@@ -122,7 +128,7 @@ function permanent() {
 
   function prepForm(reqOptions, msg) {
     var formData;
-    var ismultipart = reqOptions.url.includes(routes.archive.fileadd);
+    var ismultipart = reqOptions.url.includes(routes.record.add);
 
     if (ismultipart && msg.data && msg.data.length > 0 ) {
       formData = { payload: msg };

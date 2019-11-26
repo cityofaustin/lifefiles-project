@@ -61,31 +61,31 @@ function saveDocument(doc) {
   return new Promise(function (resolve) {
     var response = new common.response();
 
-    // permanent.addFile(doc).then(function (saveres) {
-    //   if (saveres.success && saveres.data) {
-    //     response.success = true;
-    //     // response.addedRows = saveres.data.addedRows;
-    //     // response.originalname = saveres.data.originalname;
-    //     // response.filename = saveres.data.filename;
-    //   }
-    //   else {
-    //     response.success = false;
-    //   }
-    //   resolve(response);
-    // });
-
-    microdb.Tables.ownerdocument.saveNew(doc).then(function (saveres) {
-      if (saveres.success && saveres.data && saveres.data.addedRows) {
+    permanent.addFile(doc).then(function (saveres) {
+      if (saveres.success && saveres.data) {
         response.success = true;
-        response.addedRows = saveres.data.addedRows;
-        response.originalname = saveres.data.originalname;
-        response.filename = saveres.data.filename;
+        // response.addedRows = saveres.data.addedRows;
+        // response.originalname = saveres.data.originalname;
+        // response.filename = saveres.data.filename;
       }
       else {
         response.success = false;
       }
       resolve(response);
     });
+
+    // microdb.Tables.ownerdocument.saveNew(doc).then(function (saveres) {
+    //   if (saveres.success && saveres.data && saveres.data.addedRows) {
+    //     response.success = true;
+    //     response.addedRows = saveres.data.addedRows;
+    //     response.originalname = saveres.data.originalname;
+    //     response.filename = saveres.data.filename;
+    //   }
+    //   else {
+    //     response.success = false;
+    //   }
+    //   resolve(response);
+    // });
   });
 }
 
@@ -144,36 +144,58 @@ function addOwner(data) {
   return new Promise(function (resolve) {
     var response = new common.response();
 
-    microdb.Tables.owner.saveNew(data.Profile).then(function (res) {
-      if (res.success && res.data && res.data.addedRows) {
-        response.data.insertId = res.data.addedRows[0].insertId;
-        response.success = true;
+    //new way
+    permanent.createArchive(data.Profile).then(function (permres) {
+      if (!permres.success) {
+        response.success = false;
         resolve(response);
-
-        // permanent.createArchive(data.Profile).then(function (permres) {
-        //   if (permres.success) {
-        //     var owner = {
-        //       primarykey: response.data.insertId,
-        //       permanent_archive_number: permres.data.pa_number
-        //     };
-        //     microdb.Tables.owner.saveUpdate(owner).then(function (upres) {
-        //       // if (upres.success) {
-        //       // }
-        //       // else {
-        //       // }
-        //       response.success = upres.success;
-        //       resolve(response);
-        //     });
-        //   }
-        // });
+        return;
       }
       else {
-        // var err = res.error;
-        response.success = false;
-        response.message = 'error adding Owner';
-        resolve(response);
+        data.Profile.permanent_archive_number = permres.data.archiveNbr;
+        microdb.Tables.owner.saveNew(data.Profile).then(function (newres) {
+          // if (upres.success) {
+          // }
+          // else {
+          // }
+          response.success = newres.success;
+          resolve(response);
+        });
       }
     });
+
+
+    //old way
+    // microdb.Tables.owner.saveNew(data.Profile).then(function (res) {
+    //   if (res.success && res.data && res.data.addedRows) {
+    //     response.data.insertId = res.data.addedRows[0].insertId;
+    //     response.success = true;
+    //     resolve(response);
+
+    //     permanent.createArchive(data.Profile).then(function (permres) {
+    //       if (permres.success) {
+    //         var owner = {
+    //           primarykey: response.data.insertId,
+    //           permanent_archive_number: permres.data.pa_number
+    //         };
+    //         microdb.Tables.owner.saveUpdate(owner).then(function (upres) {
+    //           // if (upres.success) {
+    //           // }
+    //           // else {
+    //           // }
+    //           response.success = upres.success;
+    //           resolve(response);
+    //         });
+    //       }
+    //     });
+    //   }
+    //   else {
+    //     // var err = res.error;
+    //     response.success = false;
+    //     response.message = 'error adding Owner';
+    //     resolve(response);
+    //   }
+    // });
   });
 }
 
@@ -203,7 +225,7 @@ function getOwner(data) {
         //     var dddd=permres;
         //   });
         // }
-        
+
 
       }
       else {
