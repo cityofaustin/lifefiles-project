@@ -57,13 +57,30 @@ function saveProfile(data) {
   });
 }
 
-function saveDocument(doc) {
+function saveDocument(docreq) {
   return new Promise(function (resolve) {
     var response = new common.response();
 
-    permanent.addFile(doc).then(function (saveres) {
+    permanent.addFile(docreq.doc).then(function (saveres) {
       if (saveres.success && saveres.data) {
-        response.success = true;
+
+        var svdoc = {
+          ownerid: docreq.ownerpk,
+          documentname: docreq.doc.originalname,
+          permanentarchivenumber: saveres.data.record.recordArchiveNumber,
+        };
+
+        microdb.Tables.ownerdocument.saveNew(svdoc).then(function (saveres) {
+          if (saveres.success && saveres.data && saveres.data.addedRows) {
+            response.success = true;
+          }
+          else {
+            response.success = false;
+          }
+          resolve(response);
+        });
+
+        // response.success = true;
         // response.addedRows = saveres.data.addedRows;
         // response.originalname = saveres.data.originalname;
         // response.filename = saveres.data.filename;

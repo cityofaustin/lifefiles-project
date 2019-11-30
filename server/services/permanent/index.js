@@ -92,7 +92,8 @@ function permanent() {
       var clientResponse = new Response();
       // var url = process.env.NODE_ENV == 'local' ? 'http://localhost:9002' : 'https://api.permanent.org:443/';
       // url = url + route;
-      var url = 'http://localhost:9002'+ route;
+      // var url = 'http://localhost:9002'+ route;
+      var url = 'http://localapi.permanent.org'+ route;
 
       var reqOptions = {
         preambleCRLF: true,

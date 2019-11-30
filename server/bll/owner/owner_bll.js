@@ -76,13 +76,16 @@ function saveDocument(data) {
           resolve(response);
         }
         else {
-          var doc = {
+          var docreq = {
+            ownerpk:ownerpk,
+            doc:{
             file: new permanent.File(data.fileInfo),
             archive_number: owner.permanent_archive_number,
             originalname: data.fileInfo.originalname,
             filehandle: data.fileInfo.filename
+            }
           };
-          owner_dal.saveDocument(doc).then(resolve);
+          owner_dal.saveDocument(docreq).then(resolve);
         }
       }
     });
