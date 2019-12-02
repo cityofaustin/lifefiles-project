@@ -24,7 +24,7 @@ Launch website at http://localhost:9005/
 
 ## Project Info
 
-This project is funded by the Robert Wood Johnson Foundation and developed by the Innovation Office at the City of Austin.  Kerry OConnor is the lead investigator, and Daniel Culota is the Co-investigator on this project.  This project is a prototype to test the design considerations around serving a displaced population, and the technology considerations around permanent document management, distributed ledger technology, and the conference of e-notarization. 
+This project is funded by the Robert Wood Johnson Foundation and developed by the Innovation Office at the City of Austin.  Kerry O'Connor is the lead investigator, and Daniel Culotta is the Co-investigator on this project.  This project is a prototype to test the design considerations around serving a displaced population, and the technology considerations around permanent document management, distributed ledger technology, and the conference of e-notarization. 
 
 The project timeline can be found here: [Timeline](https://docs.google.com/spreadsheets/d/1kMICJU_4RQoiki9yyuenM59W-u7ECp5vaF7qTbelfvQ/edit?usp=sharing)
 
