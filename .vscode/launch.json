@@ -8,8 +8,8 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "C:\\projects\\cityofaustin\\mypass-app\\publish\\server\\app.js",
-            "cwd": "C:\\projects\\cityofaustin\\mypass-app\\publish\\server\\"
+            "program": "${workspaceFolder}\\publish\\server\\app.js",
+            "cwd": "${workspaceFolder}\\publish\\server\\"
         },
         {
             "type": "node",
