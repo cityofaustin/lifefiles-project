@@ -102,21 +102,13 @@ function getDocs(data) {
 function getFile(data) {
   return new Promise(function (resolve) {
     var response = new common.response();
-    if (!data || (data && !data.thefile)) {
+    if (!data || (data && !data.primarykey)) {
       response.success = false;
       resolve(response);
     }
     else {
       owner_dal.getFile(data).then(function (getres) {
-        response.success = true;
-        if (getres.success) {
-          response.success = true;
-          response.data = getres.data;
-        }
-        else {
-          response.success = false;
-        }
-        resolve(response);
+        resolve(getres);
       });
     }
   });

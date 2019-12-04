@@ -148,12 +148,14 @@
         // $('.attachment-dl').append(link);
         // link.click();
 
-        // var img = document.createElement('IMG');
-        $('#theimg').attr('src',URL.createObjectURL(new Blob([new Uint8Array(file.file.data)])));
-        
+        //previous version for showing bytes
+        // $('#theimg').attr('src',URL.createObjectURL(new Blob([new Uint8Array(file.file.data)])));
 
-        // $('.img-viewer').append();
+        //permanent version using their urls
+        $('#theimg').attr('src',file.thumbURL200);
+
         $('.img-viewer').removeClass('hidden');
+
     }
 
   }

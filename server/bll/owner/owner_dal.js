@@ -126,17 +126,41 @@ function getDocs(data) {
 function getFile(data) {
   return new Promise(function (resolve) {
     var response = new common.response();
-    microdb.Tables.ownerdocument.getAttachment(data).then(function (getres) {
+    // microdb.Tables.ownerdocument.getAttachment(data).then(function (getres) {
+    //   response.success = true;
+    //   if (getres.success) {
+    //     response.success = true;
+    //     response.data = getres.data;
+    //   }
+    //   else {
+    //     response.success = false;
+    //   }
+    //   resolve(response);
+    // });
+
+    microdb.Tables.ownerdocument.get({ primarykey: data.primarykey }).then(function (getres) {
       response.success = true;
       if (getres.success) {
-        response.success = true;
-        response.data = getres.data;
+        // response.data = getres.data && getres.data.Rows ? getres.data.Rows : [];
+        var archNum = getres.data.Rows[0].permanentarchivenumber;
+        permanent.getFile({ archive_number: archNum }).then(function (permres) {
+          if (!permres.success) {
+            response.success = false;
+          }
+          else {
+            response.data = permres.data.record;
+            response.success = true;
+          }
+          resolve(response);
+        });
       }
       else {
         response.success = false;
+        resolve(response);
       }
-      resolve(response);
+
     });
+
   });
 }
 
