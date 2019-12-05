@@ -136,6 +136,7 @@
       file = file.pop();
     }
     req.thefile = file.thefile;
+    mypass.utils.startWaiting();
     mypass.datacontext.owner.getfile(req).then(onGetFile);
   }
 
@@ -155,6 +156,7 @@
         $('#theimg').attr('src',file.thumbURL200);
 
         $('.img-viewer').removeClass('hidden');
+        mypass.utils.stopWaiting();
 
     }
 
