@@ -112,9 +112,6 @@
             SetUpFilePicker();
           }
           else if (data && data.success) {
-            // data.addedRows = tempInsertRes.addedRows;
-            // data.filename = tempInsertRes.filename;
-            // data.originalname = tempInsertRes.originalname;
             SendFiles();
           }
         }
@@ -125,7 +122,6 @@
       getDocs();
       SetUpFilePicker();
       mypass.utils.stopWaiting();
-      // $rootScope.$emit(common.APP_EVENTS.EndProcess);
     }
 
   }
