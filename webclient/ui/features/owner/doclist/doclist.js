@@ -48,7 +48,7 @@
   function SetUpFilePicker() {
     uploadError = false;
     uploadErrorMsg = '';
-
+    mypass.utils.stopWaiting();
     $(".filepicker-wrapper").empty();
     $('.filepicker-wrapper').append('<input id="ajaxpicker" type="file" class="hidden" accept="*.*" multiple/>');
     $('#ajaxpicker').change(function (changeEvent) {
@@ -75,14 +75,15 @@
     }
 
     if (fileCtr <= ajaxFiles.length - 1) {
-      // $rootScope.$emit(common.APP_EVENTS.BeginProcess);
+      mypass.utils.startWaiting();
+      
       var file = ajaxFiles[fileCtr];
 
       if (file.size > 10485760) {
         //limit file size to 10 mb ...1048576 = 1mb
         fileCtr = 0;
         SetUpFilePicker();
-        // $rootScope.$emit(common.APP_EVENTS.EndProcess);
+        mypass.utils.stopWaiting();
         return;
       }
 
@@ -123,6 +124,7 @@
       fileCtr = 0;
       getDocs();
       SetUpFilePicker();
+      mypass.utils.stopWaiting();
       // $rootScope.$emit(common.APP_EVENTS.EndProcess);
     }
 
@@ -139,10 +141,12 @@
     }
     req.thefile = file.thefile;
     mypass.utils.startWaiting();
-    mypass.datacontext.owner.getfile(req).then(onGetFile);
+    mypass.datacontext.owner.getfile(req).then(function(getres){
+      onGetFile(getres,file);
+    });
   }
 
-  function onGetFile(res) {
+  function onGetFile(res,fileInfo) {
     if (res.success) {
       var file = res.data;
         // var link = document.createElement('a');
@@ -156,6 +160,8 @@
 
         //permanent version using their urls
         $('#theimg').attr('src',file.thumbURL200);
+
+        $('.file-name').text(fileInfo.documentname);
 
         $('.img-viewer').removeClass('hidden');
         mypass.utils.stopWaiting();

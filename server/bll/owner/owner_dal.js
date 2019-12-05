@@ -105,6 +105,7 @@ function saveDocument(docreq) {
 function getDocs(data) {
   return new Promise(function (resolve) {
     var response = new common.response();
+  
     microdb.Tables.ownerdocument.get(data).then(function (getres) {
       response.success = true;
       if (getres.success) {

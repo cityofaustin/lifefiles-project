@@ -96,7 +96,18 @@ function saveDocument(data) {
 }
 
 function getDocs(data) {
-  return owner_dal.getDocs(data);
+  return new Promise(function (resolve) {
+    var response = new common.response();
+    if (!data || (data && !data.ownerid)) {
+      response.success = false;
+      resolve(response);
+    }
+    else {
+      owner_dal.getDocs(data).then(function (getres) {
+        resolve(getres);
+      });
+    }
+  });
 }
 
 function getFile(data) {
