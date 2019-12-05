@@ -72,18 +72,18 @@ function Web_Vendor(cb) {
   ];
   gulp.src(srcpaths).on("error", handleError).pipe(gulp.dest('publish/webclient/vendor/'));
 
-  var srcpaths = [
+  var srcpaths2 = [
     'webclient/vendor/bootstrap/*/**',
   ];
 
-  gulp.src(srcpaths).on("error", handleError).pipe(gulp.dest('publish/webclient/vendor/bootstrap/'));
+  gulp.src(srcpaths2).on("error", handleError).pipe(gulp.dest('publish/webclient/vendor/bootstrap/'));
 
-  var srcpaths = [
+  var srcpaths3 = [
     'webclient/vendor/fontawesome/css*/**',
     'webclient/vendor/fontawesome/webfonts*/**',
   ];
 
-  gulp.src(srcpaths).on("error", handleError).pipe(gulp.dest('publish/webclient/vendor/fontawesome/'));
+  gulp.src(srcpaths3).on("error", handleError).pipe(gulp.dest('publish/webclient/vendor/fontawesome/'));
 
     if(cb){
       cb();

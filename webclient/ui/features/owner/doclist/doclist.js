@@ -26,6 +26,7 @@
     $('.btn-logout').removeClass('hidden');
     $(parentElement).empty();
     $(parentElement).append(mypass.ownerdashboard.doclist.template);
+    mypass.utils.startWaiting();
     SetUpFilePicker();
     getDocs();
   }
@@ -40,6 +41,7 @@
       theDocs = res.data;
       mypass.formhelper.bindTableRows('.doc-list', res.data);
     }
+    mypass.utils.stopWaiting();
   }
 
 
