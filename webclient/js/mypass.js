@@ -25,11 +25,13 @@ This allows for nice object referencing e.g. mypass.[feature].[method]
     this.registerFeatureChild = registerFeatureChild;
 
     function init() {
-      window.addEventListener('mypass.booted', onAppBoot); 
       /*
       mypass.booted Event is thrown by appboot.js to notify when all code is loaded
       this helps set things off properly.
       */
+      window.addEventListener('mypass.booted', onAppBoot); 
+      window.addEventListener('mypass.startwaiting', onStartWaiting);
+      window.addEventListener('mypass.stopwaiting', onStopWaiting);
       
     }
 
@@ -80,6 +82,13 @@ This allows for nice object referencing e.g. mypass.[feature].[method]
         }
       }
 
+    }
+
+    function onStartWaiting(params) {
+      $('.start-waiting').show();
+    }
+    function onStopWaiting(params) {
+      $('.start-waiting').hide();
     }
 
     function onLogout(evt) {

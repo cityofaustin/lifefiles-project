@@ -60,10 +60,8 @@ function saveProfile(data) {
 function saveDocument(docreq) {
   return new Promise(function (resolve) {
     var response = new common.response();
-
     permanent.addFile(docreq.doc).then(function (saveres) {
       if (saveres.success && saveres.data) {
-
         var svdoc = {
           ownerid: docreq.ownerpk,
           documentname: docreq.doc.originalname,
@@ -75,22 +73,20 @@ function saveDocument(docreq) {
             response.success = true;
           }
           else {
+            response.data=saveres.data;
             response.success = false;
           }
           resolve(response);
         });
-
-        // response.success = true;
-        // response.addedRows = saveres.data.addedRows;
-        // response.originalname = saveres.data.originalname;
-        // response.filename = saveres.data.filename;
       }
       else {
         response.success = false;
+        resolve(response);
       }
-      resolve(response);
+      
     });
 
+    //if saving doc to mypass database
     // microdb.Tables.ownerdocument.saveNew(doc).then(function (saveres) {
     //   if (saveres.success && saveres.data && saveres.data.addedRows) {
     //     response.success = true;

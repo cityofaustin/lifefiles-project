@@ -11,7 +11,9 @@
         session:{
           ready:'s.ready'
         },
-        booted:'mypass.booted'
+        booted:'mypass.booted',
+        startwaiting:'mypass.startwaiting',
+        stopwaiting:'mypass.stopwaiting'
       }
   };
 

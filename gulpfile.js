@@ -80,7 +80,7 @@ function Web_Vendor(cb) {
 
   var srcpaths = [
     'webclient/vendor/fontawesome/css*/**',
-    'webclient/vendor/fontawesome/fonts*/**',
+    'webclient/vendor/fontawesome/webfonts*/**',
   ];
 
   gulp.src(srcpaths).on("error", handleError).pipe(gulp.dest('publish/webclient/vendor/fontawesome/'));

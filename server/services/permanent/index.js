@@ -92,8 +92,8 @@ function permanent() {
       var clientResponse = new Response();
       // var url = process.env.NODE_ENV == 'local' ? 'http://localhost:9002' : 'https://api.permanent.org:443/';
       // url = url + route;
-      var url = 'http://localhost:9002'+ route;
-      // var url = 'http://localapi.permanent.org'+ route;
+      // var url = 'http://localhost:9002'+ route;
+      var url = 'http://localapi.permanent.org'+ route;
 
       var reqOptions = {
         preambleCRLF: true,
@@ -174,40 +174,7 @@ function permanent() {
     return req;
   }
 
-  // function maprows(row, data) {
-  //   var rowkeys = Object.keys(row);
-  //   var datakeys = Object.keys(data);
-
-  //   //only use the columns given by client
-  //   for (var rk = 0; rk < rowkeys.length; rk++) {
-  //     var col = rowkeys[rk];
-  //     if (!data.hasOwnProperty(rowkeys[rk])) {
-  //       delete row[rowkeys[rk]];
-  //     }
-  //   }
-
-  //   for (var i = 0; i < datakeys.length; i++) {
-  //     var col2 = datakeys[i];
-  //     if (row.hasOwnProperty(col2)) {
-  //       if (data[col2] instanceof permanent.prototype.File) {
-  //         row[col2].File = data[col2];
-  //         row[col2].FileMap = {
-  //           filename: data[col2].fileInfo.filename,
-  //           originalname: data[col2].fileInfo.originalname,
-  //           fieldname: data[col2].fileInfo.fieldname
-  //         };
-  //       }
-  //       else {
-  //         row[col2].Value = data[col2];
-  //       }
-
-  //     }
-  //   }
-  //   if (data.primarykey && data.primarykey > 0) {
-  //     row.primarykey.Value = data.primarykey;
-  //   }
-  //   return row;
-  // }
+  
 
 
 
