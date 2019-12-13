@@ -32,7 +32,7 @@ The project timeline can be found here: [Timeline](https://docs.google.com/sprea
 
 ## Project Update
 
-![2020 update infographic](https://github.com/cityofaustin/mypass-app/docs/MyPassOverview2020.png)
+<img src="/docs/MyPassOverview2020.png" align="middle" width="700" >
 
 See the README.md files for respective notes in the server and webclient folders.
 
