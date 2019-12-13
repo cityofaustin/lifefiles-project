@@ -30,6 +30,9 @@ This project is funded by the Robert Wood Johnson Foundation and developed by th
 
 The project timeline can be found here: [Timeline](https://docs.google.com/spreadsheets/d/1kMICJU_4RQoiki9yyuenM59W-u7ECp5vaF7qTbelfvQ/edit?usp=sharing)
 
+## Project Update
+
+![2020 update infographic](https://github.com/cityofaustin/mypass-app/docs/MyPassOverview2020.png)
 
 See the README.md files for respective notes in the server and webclient folders.
 
