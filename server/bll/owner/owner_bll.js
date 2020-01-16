@@ -6,7 +6,8 @@ var
   owner_dal = require('./owner_dal'),
   common = require("../../common"),
   env = require('node-env-file'),
-  permanent = require('../../services/permanent')
+  permanent = require('../../services/permanent'),
+  uport = require('../../services/uport')
   ;
 
 env('./envVars.txt');
@@ -20,6 +21,7 @@ exports.getFile = getFile;
 exports.getAll = getAll;
 exports.addOwner = addOwner;
 exports.getOwner = getOwner;
+exports.generateVC = generateVC;
 
 function getByAccountId(id) {
   return owner_dal.getByAccountId(id);
@@ -168,4 +170,14 @@ function getOwner(data) {
     }
   });
 
+}
+
+function generateVC() {
+  return new Promise(function (resolve) {
+    uport.init();
+    var response = new common.response();
+    response.success = true;
+    response.message = 'Generate VC Request In Progress';
+    resolve(response);
+  });
 }

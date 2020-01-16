@@ -13,6 +13,8 @@ exports.init = function (app) {
   app.post('/owner/getfile', passportConf.isAuthenticated, GetFile);
   app.post('/owner/getall', passportConf.isAuthenticated, OnGetAll);
   app.post('/owner/get', passportConf.isAuthenticated, OnGetOwner);
+  //TODO: Change to have Authentication
+  app.post('/owner/generateVC', OnGenerateVC);
 
   // exports.getArchive = getArchive;
   // exports.insertArchive = insertArchive;
@@ -78,6 +80,12 @@ function OnGetOwner(req, res, next) {
     primarykey: req.body.data.primarykey,
   };
   bll.owner.getOwner(data).then(function (bllRes) {
+    res.status(200).send(bllRes);
+  });
+}
+
+function OnGenerateVC(req, res, next) {
+  bll.owner.generateVC().then(function (bllRes) {
     res.status(200).send(bllRes);
   });
 }

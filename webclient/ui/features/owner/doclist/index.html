@@ -8,6 +8,7 @@
             <th scope="col" class="hidden"></th>
             <th scope="col">Title</th>
             <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -15,6 +16,11 @@
             <td data-bind="primarykey" class="hidden"></td>
             <td data-bind="documentname"></td>
             <td><i class="fa fa-file" data-key="primarykey" onclick="mypass.ownerdashboard.doclist.getfile(this)"></i>
+            </td>
+            <td>
+              <form action="localhost:9005/owner/generateVC/" method="POST">
+                <input type="submit" value="generateVC">
+              </form>
             </td>
           </tr>
         </tbody>
