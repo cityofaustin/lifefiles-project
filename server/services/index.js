@@ -1,1 +1,0 @@
-exports.permanent=require('./permanent');

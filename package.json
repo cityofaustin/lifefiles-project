@@ -41,6 +41,7 @@
     "node-env-file": "^0.1.8",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "permanent-api-js": "^1.0.2",
     "request": "^2.88.0",
     "serve-favicon": "^2.5.0",
     "uuid": "^3.3.3"

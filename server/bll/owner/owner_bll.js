@@ -6,7 +6,8 @@ var
   owner_dal = require('./owner_dal'),
   common = require("../../common"),
   env = require('node-env-file'),
-  permanent = require('../../services/permanent')
+  permanent = require('permanent-api-js')
+  // permanent = require('../../services/permanent')
   ;
 
 env('./envVars.txt');
