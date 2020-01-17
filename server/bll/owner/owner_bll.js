@@ -7,8 +7,11 @@ var
   common = require("../../common"),
   env = require('node-env-file'),
   permanent = require('../../services/permanent'),
-  uport = require('../../services/uport')
+  uport = require('../../services/uport'),
+  microsoft = require('../../services/microsoft')
   ;
+
+var VC_PROVIDER = "microsoft"
 
 env('./envVars.txt');
 var microdb = require('microdb-api')(process.env.MICRODB_APIKEY);
@@ -174,7 +177,13 @@ function getOwner(data) {
 
 function generateVC() {
   return new Promise(function (resolve) {
-    uport.init();
+    
+    if(VC_PROVIDER == "microsoft") {
+      microsoft.init();
+    } else if (VC_PROVIDER == "uport") {
+      uport.init();
+    }
+  
     var response = new common.response();
     response.success = true;
     response.message = 'Generate VC Request In Progress';

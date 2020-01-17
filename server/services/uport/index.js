@@ -12,7 +12,7 @@ function uport() {
     this.init = init
 
     function init() {
-        console.log('UPort Init')
+        console.log('UPort Init!')
         createAndVerify();
     }
 
