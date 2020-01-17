@@ -47,6 +47,7 @@
     "passport-local": "^1.0.0",
     "request": "^2.88.0",
     "serve-favicon": "^2.5.0",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "web3": "^1.2.5-rc.0"
   }
 }
