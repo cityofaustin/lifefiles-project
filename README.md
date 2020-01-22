@@ -37,7 +37,4 @@ The project timeline can be found here: [Timeline](https://docs.google.com/sprea
 See the README.md files for respective notes in the server and webclient folders.
 
 
-TODOs:
--------
-- REVIEW https://www.npmjs.com/package/lusca
 
