@@ -8,10 +8,12 @@ var
   env = require('node-env-file'),
   permanent = require('../../services/permanent'),
   uport = require('../../services/uport'),
-  microsoft = require('../../services/microsoft')
+  microsoft = require('../../services/microsoft'),
+  ibm = require('../../services/ibm')
+
   ;
 
-var VC_PROVIDER = "microsoft"
+var VC_PROVIDER = "ibm"
 
 env('./envVars.txt');
 var microdb = require('microdb-api')(process.env.MICRODB_APIKEY);
@@ -182,6 +184,8 @@ function generateVC() {
       microsoft.init();
     } else if (VC_PROVIDER == "uport") {
       uport.init();
+    } else if (VC_PROVIDER == "ibm") {
+      ibm.init();
     }
   
     var response = new common.response();
