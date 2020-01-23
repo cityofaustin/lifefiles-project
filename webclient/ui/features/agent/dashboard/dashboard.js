@@ -23,6 +23,9 @@
       userform.elements.name.value = account.AccountInfo.name;
     }
 
+    mypass.datacontext.agent.getVerifiablePayload().then(function (response) {
+      $('#cred-info').text( response.did );
+    });
   }
 
   function editForm(edit) {

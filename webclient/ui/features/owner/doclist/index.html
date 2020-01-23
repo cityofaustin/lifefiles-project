@@ -18,9 +18,11 @@
             <td><i class="fa fa-file" data-key="primarykey" onclick="mypass.ownerdashboard.doclist.getfile(this)"></i>
             </td>
             <td>
-              <form action="localhost:9005/owner/generateVC/" method="POST">
-                <input type="submit" value="generateVC">
+
+              <form method="post" action="http://localhost:9005/owner/generateVC/">  
+                <button type="submit">Get VC</button>
               </form>
+              
             </td>
           </tr>
         </tbody>

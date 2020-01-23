@@ -1,44 +1,45 @@
-var EthrDID = require('ethr-did');
-var Web3 = require('web3');
-var createVerifiableCredential = require('did-jwt-vc').createVerifiableCredential;
-var createPresentation = require('did-jwt-vc').createPresentation;
-var Resolver = require('did-resolver').Resolver
-var getResolver = require('ethr-did-resolver').getResolver
-var verifyCredential = require('did-jwt-vc').verifyCredential
-var verifyPresentation = require('did-jwt-vc').verifyPresentation
+const EthrDID = require('ethr-did');
+const Web3 = require('web3');
+const createVerifiableCredential = require('did-jwt-vc').createVerifiableCredential;
+const createPresentation = require('did-jwt-vc').createPresentation;
+const Resolver = require('did-resolver').Resolver
+const getResolver = require('ethr-did-resolver').getResolver
+const verifyCredential = require('did-jwt-vc').verifyCredential
+const verifyPresentation = require('did-jwt-vc').verifyPresentation
+// const DidRegistryContract = require('ethr-did-registry')
+
+const web3 = new Web3();
 
 function uport() {
     
     this.init = init
+    this.createNewDIDWithKeys = createNewDIDWithKeys
 
     function init() {
         console.log('UPort Init!')
         createAndVerify();
     }
+    
+    function createNewDIDWithKeys() {
+        const account = web3.eth.accounts.create();
+        const privKeyWithoutHeader = account.privateKey.substring(2);
+        const ethrDid = new EthrDID({address: account.address, privateKey: privKeyWithoutHeader})
+        const agentDid = {address:account.address, privateKey: privKeyWithoutHeader, did: ethrDid}
+        return agentDid;
+    }
 
     function createNewDID() {
-        var web3 = new Web3();
-        var account = web3.eth.accounts.create();
-        let privKeyWithoutHeader = account.privateKey.substring(2);
+        const account = web3.eth.accounts.create();
+        const privKeyWithoutHeader = account.privateKey.substring(2);
         const ethrDid = new EthrDID({address: account.address, privateKey: privKeyWithoutHeader})
         return ethrDid;
     }
 
-    // function createIssuer() {
-    //     const issuer = new EthrDID({
-    //         address: '0xf1232f840f3ad7d23fcdaa84d6c66dac24efb198',
-    //         privateKey: 'd8b595680851765f38ea5405129244ba3cbad84467d190859f4c8b20c1ff6c75'
-    //     });
-    //     return issuer;
-    // }
-
     async function createAndVerify() {
 
-        let issuerDID = createNewDID();
-        let bachelorDegreeDID = createNewDID();
-        let issueTime = 1562950282;
-
-        // const issuer = createIssuer();
+        const issuerDID = createNewDID();
+        const bachelorDegreeDID = createNewDID();
+        const issueTime = 1562950282;
         const resolver = new Resolver(getResolver())
         
         const vcJwt = await createVC(issuerDID, bachelorDegreeDID, issueTime);
@@ -103,6 +104,23 @@ function uport() {
         const verifiedVP = await verifyPresentation(vpJwt, resolver)
         return verifiedVP;
     }
+
+
+    // function createIssuer() {
+    //     const issuer = new EthrDID({
+    //         address: '0xf1232f840f3ad7d23fcdaa84d6c66dac24efb198',
+    //         privateKey: 'd8b595680851765f38ea5405129244ba3cbad84467d190859f4c8b20c1ff6c75'
+    //     });
+    //     return issuer;
+    // }
+
+    // async function registerDid() {
+    //     // var web3 = new Web3();
+    //     let networkId = 1 // Mainnet
+    //     let DidReg = web3.eth.contract(DidRegistryContract.abi)
+    //     let didReg = DidReg.at(DidRegistryContract.networks[networkId].address)
+    //     console.log(didReg)
+    // }
 }
 
 module.exports = new uport();

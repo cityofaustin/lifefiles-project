@@ -13,7 +13,7 @@ var
 
   ;
 
-var VC_PROVIDER = "ibm"
+var VC_PROVIDER = "uport"
 
 env('./envVars.txt');
 var microdb = require('microdb-api')(process.env.MICRODB_APIKEY);

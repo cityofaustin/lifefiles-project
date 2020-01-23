@@ -13,6 +13,7 @@ exports.init = function (app) {
   app.post('/agent/getall', passportConf.isAuthenticated, OnGetAll);
   // app.post('/agent/delete', passportConf.isAuthenticated, DeleteAccount);
   // app.post('/account/changepassword', passportConf.isAuthenticated, ChangePassword);
+  app.post('/agent/getVerifiablePayload', passportConf.isAuthenticated, OnGetVerifiablePayload)
 };
 
 function SaveProfile(req, res, next) {
@@ -40,4 +41,13 @@ function OnGetAll(req,res,next) {
 //   });
 // }
 
+function OnGetVerifiablePayload(req, res, next) {
+  var data = {}
+  data.Profile = req.body.data;
+  data.AccountInfo = req.User.AccountInfo;
+  console.log(req.body.data)
+  bll.agent.getVerifiablePayload(data).then(function (bllRes) {
+    res.status(200).send(bllRes);
+  });
+}
 
