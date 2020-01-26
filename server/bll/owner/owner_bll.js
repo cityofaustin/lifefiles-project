@@ -9,11 +9,12 @@ var
   permanent = require('../../services/permanent'),
   uport = require('../../services/uport'),
   microsoft = require('../../services/microsoft'),
-  ibm = require('../../services/ibm')
+  ibm = require('../../services/ibm'),
+  factom = require('../../services/factom')
 
   ;
 
-var VC_PROVIDER = "uport"
+var VC_PROVIDER = "factom"
 
 env('./envVars.txt');
 var microdb = require('microdb-api')(process.env.MICRODB_APIKEY);
@@ -186,6 +187,8 @@ function generateVC() {
       uport.init();
     } else if (VC_PROVIDER == "ibm") {
       ibm.init();
+    } else if (VC_PROVIDER == "factom") {
+      factom.init();
     }
   
     var response = new common.response();
