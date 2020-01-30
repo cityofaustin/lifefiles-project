@@ -26,6 +26,7 @@
     $('.btn-logout').removeClass('hidden');
     $(parentElement).empty();
     $(parentElement).append(mypass.ownerdashboard.doclist.template);
+    mypass.utils.startWaiting();
     SetUpFilePicker();
     getDocs();
   }
@@ -40,13 +41,14 @@
       theDocs = res.data;
       mypass.formhelper.bindTableRows('.doc-list', res.data);
     }
+    mypass.utils.stopWaiting();
   }
 
 
   function SetUpFilePicker() {
     uploadError = false;
     uploadErrorMsg = '';
-
+    mypass.utils.stopWaiting();
     $(".filepicker-wrapper").empty();
     $('.filepicker-wrapper').append('<input id="ajaxpicker" type="file" class="hidden" accept="*.*" multiple/>');
     $('#ajaxpicker').change(function (changeEvent) {
@@ -73,14 +75,15 @@
     }
 
     if (fileCtr <= ajaxFiles.length - 1) {
-      // $rootScope.$emit(common.APP_EVENTS.BeginProcess);
+      mypass.utils.startWaiting();
+      
       var file = ajaxFiles[fileCtr];
 
       if (file.size > 10485760) {
         //limit file size to 10 mb ...1048576 = 1mb
         fileCtr = 0;
         SetUpFilePicker();
-        // $rootScope.$emit(common.APP_EVENTS.EndProcess);
+        mypass.utils.stopWaiting();
         return;
       }
 
@@ -109,9 +112,6 @@
             SetUpFilePicker();
           }
           else if (data && data.success) {
-            // data.addedRows = tempInsertRes.addedRows;
-            // data.filename = tempInsertRes.filename;
-            // data.originalname = tempInsertRes.originalname;
             SendFiles();
           }
         }
@@ -121,7 +121,7 @@
       fileCtr = 0;
       getDocs();
       SetUpFilePicker();
-      // $rootScope.$emit(common.APP_EVENTS.EndProcess);
+      mypass.utils.stopWaiting();
     }
 
   }
@@ -136,10 +136,13 @@
       file = file.pop();
     }
     req.thefile = file.thefile;
-    mypass.datacontext.owner.getfile(req).then(onGetFile);
+    mypass.utils.startWaiting();
+    mypass.datacontext.owner.getfile(req).then(function(getres){
+      onGetFile(getres,file);
+    });
   }
 
-  function onGetFile(res) {
+  function onGetFile(res,fileInfo) {
     if (res.success) {
       var file = res.data;
         // var link = document.createElement('a');
@@ -148,12 +151,17 @@
         // $('.attachment-dl').append(link);
         // link.click();
 
-        // var img = document.createElement('IMG');
-        $('#theimg').attr('src',URL.createObjectURL(new Blob([new Uint8Array(file.file.data)])));
-        
+        //previous version for showing bytes
+        // $('#theimg').attr('src',URL.createObjectURL(new Blob([new Uint8Array(file.file.data)])));
 
-        // $('.img-viewer').append();
+        //permanent version using their urls
+        $('#theimg').attr('src',file.thumbURL200);
+
+        $('.file-name').text(fileInfo.documentname);
+
         $('.img-viewer').removeClass('hidden');
+        mypass.utils.stopWaiting();
+
     }
 
   }

@@ -6,7 +6,7 @@
 
 (function (mypass) {
   'use strict';
- 
+
 
   mypass.formhelper = {
     showElement: showElement,
@@ -24,23 +24,32 @@
 
   function bindTableRows(tableClassName, dataRows) {
     var str = new mypass.utils.StringBuilder();
-    var tbrow = $(tableClassName + ' tbody tr:first');
+    var tbrow;
+    var tbrowComm = $(tableClassName + ' table tbody');
+    if (tbrowComm[0].childNodes[0].nodeType == 8) {
+      tbrow = tbrowComm[0].childNodes[0].data;
+      tbrow=$(tbrow);
+    }
+    else {
+      tbrow = $(tableClassName + ' tbody tr:first');
+    }
 
     if (tbrow && tbrow.length > 0) {
       var rowTemplate = tbrow[0].outerHTML;
       var rowTemplateHlder = document.createComment(rowTemplate);
+
 
       $(tableClassName + ' tbody').empty();
       $(tableClassName + ' tbody').append(rowTemplateHlder);
 
       for (var index = 0; index < dataRows.length; index++) {
         var temp = $(rowTemplate).clone();
-        const element = dataRows[index];
+        var element = dataRows[index];
         // var chrd = temp.children();
         var chrd = $(temp).find('[data-bind]');
         for (var index2 = 0; index2 < chrd.length; index2++) {
           var child = chrd[index2];
-          if(child.hasAttribute('data-bind')){
+          if (child.hasAttribute('data-bind')) {
             var prop = child.getAttribute('data-bind');
             child.innerText = element[prop];
           }
@@ -49,9 +58,9 @@
         var chrdKey = $(temp).find('[data-key]');
         for (var index2 = 0; index2 < chrdKey.length; index2++) {
           var child = chrdKey[index2];
-          if(child.hasAttribute('data-key')){
+          if (child.hasAttribute('data-key')) {
             var prop = child.getAttribute('data-key');
-            child.setAttribute('data-key',element[prop]);
+            child.setAttribute('data-key', element[prop]);
           }
         }
 

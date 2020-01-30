@@ -7,7 +7,7 @@ var
   util = require("util"),
   common = require("../../common"),
   env = require('node-env-file'),
-  permanent = require('../../services/permanent')
+  permanent = require('permanent-api-js')
   ;
 
 env('./envVars.txt');
@@ -57,41 +57,55 @@ function saveProfile(data) {
   });
 }
 
-function saveDocument(doc) {
+function saveDocument(docreq) {
   return new Promise(function (resolve) {
     var response = new common.response();
+    permanent.addFile(docreq.doc).then(function (saveres) {
+      if (saveres.success && saveres.data) {
+        var svdoc = {
+          ownerid: docreq.ownerpk,
+          documentname: docreq.doc.originalname,
+          permanentarchivenumber: saveres.data.record.recordArchiveNumber,
+        };
 
-    // permanent.addFile(doc).then(function (saveres) {
-    //   if (saveres.success && saveres.data) {
+        microdb.Tables.ownerdocument.saveNew(svdoc).then(function (saveres) {
+          if (saveres.success && saveres.data && saveres.data.addedRows) {
+            response.success = true;
+          }
+          else {
+            response.data=saveres.data;
+            response.success = false;
+          }
+          resolve(response);
+        });
+      } 
+      else {
+        response.success = false;
+        resolve(response);
+      }
+      
+    });
+
+    //if saving doc to mypass database
+    // microdb.Tables.ownerdocument.saveNew(doc).then(function (saveres) {
+    //   if (saveres.success && saveres.data && saveres.data.addedRows) {
     //     response.success = true;
-    //     // response.addedRows = saveres.data.addedRows;
-    //     // response.originalname = saveres.data.originalname;
-    //     // response.filename = saveres.data.filename;
+    //     response.addedRows = saveres.data.addedRows;
+    //     response.originalname = saveres.data.originalname;
+    //     response.filename = saveres.data.filename;
     //   }
     //   else {
     //     response.success = false;
     //   }
     //   resolve(response);
     // });
-
-    microdb.Tables.ownerdocument.saveNew(doc).then(function (saveres) {
-      if (saveres.success && saveres.data && saveres.data.addedRows) {
-        response.success = true;
-        response.addedRows = saveres.data.addedRows;
-        response.originalname = saveres.data.originalname;
-        response.filename = saveres.data.filename;
-      }
-      else {
-        response.success = false;
-      }
-      resolve(response);
-    });
   });
 }
 
 function getDocs(data) {
   return new Promise(function (resolve) {
     var response = new common.response();
+  
     microdb.Tables.ownerdocument.get(data).then(function (getres) {
       response.success = true;
       if (getres.success) {
@@ -109,17 +123,41 @@ function getDocs(data) {
 function getFile(data) {
   return new Promise(function (resolve) {
     var response = new common.response();
-    microdb.Tables.ownerdocument.getAttachment(data).then(function (getres) {
+    // microdb.Tables.ownerdocument.getAttachment(data).then(function (getres) {
+    //   response.success = true;
+    //   if (getres.success) {
+    //     response.success = true;
+    //     response.data = getres.data;
+    //   }
+    //   else {
+    //     response.success = false;
+    //   }
+    //   resolve(response);
+    // });
+
+    microdb.Tables.ownerdocument.get({ primarykey: data.primarykey }).then(function (getres) {
       response.success = true;
       if (getres.success) {
-        response.success = true;
-        response.data = getres.data;
+        // response.data = getres.data && getres.data.Rows ? getres.data.Rows : [];
+        var archNum = getres.data.Rows[0].permanentarchivenumber;
+        permanent.getFile({ archive_number: archNum }).then(function (permres) {
+          if (!permres.success) {
+            response.success = false;
+          }
+          else {
+            response.data = permres.data.record;
+            response.success = true;
+          }
+          resolve(response);
+        });
       }
       else {
         response.success = false;
+        resolve(response);
       }
-      resolve(response);
+
     });
+
   });
 }
 
@@ -144,36 +182,58 @@ function addOwner(data) {
   return new Promise(function (resolve) {
     var response = new common.response();
 
-    microdb.Tables.owner.saveNew(data.Profile).then(function (res) {
-      if (res.success && res.data && res.data.addedRows) {
-        response.data.insertId = res.data.addedRows[0].insertId;
-        response.success = true;
+    //new way
+    permanent.createArchive(data.Profile).then(function (permres) {
+      if (!permres.success) {
+        response.success = false;
         resolve(response);
-
-        // permanent.createArchive(data.Profile).then(function (permres) {
-        //   if (permres.success) {
-        //     var owner = {
-        //       primarykey: response.data.insertId,
-        //       permanent_archive_number: permres.data.pa_number
-        //     };
-        //     microdb.Tables.owner.saveUpdate(owner).then(function (upres) {
-        //       // if (upres.success) {
-        //       // }
-        //       // else {
-        //       // }
-        //       response.success = upres.success;
-        //       resolve(response);
-        //     });
-        //   }
-        // });
+        return;
       }
       else {
-        // var err = res.error;
-        response.success = false;
-        response.message = 'error adding Owner';
-        resolve(response);
+        data.Profile.permanent_archive_number = permres.data.archiveNbr;
+        microdb.Tables.owner.saveNew(data.Profile).then(function (newres) {
+          // if (upres.success) {
+          // }
+          // else {
+          // }
+          response.success = newres.success;
+          resolve(response);
+        });
       }
     });
+
+
+    //old way
+    // microdb.Tables.owner.saveNew(data.Profile).then(function (res) {
+    //   if (res.success && res.data && res.data.addedRows) {
+    //     response.data.insertId = res.data.addedRows[0].insertId;
+    //     response.success = true;
+    //     resolve(response);
+
+    //     permanent.createArchive(data.Profile).then(function (permres) {
+    //       if (permres.success) {
+    //         var owner = {
+    //           primarykey: response.data.insertId,
+    //           permanent_archive_number: permres.data.pa_number
+    //         };
+    //         microdb.Tables.owner.saveUpdate(owner).then(function (upres) {
+    //           // if (upres.success) {
+    //           // }
+    //           // else {
+    //           // }
+    //           response.success = upres.success;
+    //           resolve(response);
+    //         });
+    //       }
+    //     });
+    //   }
+    //   else {
+    //     // var err = res.error;
+    //     response.success = false;
+    //     response.message = 'error adding Owner';
+    //     resolve(response);
+    //   }
+    // });
   });
 }
 
@@ -203,7 +263,7 @@ function getOwner(data) {
         //     var dddd=permres;
         //   });
         // }
-        
+
 
       }
       else {

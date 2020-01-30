@@ -6,7 +6,7 @@ var
   owner_dal = require('./owner_dal'),
   common = require("../../common"),
   env = require('node-env-file'),
-  permanent = require('../../services/permanent')
+  permanent = require('permanent-api-js')
   ;
 
 env('./envVars.txt');
@@ -43,46 +43,52 @@ function saveDocument(data) {
     }
 
     //for saving to microdb
-    var doc = {
-      documentname: data.FileName,
-      thefile: new microdb.File(data.fileInfo)
-    };
-    if (data.ownerkey > 0) {
-      doc.ownerid = data.ownerkey; // is someone posting on owners behalf
-    }
-    else {
-      doc.ownerid = data.User.AccountInfo.primarykey; //is owner posting file
-    }
-    owner_dal.saveDocument(doc).then(resolve);
+    // var doc = {
+    //   documentname: data.FileName,
+    //   thefile: new microdb.File(data.fileInfo)
+    // };
+    // if (data.ownerkey > 0) {
+    //   // is someone posting on owners behalf
+    //   doc.ownerid = data.ownerkey; 
+    // }
+    // else {
+    //   //is owner posting file
+    //   doc.ownerid = data.User.AccountInfo.primarykey; 
+    // }
+    // owner_dal.saveDocument(doc).then(resolve);
+
 
     //for saving to permanent
 
-    // var ownerpk = data.ownerkey > 0 ? data.ownerkey : data.User.AccountInfo.primarykey;
+    var ownerpk = data.ownerkey > 0 ? data.ownerkey : data.User.AccountInfo.primarykey;
 
-    // microdb.Tables.owner.get({ "primarykey": ownerpk }).then(function (geto) {
-    //   if (!geto.success || geto.data && geto.data.Rows.length < 1) {
-    //     response.success = false;
-    //     response.message = 'no owner found';
-    //     resolve(response);
-    //   }
-    //   else {
-    //     var owner = geto.data.Rows[0];
-    //     if (!owner.permanent_archive_number) {
-    //       response.success = false;
-    //       response.message = 'no permanent archive number found for owner';
-    //       resolve(response);
-    //     }
-    //     else {
-    //       var doc = {
-    //         file: new permanent.File(data.fileInfo),
-    //         archive_number: owner.permanent_archive_number,
-    //         originalname: data.fileInfo.originalname,
-    //         filehandle: data.fileInfo.filename
-    //       };
-    //       owner_dal.saveDocument(doc).then(resolve);
-    //     }
-    //   }
-    // });
+    microdb.Tables.owner.get({ "primarykey": ownerpk }).then(function (geto) {
+      if (!geto.success || geto.data && geto.data.Rows.length < 1) {
+        response.success = false;
+        response.message = 'no owner found';
+        resolve(response);
+      }
+      else {
+        var owner = geto.data.Rows[0];
+        if (!owner.permanent_archive_number) {
+          response.success = false;
+          response.message = 'no permanent archive number found for owner';
+          resolve(response);
+        }
+        else {
+          var docreq = {
+            ownerpk:ownerpk,
+            doc:{
+            file: new permanent.File(data.fileInfo),
+            archive_number: owner.permanent_archive_number,
+            originalname: data.fileInfo.originalname,
+            filehandle: data.fileInfo.filename
+            }
+          };
+          owner_dal.saveDocument(docreq).then(resolve);
+        }
+      }
+    });
 
 
   });
@@ -90,27 +96,30 @@ function saveDocument(data) {
 }
 
 function getDocs(data) {
-  return owner_dal.getDocs(data);
+  return new Promise(function (resolve) {
+    var response = new common.response();
+    if (!data || (data && !data.ownerid)) {
+      response.success = false;
+      resolve(response);
+    }
+    else {
+      owner_dal.getDocs(data).then(function (getres) {
+        resolve(getres);
+      });
+    }
+  });
 }
 
 function getFile(data) {
   return new Promise(function (resolve) {
     var response = new common.response();
-    if (!data || (data && !data.thefile)) {
+    if (!data || (data && !data.primarykey)) {
       response.success = false;
       resolve(response);
     }
     else {
       owner_dal.getFile(data).then(function (getres) {
-        response.success = true;
-        if (getres.success) {
-          response.success = true;
-          response.data = getres.data;
-        }
-        else {
-          response.success = false;
-        }
-        resolve(response);
+        resolve(getres);
       });
     }
   });

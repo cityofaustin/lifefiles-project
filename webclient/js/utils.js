@@ -15,7 +15,9 @@ general utility functions
   
   mypass.utils = {
     StringBuilder: StringBuilder,
-    FileTypes:fileTypes
+    FileTypes:fileTypes,
+    startWaiting:startWaiting,
+    stopWaiting:stopWaiting
   };
 
   
@@ -44,5 +46,13 @@ general utility functions
   
   }
   
+  function startWaiting() {
+    var event = new CustomEvent(mypass.Events.APP_STATUS.startwaiting);
+    window.dispatchEvent(event);
+  }
+  function stopWaiting() {
+    var event = new CustomEvent(mypass.Events.APP_STATUS.stopwaiting);
+    window.dispatchEvent(event);
+  }
 
 })(mypass);

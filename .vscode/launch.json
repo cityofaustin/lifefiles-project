@@ -8,8 +8,9 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}\\publish\\server\\app.js",
-            "cwd": "${workspaceFolder}\\publish\\server\\"
+
+            "program": "${workspaceFolder}/publish/server/app.js",
+            "cwd": "${workspaceFolder}/publish/server/"
         },
         {
             "type": "node",

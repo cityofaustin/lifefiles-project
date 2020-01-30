@@ -11,20 +11,24 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td data-bind="primarykey" class="hidden"></td>
-            <td data-bind="documentname"></td>
-            <td><i class="fa fa-file" data-key="primarykey" onclick="mypass.ownerdashboard.doclist.getfile(this)"></i>
-            </td>
-          </tr>
+            <tr>
+                <td data-bind="primarykey" class="hidden"></td>
+                <td data-bind="documentname"></td>
+                <td><i class="fas fa-file" data-key="primarykey" onclick="mypass.ownerdashboard.doclist.getfile(this)"></i>
+                </td>
+              </tr>
         </tbody>
       </table>
     </div>
 
     <div class="img-viewer hidden">
       <div class="frm p-lg">
-        <div> <i class="fa fa-close pull-right mb" onclick="mypass.ownerdashboard.doclist.closeViewer()"></i></div>
-        <img id="theimg">
+        <div class="hdr bb mb"> <i class="fas fa-times pull-right mb"
+            onclick="mypass.ownerdashboard.doclist.closeViewer()"></i></div>
+        <div class="img-cont">
+          <div class="file-name mb"></div>
+          <img id="theimg">
+        </div>
       </div>
     </div>
 
@@ -32,12 +36,11 @@
 
   <div class="rt text-center">
     <a class="cursor-pointer p-sm " onclick="mypass.ownerdashboard.doclist.uploadFile();">
-      <i class="fa fa-upload mr"></i><span>Upload</span>
+      <i class="fas fa-upload mr"></i><span>Upload</span>
     </a>
     <div class="filepicker-wrapper"></div>
 
   </div>
-
 
 
 

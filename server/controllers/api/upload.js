@@ -57,9 +57,7 @@ function OnUpload(req, res, next) {
       }
       else {
         //need to remove file from tmp folder
-        response.addedRows = tempInsertRes.addedRows;
-        response.filename = tempInsertRes.filename;
-        response.originalname = tempInsertRes.originalname;
+        response.data = tempInsertRes.data;
         response.success = true;
         res.status(200).send(response);
         return;
