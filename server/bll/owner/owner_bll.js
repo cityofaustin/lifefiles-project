@@ -3,14 +3,11 @@ OWNER SPECIFIC BUSINESS LOGIC
 */
 
 var
-  owner_dal = require('./owner_dal'),
   common = require("../../common"),
-  env = require('node-env-file'),
-  permanent = require('permanent-api-js')
+  permanent = require('permanent-api-js'),
+  datacontext=require('../../datacontext')
   ;
 
-env('./envVars.txt');
-var microdb = require('microdb-api')(process.env.MICRODB_APIKEY);
 
 exports.getByAccountId = getByAccountId;
 exports.saveProfile = saveProfile;
@@ -22,12 +19,11 @@ exports.addOwner = addOwner;
 exports.getOwner = getOwner;
 
 function getByAccountId(id) {
-  return owner_dal.getByAccountId(id);
+  return datacontext.owner.getByAccountId(id);
 }
 
-
 function saveProfile(data) {
-  return owner_dal.saveProfile(data);
+  return datacontext.owner.saveProfile(data);
 }
 
 function saveDocument(data) {
@@ -42,27 +38,8 @@ function saveDocument(data) {
       return;
     }
 
-    //for saving to microdb
-    // var doc = {
-    //   documentname: data.FileName,
-    //   thefile: new microdb.File(data.fileInfo)
-    // };
-    // if (data.ownerkey > 0) {
-    //   // is someone posting on owners behalf
-    //   doc.ownerid = data.ownerkey; 
-    // }
-    // else {
-    //   //is owner posting file
-    //   doc.ownerid = data.User.AccountInfo.primarykey; 
-    // }
-    // owner_dal.saveDocument(doc).then(resolve);
-
-
-    //for saving to permanent
-
     var ownerpk = data.ownerkey > 0 ? data.ownerkey : data.User.AccountInfo.primarykey;
-
-    microdb.Tables.owner.get({ "primarykey": ownerpk }).then(function (geto) {
+    datacontext.owner.getOwner(ownerpk).then(function (geto) {
       if (!geto.success || geto.data && geto.data.Rows.length < 1) {
         response.success = false;
         response.message = 'no owner found';
@@ -85,14 +62,11 @@ function saveDocument(data) {
             filehandle: data.fileInfo.filename
             }
           };
-          owner_dal.saveDocument(docreq).then(resolve);
+          datacontext.owner.saveDocument(docreq).then(resolve);
         }
       }
     });
-
-
   });
-
 }
 
 function getDocs(data) {
@@ -103,7 +77,7 @@ function getDocs(data) {
       resolve(response);
     }
     else {
-      owner_dal.getDocs(data).then(function (getres) {
+      datacontext.owner.getDocs(data).then(function (getres) {
         resolve(getres);
       });
     }
@@ -118,16 +92,16 @@ function getFile(data) {
       resolve(response);
     }
     else {
-      owner_dal.getFile(data).then(function (getres) {
-        resolve(getres);
-      });
+      datacontext.owner.getFile(data.primarykey).then(function (getres) {
+          resolve(getres);
+        });
     }
   });
 }
 
 function getAll() {
   //check your business rules is current user can perform action
-  return owner_dal.getAll();
+  return datacontext.owner.getAll();
 }
 
 function addOwner(data) {
@@ -140,7 +114,7 @@ function addOwner(data) {
     }
     else {
       //check if owner exists
-      microdb.Tables.owner.get(data.Profile).then(function (res) {
+      datacontext.owner.getOwner(data.Profile.primarykey).then(function (res) {
         if (res.success) {
           if (res.data && res.data.Rows.length > 0) {
             response.success = false;
@@ -148,17 +122,15 @@ function addOwner(data) {
             resolve(response);
           }
           else {
-            owner_dal.addOwner(data).then(resolve);
+            datacontext.owner.addOwner(data).then(resolve);
           }
         }
         else {
-          // var err = res.error;
           response.success = false;
           response.message = 'error';
           resolve(response);
         }
       });
-
     }
   });
 
@@ -173,7 +145,7 @@ function getOwner(data) {
       resolve(response);
     }
     else {
-      owner_dal.getOwner(data).then(resolve);
+      datacontext.owner.getOwner(data.Profile.primarykey).then(resolve);
     }
   });
 

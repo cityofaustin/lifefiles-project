@@ -4,3 +4,4 @@ ENABLE_LOGGING=true
 LOGFILENAME=app_log.log
 MICRODB_APIKEY=your_secret_api_key_here
 PERMANENTORG_APIKEY=123
+dataprovider=microdb
