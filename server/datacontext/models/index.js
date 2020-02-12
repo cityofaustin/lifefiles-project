@@ -1,1 +1,0 @@
-exports.owner = require('./owner');

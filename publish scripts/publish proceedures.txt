@@ -1,3 +1,0 @@
-
-Add instructions for consistent publish practices.
-If even using another publishing tool, this should serve as a guide.
