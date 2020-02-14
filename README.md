@@ -6,22 +6,27 @@ The MyPass application is secure document storage solution designed to help peop
 
 ## Getting Started
 
-Install Node JS, and Gulp
+## Quick Start
 
-Install dependencies with command 
-```
-npm install
+Change the env.template to be a .env file and update to your values
+
+```bash
+$ cp env.template .env
 ```
 
-Run 'Gulp' to build scripts and put them into 'Publish' folder
+Install dependencies:
+
+```bash
+$ yarn
 ```
-gulp default
+
+Start the server:
+
+```bash
+$ yarn start
 ```
-  
-Launch website at http://localhost:9005/
-  ```
-  npm start
-  ```
+
+Hit the api endpoints at: http://localhost:5000/api/
   
 
 ## Project Info
