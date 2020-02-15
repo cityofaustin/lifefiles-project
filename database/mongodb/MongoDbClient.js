@@ -5,6 +5,7 @@ const md5 = require("md5");
 
 const Account = require("./models/Account");
 const Document = require("./models/Document");
+const DocumentType = require("./models/DocumentType");
 const Role = require("./models/Role");
 const Permission = require("./models/Permission");
 const RolePermissionTable = require("./models/RolePermissionTable");
@@ -29,12 +30,41 @@ class MongoDbClient {
       this.gfs.collection("uploads");
     });
 
-    mongoose.connect(this.mongoURI, mongoDbOptions).then(this.updateRolePermissionsTableCache());
+    mongoose.connect(this.mongoURI, mongoDbOptions).then(() => {
+      this.populateDefaultValues();
+      this.updateRolePermissionsTableCache();
+    });
+  }
+
+  // DB initial setup
+  async populateDefaultValues() {
+    const accounts = await this.getAllAccounts();
+    const documentTypes = await this.getAllDocumentTypes();
+
+    if (accounts.length === 0) {
+      console.log("\nAccounts are empty. Populating default values...");
+      let defaultAccount = { account: { username: "SallyOwner", password: "owner", role: "owner", email: "owner@owner.com" } };
+      let defaultDid = { did: { address: "0x6efedeaec20e79071251fffa655F1bdDCa65c027", privateKey: "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415" } };
+      this.createAccount(defaultAccount.account, defaultDid.did);
+    }
+
+    if (documentTypes.length === 0) {
+      console.log("\nDocumentTypes are empty. Populating default values...");
+      let records = ["Driver's License", "Birth Certificate", "MAP Card", "Medical Records", "Social Security Card", "Passport", "Marriage Certificate"];
+      for (let record of records) {
+        let fields = [
+          { fieldName: "name", required: true },
+          { fieldName: "dateofbirth", required: false }
+        ];
+
+        this.createDocumentType({ name: record, fields: fields });
+      }
+    }
   }
 
   // Cache
   async updateRolePermissionsTableCache() {
-    this.cachedRolePermissionTable = await this.getLatestRoleLPermissionTable();
+    this.cachedRolePermissionTable = await this.getLatestRolePermissionTable();
   }
 
   getCachedRolePermissionsTable() {
@@ -65,12 +95,29 @@ class MongoDbClient {
     return savedAccount;
   }
 
+  // Document Types
+  async getAllDocumentTypes() {
+    const documentTypes = await DocumentType.find({});
+    return documentTypes;
+  }
+
+  async createDocumentType(documentType) {
+    const newDocumentType = new DocumentType();
+    newDocumentType.name = documentType.name;
+    for (let field of documentType.fields) {
+      newDocumentType.fields.push(field);
+    }
+    const documentTypeSaved = await newDocumentType.save();
+    return documentTypeSaved;
+  }
+
   // Documents
-  async uploadDocument(uploadedByAccount, uploadForAccount, file) {
+  async uploadDocument(uploadedByAccount, uploadForAccount, file, documentType) {
     const newDocument = new Document();
     newDocument.name = file.originalName;
     newDocument.url = file.filename;
     newDocument.uploadedBy = uploadedByAccount;
+    newDocument.type = documentType;
     const document = await newDocument.save();
 
     const hash = await this.getHash(document.url);
@@ -128,7 +175,7 @@ class MongoDbClient {
   }
 
   // Admin - Role Permission Table
-  async getLatestRoleLPermissionTable() {
+  async getLatestRolePermissionTable() {
     // Get latest role permission table for role permissions table versioning
     const rolePermissionTable = await RolePermissionTable.findOne()
       .limit(1)

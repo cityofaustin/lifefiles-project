@@ -8,6 +8,7 @@ var DocumentSchema = new mongoose.Schema({
   hash: String,
   vcJwt: String,
   vpJwt: String,
+  type: String,
   uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Account" }
 });
 

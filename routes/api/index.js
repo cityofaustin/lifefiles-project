@@ -39,6 +39,8 @@ router
 
 router.route("/uploadDocumentOnBehalfOfUser").post([auth.required, isAllowedUploadDocument, upload.single("img")], DocumentController.uploadDocumentOnBehalfOfUser);
 
+router.route("/documenttypes/").get(DocumentController.getDocumentTypes);
+
 // TODO: Add auth jwt to parameter for authorized images
 router.route("/documents/:filename").get(DocumentController.getDocument);
 

@@ -3,7 +3,7 @@ const common = require("../common/common");
 module.exports = {
   uploadDocument: async (req, res, next) => {
     const account = await common.dbClient.getAccountById(req.payload.id);
-    const document = await common.dbClient.uploadDocument(account, account, req.file);
+    const document = await common.dbClient.uploadDocument(account, account, req.file, req.body.type);
     res.status(200).json({ file: document.url });
   },
 
@@ -52,5 +52,10 @@ module.exports = {
     } else {
       payload.pipe(res);
     }
+  },
+
+  getDocumentTypes: async (req, res, next) => {
+    const documentTypes = await common.dbClient.getAllDocumentTypes();
+    res.status(200).json({ documentTypes: documentTypes });
   }
 };
