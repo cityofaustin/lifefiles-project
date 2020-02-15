@@ -54,6 +54,12 @@ module.exports = {
     }
   },
 
+  deleteDocument: async (req, res, next) => {
+    const filename = req.params.filename;
+    await common.dbClient.deleteDocument(filename);
+    res.status(200).json({ message: "success" });
+  },
+
   getDocumentTypes: async (req, res, next) => {
     const documentTypes = await common.dbClient.getAllDocumentTypes();
     res.status(200).json({ documentTypes: documentTypes });

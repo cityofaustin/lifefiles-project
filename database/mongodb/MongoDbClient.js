@@ -147,6 +147,16 @@ class MongoDbClient {
     return payload;
   }
 
+  async deleteDocument(filename) {
+    await this.deleteDocumentPromise(filename);
+
+    const document = await Document.findOneAndRemove({
+      url: filename
+    });
+
+    return document;
+  }
+
   // Admin - Roles
   async getAllRoles() {
     const roles = await Role.find({});
@@ -247,8 +257,24 @@ class MongoDbClient {
         if (!file || file.length === 0) {
           resolve({ error: "No file exists" });
         }
-        const readstream = this.gfs.createReadStream(file.filename);
+        let readstream;
+        try {
+          readstream = this.gfs.createReadStream(file.filename);
+        } catch (e) {
+          console.log({ error: e });
+        }
         resolve(readstream);
+      });
+    });
+  }
+
+  async deleteDocumentPromise(filename) {
+    return new Promise((resolve, reject) => {
+      this.gfs.files.deleteOne({ filename: filename }, (err, file) => {
+        if (!file || file.length === 0) {
+          resolve({ error: "No file exists" });
+        }
+        resolve();
       });
     });
   }

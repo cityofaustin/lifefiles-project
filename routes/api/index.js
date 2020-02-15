@@ -42,7 +42,10 @@ router.route("/uploadDocumentOnBehalfOfUser").post([auth.required, isAllowedUplo
 router.route("/documenttypes/").get(DocumentController.getDocumentTypes);
 
 // TODO: Add auth jwt to parameter for authorized images
-router.route("/documents/:filename").get(DocumentController.getDocument);
+router
+  .route("/documents/:filename")
+  .get(DocumentController.getDocument)
+  .delete(DocumentController.deleteDocument);
 
 // Admin - TODO: Add Admin Auth Only
 router
