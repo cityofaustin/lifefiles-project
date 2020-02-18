@@ -14,6 +14,8 @@ const Schema = require("../middleware/schema");
 // Accounts
 router.route("/account").get(auth.required, AccountController.getAcccount);
 
+router.route("/account/:accountId/documenttypes/").get(auth.required, AccountController.getAvailableDocumentTypes);
+
 router
   .route("/accounts")
   .get(auth.required, AccountController.getAcccounts)
@@ -30,6 +32,8 @@ router.route("/accounts/login").post(
   }),
   AccountController.login
 );
+
+router.route("/requestDocument").post([auth.required, celebrate({ body: Schema.documentRequestSchema })], AccountController.newDocumentRequest);
 
 // Documents
 router

@@ -26,7 +26,13 @@ var AccountSchema = new mongoose.Schema(
     didPrivateKey: String,
     hash: String,
     salt: String,
-    documents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }]
+    documents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }],
+    shareRequests: [
+      {
+        shareWithAccount: { type: mongoose.Schema.Types.ObjectId, ref: "AccountId" },
+        shareDocumentType: { type: mongoose.Schema.Types.ObjectId, ref: "DocumentType" }
+      }
+    ]
   },
   { timestamps: true },
   { usePushEach: true }
@@ -35,17 +41,13 @@ var AccountSchema = new mongoose.Schema(
 AccountSchema.plugin(uniqueValidator, { message: "is already taken." });
 
 AccountSchema.methods.validPassword = function(password) {
-  var hash = crypto
-    .pbkdf2Sync(password, this.salt, 10000, 512, "sha512")
-    .toString("hex");
+  var hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, "sha512").toString("hex");
   return this.hash === hash;
 };
 
 AccountSchema.methods.setPassword = function(password) {
   this.salt = crypto.randomBytes(16).toString("hex");
-  this.hash = crypto
-    .pbkdf2Sync(password, this.salt, 10000, 512, "sha512")
-    .toString("hex");
+  this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, "sha512").toString("hex");
 };
 
 AccountSchema.methods.generateJWT = function() {

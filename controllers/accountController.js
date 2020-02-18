@@ -12,6 +12,16 @@ module.exports = {
     res.status(200).json(accounts);
   },
 
+  getAvailableDocumentTypes: async (req, res, next) => {
+    const accountId = req.params.accountId;
+    const documents = await common.dbClient.getDocuments(accountId);
+    let documentTypes = [];
+    for (let document of documents) {
+      documentTypes.push(document.type);
+    }
+    res.status(200).json(documentTypes);
+  },
+
   newAccount: async (req, res, next) => {
     const did = await common.blockchainClient.createNewDID();
     const account = await common.dbClient.createAccount(req.body.account, did);
@@ -39,5 +49,15 @@ module.exports = {
         return res.status(422).json(info);
       }
     })(req, res, next);
+  },
+
+  newDocumentRequest: async (req, res, next) => {
+    const accountRequestingId = req.payload.id;
+    const accountId = req.body.documentRequest.accountId;
+    const documentTypeName = req.body.documentRequest.documentType;
+
+    const shareRequest = await common.dbClient.createShareRequest(accountRequestingId, accountId, documentTypeName);
+
+    res.status(200).json(shareRequest);
   }
 };

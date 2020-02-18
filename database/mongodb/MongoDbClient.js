@@ -43,9 +43,13 @@ class MongoDbClient {
 
     if (accounts.length === 0) {
       console.log("\nAccounts are empty. Populating default values...");
-      let defaultAccount = { account: { username: "SallyOwner", password: "owner", role: "owner", email: "owner@owner.com" } };
-      let defaultDid = { did: { address: "0x6efedeaec20e79071251fffa655F1bdDCa65c027", privateKey: "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415" } };
-      this.createAccount(defaultAccount.account, defaultDid.did);
+      let ownerAccount = { account: { username: "SallyOwner", password: "owner", role: "owner", email: "owner@owner.com" } };
+      let ownerDid = { did: { address: "0x6efedeaec20e79071251fffa655F1bdDCa65c027", privateKey: "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415" } };
+      this.createAccount(ownerAccount.account, ownerDid.did);
+
+      let caseWorkerAccount = { account: { username: "BillyCaseWorker", password: "caseworker", role: "notary", email: "caseworker@caseworker.com" } };
+      let caseWorkerDid = { did: { address: "0x2a6F1D5083fb19b9f2C653B598abCb5705eD0439", privateKey: "8ef83de6f0ccf32798f8afcd436936870af619511f2385e8aace87729e771a8b" } };
+      this.createAccount(caseWorkerAccount.account, caseWorkerDid.did);
     }
 
     if (documentTypes.length === 0) {
@@ -93,6 +97,20 @@ class MongoDbClient {
 
     const savedAccount = await newAccount.save();
     return savedAccount;
+  }
+
+  async createShareRequest(accountRequestingId, accountId, documentTypeName) {
+    const account = await Account.findById(accountId);
+    const accountRequesting = await Account.findById(accountRequestingId);
+    const documentType = await DocumentType.findOne({
+      name: documentTypeName
+    });
+
+    let shareReqeust = { shareWithAccount: accountRequesting, shareDocumentType: documentType };
+    account.shareRequests.push(shareReqeust);
+    await account.save();
+
+    return account;
   }
 
   // Document Types
