@@ -14,7 +14,13 @@ const Schema = require("../middleware/schema");
 // Accounts
 router.route("/account").get(auth.required, AccountController.getAcccount);
 
-router.route("/account/:accountId/documenttypes/").get(auth.required, AccountController.getAvailableDocumentTypes);
+router
+  .route("/account/:accountId/documenttypes/")
+  .get(auth.required, AccountController.getAvailableDocumentTypes);
+
+router
+  .route("/account/:accountId/sharerequests/")
+  .get(auth.required, AccountController.getShareRequests);
 
 router
   .route("/accounts")
@@ -33,15 +39,32 @@ router.route("/accounts/login").post(
   AccountController.login
 );
 
-router.route("/requestDocument").post([auth.required, celebrate({ body: Schema.documentRequestSchema })], AccountController.newDocumentRequest);
+router
+  .route("/shareRequest")
+  .post(
+    [auth.required, celebrate({ body: Schema.documentRequestSchema })],
+    AccountController.newDocumentRequest
+  );
+
+router
+  .route("/approveShareRequest")
+  .post([auth.required], AccountController.approveDocumentRequest);
 
 // Documents
 router
   .route("/documents/")
   .get(auth.required, DocumentController.getDocuments)
-  .post([auth.required, isAllowedUploadDocument, upload.single("img")], DocumentController.uploadDocument);
+  .post(
+    [auth.required, isAllowedUploadDocument, upload.single("img")],
+    DocumentController.uploadDocument
+  );
 
-router.route("/uploadDocumentOnBehalfOfUser").post([auth.required, isAllowedUploadDocument, upload.single("img")], DocumentController.uploadDocumentOnBehalfOfUser);
+router
+  .route("/uploadDocumentOnBehalfOfUser")
+  .post(
+    [auth.required, isAllowedUploadDocument, upload.single("img")],
+    DocumentController.uploadDocumentOnBehalfOfUser
+  );
 
 router.route("/documenttypes/").get(DocumentController.getDocumentTypes);
 
@@ -57,19 +80,27 @@ router
   .get(AdminController.getRolePermissionTable)
   .post(AdminController.newRolePermissionTable);
 
-router.route("/admin/generateDefaultRolePermissionsTable").get(AdminController.generateDefaultRolePermissionsTable);
+router
+  .route("/admin/generateDefaultRolePermissionsTable")
+  .get(AdminController.generateDefaultRolePermissionsTable);
 
 // Admin - Roles
 router
   .route("/roles")
   .get(auth.required, AdminController.getRoles)
-  .post([auth.required, celebrate({ body: Schema.roleSchema })], AdminController.newRole);
+  .post(
+    [auth.required, celebrate({ body: Schema.roleSchema })],
+    AdminController.newRole
+  );
 
 // Admin - Permissions
 router
   .route("/permissions")
   .get(auth.required, AdminController.getPermissions)
-  .post([auth.required, celebrate({ body: Schema.permissionSchema })], AdminController.newPermission);
+  .post(
+    [auth.required, celebrate({ body: Schema.permissionSchema })],
+    AdminController.newPermission
+  );
 
 router.use(function(err, req, res, next) {
   if (err.name === "ValidationError") {

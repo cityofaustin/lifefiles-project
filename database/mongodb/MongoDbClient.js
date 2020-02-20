@@ -8,6 +8,7 @@ const Document = require("./models/Document");
 const DocumentType = require("./models/DocumentType");
 const Role = require("./models/Role");
 const Permission = require("./models/Permission");
+const ShareRequest = require("./models/ShareRequest");
 const RolePermissionTable = require("./models/RolePermissionTable");
 const VerifiableCredential = require("./models/VerifiableCredential");
 const VerifiablePresentation = require("./models/VerifiablePresentation");
@@ -23,7 +24,10 @@ class MongoDbClient {
     this.cachedRolePermissionTable = undefined;
     this.mongoURI = process.env.MONGODB_URI;
 
-    this.fileConnection = mongoose.createConnection(this.mongoURI, mongoDbOptions);
+    this.fileConnection = mongoose.createConnection(
+      this.mongoURI,
+      mongoDbOptions
+    );
 
     this.fileConnection.once("open", () => {
       this.gfs = grid(this.fileConnection.db, mongoose.mongo);
@@ -43,18 +47,52 @@ class MongoDbClient {
 
     if (accounts.length === 0) {
       console.log("\nAccounts are empty. Populating default values...");
-      let ownerAccount = { account: { username: "SallyOwner", password: "owner", role: "owner", email: "owner@owner.com" } };
-      let ownerDid = { did: { address: "0x6efedeaec20e79071251fffa655F1bdDCa65c027", privateKey: "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415" } };
+      let ownerAccount = {
+        account: {
+          username: "SallyOwner",
+          password: "owner",
+          role: "owner",
+          email: "owner@owner.com"
+        }
+      };
+      let ownerDid = {
+        did: {
+          address: "0x6efedeaec20e79071251fffa655F1bdDCa65c027",
+          privateKey:
+            "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415"
+        }
+      };
       this.createAccount(ownerAccount.account, ownerDid.did);
 
-      let caseWorkerAccount = { account: { username: "BillyCaseWorker", password: "caseworker", role: "notary", email: "caseworker@caseworker.com" } };
-      let caseWorkerDid = { did: { address: "0x2a6F1D5083fb19b9f2C653B598abCb5705eD0439", privateKey: "8ef83de6f0ccf32798f8afcd436936870af619511f2385e8aace87729e771a8b" } };
+      let caseWorkerAccount = {
+        account: {
+          username: "BillyCaseWorker",
+          password: "caseworker",
+          role: "notary",
+          email: "caseworker@caseworker.com"
+        }
+      };
+      let caseWorkerDid = {
+        did: {
+          address: "0x2a6F1D5083fb19b9f2C653B598abCb5705eD0439",
+          privateKey:
+            "8ef83de6f0ccf32798f8afcd436936870af619511f2385e8aace87729e771a8b"
+        }
+      };
       this.createAccount(caseWorkerAccount.account, caseWorkerDid.did);
     }
 
     if (documentTypes.length === 0) {
       console.log("\nDocumentTypes are empty. Populating default values...");
-      let records = ["Driver's License", "Birth Certificate", "MAP Card", "Medical Records", "Social Security Card", "Passport", "Marriage Certificate"];
+      let records = [
+        "Driver's License",
+        "Birth Certificate",
+        "MAP Card",
+        "Medical Records",
+        "Social Security Card",
+        "Passport",
+        "Marriage Certificate"
+      ];
       for (let record of records) {
         let fields = [
           { fieldName: "name", required: true },
@@ -99,18 +137,50 @@ class MongoDbClient {
     return savedAccount;
   }
 
-  async createShareRequest(accountRequestingId, accountId, documentTypeName) {
-    const account = await Account.findById(accountId);
-    const accountRequesting = await Account.findById(accountRequestingId);
-    const documentType = await DocumentType.findOne({
-      name: documentTypeName
+  async getShareRequests(accountId) {
+    const account = await Account.findById(accountId).populate({
+      path: "shareRequests"
     });
 
-    let shareReqeust = { shareWithAccount: accountRequesting, shareDocumentType: documentType };
-    account.shareRequests.push(shareReqeust);
+    return account.shareRequests;
+  }
+
+  async createShareRequest(accountRequestingId, accountId, documentTypeName) {
+    const account = await Account.findById(accountId);
+
+    const documents = await this.getDocuments(accountId);
+    let documentUrl;
+
+    for (let document of documents) {
+      if (documentTypeName === document.type) {
+        documentUrl = document.url;
+        break;
+      }
+    }
+
+    if (documentUrl === undefined) {
+      throw new Error("Document Not Found For Type: " + documentTypeName);
+    }
+
+    const shareRequest = new ShareRequest();
+    shareRequest.shareWithAccountId = accountRequestingId;
+    shareRequest.approved = false;
+    shareRequest.documentType = documentTypeName;
+    shareRequest.documentUrl = documentUrl;
+    await shareRequest.save();
+
+    account.shareRequests.push(shareRequest);
     await account.save();
 
     return account;
+  }
+
+  async approveShareRequest(shareRequestId) {
+    const shareRequest = await ShareRequest.findById(shareRequestId);
+    shareRequest.approved = true;
+
+    await shareRequest.save();
+    return shareRequest;
   }
 
   // Document Types
@@ -130,7 +200,12 @@ class MongoDbClient {
   }
 
   // Documents
-  async uploadDocument(uploadedByAccount, uploadForAccount, file, documentType) {
+  async uploadDocument(
+    uploadedByAccount,
+    uploadForAccount,
+    file,
+    documentType
+  ) {
     const newDocument = new Document();
     newDocument.name = file.originalName;
     newDocument.url = file.filename;
@@ -218,7 +293,9 @@ class MongoDbClient {
 
   async newRolePermissionTable(rolePermissionTable) {
     const newRolePermissionTable = new RolePermissionTable();
-    newRolePermissionTable.rolePermissionTable = JSON.stringify(rolePermissionTable);
+    newRolePermissionTable.rolePermissionTable = JSON.stringify(
+      rolePermissionTable
+    );
     const rolePermissionTableSaved = await newRolePermissionTable.save();
 
     this.updateRolePermissionsTableCache();
@@ -260,7 +337,11 @@ class MongoDbClient {
   async getHash(documentUrl) {
     return new Promise((resolve, reject) => {
       // Hash from URL
-      let localUrl = "http://localhost:" + (process.env.PORT || 5000) + "/api/documents/" + documentUrl;
+      let localUrl =
+        "http://localhost:" +
+        (process.env.PORT || 5000) +
+        "/api/documents/" +
+        documentUrl;
 
       request.get(localUrl, function(err, res, body) {
         const md5Hash = md5(body);

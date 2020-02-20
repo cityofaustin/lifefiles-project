@@ -28,10 +28,7 @@ var AccountSchema = new mongoose.Schema(
     salt: String,
     documents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }],
     shareRequests: [
-      {
-        shareWithAccount: { type: mongoose.Schema.Types.ObjectId, ref: "AccountId" },
-        shareDocumentType: { type: mongoose.Schema.Types.ObjectId, ref: "DocumentType" }
-      }
+      { type: mongoose.Schema.Types.ObjectId, ref: "ShareRequest" }
     ]
   },
   { timestamps: true },
@@ -41,13 +38,17 @@ var AccountSchema = new mongoose.Schema(
 AccountSchema.plugin(uniqueValidator, { message: "is already taken." });
 
 AccountSchema.methods.validPassword = function(password) {
-  var hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, "sha512").toString("hex");
+  var hash = crypto
+    .pbkdf2Sync(password, this.salt, 10000, 512, "sha512")
+    .toString("hex");
   return this.hash === hash;
 };
 
 AccountSchema.methods.setPassword = function(password) {
   this.salt = crypto.randomBytes(16).toString("hex");
-  this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, "sha512").toString("hex");
+  this.hash = crypto
+    .pbkdf2Sync(password, this.salt, 10000, 512, "sha512")
+    .toString("hex");
 };
 
 AccountSchema.methods.generateJWT = function() {
@@ -67,8 +68,11 @@ AccountSchema.methods.generateJWT = function() {
 };
 
 AccountSchema.methods.toAuthJSON = function() {
+  console.log(this.username);
+  console.log(this.shareRequests);
   return {
     username: this.username,
+    id: this._id,
     email: this.email,
     role: this.role,
     didAddress: this.didAddress,
