@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const grid = require("gridfs-stream");
 const request = require("request").defaults({ encoding: null });
 const md5 = require("md5");
+const ip = require("ip");
 
 const Account = require("./models/Account");
 const Document = require("./models/Document");
@@ -119,6 +120,14 @@ class MongoDbClient {
     return account;
   }
 
+  async getAllAccountInfoById(id) {
+    const account = await Account.findById(id).populate([
+      "documents",
+      "shareRequests"
+    ]);
+    return account;
+  }
+
   async getAllAccounts() {
     const accounts = await Account.find({});
     return accounts;
@@ -150,10 +159,12 @@ class MongoDbClient {
 
     const documents = await this.getDocuments(accountId);
     let documentUrl;
+    let documentId;
 
     for (let document of documents) {
       if (documentTypeName === document.type) {
         documentUrl = document.url;
+        documentId = document._id;
         break;
       }
     }
@@ -167,6 +178,7 @@ class MongoDbClient {
     shareRequest.approved = false;
     shareRequest.documentType = documentTypeName;
     shareRequest.documentUrl = documentUrl;
+    shareRequest.documentId = documentId;
     await shareRequest.save();
 
     account.shareRequests.push(shareRequest);
@@ -175,11 +187,18 @@ class MongoDbClient {
     return account;
   }
 
-  async approveShareRequest(shareRequestId) {
+  async approveOrDenyShareRequest(shareRequestId, approved) {
     const shareRequest = await ShareRequest.findById(shareRequestId);
-    shareRequest.approved = true;
+    shareRequest.approved = approved;
 
     await shareRequest.save();
+
+    if (shareRequest.approved === true) {
+      const document = await Document.findById(shareRequest.documentId);
+      document.sharedWithAccountIds.push(shareRequest.shareWithAccountId);
+      await document.save();
+    }
+
     return shareRequest;
   }
 
@@ -210,10 +229,14 @@ class MongoDbClient {
     newDocument.name = file.originalName;
     newDocument.url = file.filename;
     newDocument.uploadedBy = uploadedByAccount;
+    newDocument.belongsTo = uploadForAccount;
     newDocument.type = documentType;
     const document = await newDocument.save();
 
-    const hash = await this.getHash(document.url);
+    const hash = await this.getHash(
+      document.url,
+      uploadForAccount.generateJWT()
+    );
     document.hash = hash;
     await document.save();
 
@@ -236,6 +259,11 @@ class MongoDbClient {
   }
 
   async getDocument(filename) {
+    let document = await Document.findOne({ url: filename });
+    return document;
+  }
+
+  async getDocumentData(filename) {
     const payload = await this.getDocumentPromise(filename);
     return payload;
   }
@@ -334,14 +362,18 @@ class MongoDbClient {
   }
 
   // Helpers
-  async getHash(documentUrl) {
+  async getHash(documentUrl, jwt) {
     return new Promise((resolve, reject) => {
       // Hash from URL
       let localUrl =
-        "http://localhost:" +
+        "http://" +
+        ip.address() +
+        ":" +
         (process.env.PORT || 5000) +
         "/api/documents/" +
-        documentUrl;
+        documentUrl +
+        "/" +
+        jwt;
 
       request.get(localUrl, function(err, res, body) {
         const md5Hash = md5(body);

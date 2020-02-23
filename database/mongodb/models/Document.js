@@ -11,7 +11,8 @@ var DocumentSchema = new mongoose.Schema(
     vpJwt: String,
     type: String,
     uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Account" },
-    sharedWith: { type: mongoose.Schema.Types.ObjectId, ref: "Account" }
+    belongsTo: { type: mongoose.Schema.Types.ObjectId, ref: "Account" },
+    sharedWithAccountIds: [String]
   },
   { timestamps: true }
 );

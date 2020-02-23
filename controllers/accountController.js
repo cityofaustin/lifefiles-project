@@ -3,7 +3,7 @@ const passport = require("passport");
 
 module.exports = {
   getAcccount: async (req, res, next) => {
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
     res.status(200).json({ account: account.toAuthJSON() });
   },
 
@@ -59,10 +59,10 @@ module.exports = {
     res.status(200).json(documentTypes);
   },
 
-  newDocumentRequest: async (req, res, next) => {
+  newShareRequest: async (req, res, next) => {
     const accountRequestingId = req.payload.id;
-    const accountId = req.body.documentRequest.accountId;
-    const documentTypeName = req.body.documentRequest.documentType;
+    const accountId = req.body.shareRequest.accountId;
+    const documentTypeName = req.body.shareRequest.documentType;
 
     const shareRequest = await common.dbClient.createShareRequest(
       accountRequestingId,
@@ -73,11 +73,13 @@ module.exports = {
     res.status(200).json(shareRequest);
   },
 
-  approveDocumentRequest: async (req, res, next) => {
+  approveOrDenyShareRequest: async (req, res, next) => {
     const shareRequestId = req.body.shareRequestId;
+    const approved = req.body.approved;
 
-    const shareRequest = await common.dbClient.approveShareRequest(
-      shareRequestId
+    const shareRequest = await common.dbClient.approveOrDenyShareRequest(
+      shareRequestId,
+      approved
     );
 
     res.status(200).json(shareRequest);

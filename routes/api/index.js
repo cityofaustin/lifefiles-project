@@ -12,15 +12,7 @@ const { isAllowedUploadDocument } = require("../middleware/permission");
 const Schema = require("../middleware/schema");
 
 // Accounts
-router.route("/account").get(auth.required, AccountController.getAcccount);
-
-router
-  .route("/account/:accountId/documenttypes/")
-  .get(auth.required, AccountController.getAvailableDocumentTypes);
-
-router
-  .route("/account/:accountId/sharerequests/")
-  .get(auth.required, AccountController.getShareRequests);
+router.route("/my-account").get(auth.required, AccountController.getAcccount);
 
 router
   .route("/accounts")
@@ -38,19 +30,22 @@ router.route("/accounts/login").post(
   }),
   AccountController.login
 );
+router
+  .route("/account/:accountId/document-types/")
+  .get(auth.required, AccountController.getAvailableDocumentTypes);
 
 router
-  .route("/shareRequest")
+  .route("/account/:accountId/share-requests/")
+  .get(auth.required, AccountController.getShareRequests)
   .post(
-    [auth.required, celebrate({ body: Schema.documentRequestSchema })],
-    AccountController.newDocumentRequest
-  );
-
-router
-  .route("/approveShareRequest")
-  .post([auth.required], AccountController.approveDocumentRequest);
+    [auth.required, celebrate({ body: Schema.shareRequestSchema })],
+    AccountController.newShareRequest
+  )
+  .put(auth.required, AccountController.approveOrDenyShareRequest);
 
 // Documents
+router.route("/document-types/").get(DocumentController.getDocumentTypes);
+
 router
   .route("/documents/")
   .get(auth.required, DocumentController.getDocuments)
@@ -60,28 +55,25 @@ router
   );
 
 router
-  .route("/uploadDocumentOnBehalfOfUser")
+  .route("/upload-document-on-behalf-of-user")
   .post(
     [auth.required, isAllowedUploadDocument, upload.single("img")],
     DocumentController.uploadDocumentOnBehalfOfUser
   );
 
-router.route("/documenttypes/").get(DocumentController.getDocumentTypes);
-
-// TODO: Add auth jwt to parameter for authorized images
 router
-  .route("/documents/:filename")
-  .get(DocumentController.getDocument)
+  .route("/documents/:filename/:jwt")
+  .get(auth.image, DocumentController.getDocument)
   .delete(DocumentController.deleteDocument);
 
 // Admin - TODO: Add Admin Auth Only
 router
-  .route("/admin/rolePermissionTable")
+  .route("/admin/role-permission-table")
   .get(AdminController.getRolePermissionTable)
   .post(AdminController.newRolePermissionTable);
 
 router
-  .route("/admin/generateDefaultRolePermissionsTable")
+  .route("/admin/generate-default-role-permissions-table")
   .get(AdminController.generateDefaultRolePermissionsTable);
 
 // Admin - Roles

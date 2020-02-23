@@ -68,15 +68,15 @@ AccountSchema.methods.generateJWT = function() {
 };
 
 AccountSchema.methods.toAuthJSON = function() {
-  console.log(this.username);
-  console.log(this.shareRequests);
   return {
     username: this.username,
     id: this._id,
     email: this.email,
     role: this.role,
     didAddress: this.didAddress,
-    token: this.generateJWT()
+    token: this.generateJWT(),
+    shareRequests: this.shareRequests,
+    documents: this.documents
   };
 };
 

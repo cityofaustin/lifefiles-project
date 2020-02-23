@@ -11,6 +11,7 @@ passport.use(
     },
     function(email, password, done) {
       Account.findOne({ email: email })
+        .populate(["documents", "shareRequests"])
         .then(function(account) {
           if (!account || !account.validPassword(password)) {
             return done(null, false, {
