@@ -14,26 +14,33 @@ module.exports = {
 
   uploadDocumentOnBehalfOfUser: async (req, res, next) => {
     const account = await common.dbClient.getAccountById(req.payload.id);
+
     const uploadForAccount = await common.dbClient.getAccountById(
       req.body.uploadForAccountId
     );
     const document = await common.dbClient.uploadDocument(
       account,
       uploadForAccount,
-      req.file
+      req.files[0],
+      req.body.type
     );
 
     // const issueTime = 1562950282;
     const issueTime = Math.floor(Date.now() / 1000);
-
     const vcJwt = await common.blockchainClient.createVC(
       account.didAddress,
       account.didPrivateKey,
       document.did,
-      issueTime,
-      document.hash
+      req.body.type,
+      document.hash,
+      document.url,
+      req.files[1].md5,
+      req.body.notarizationType,
+      req.body.notaryInfo,
+      req.body.ownerSignature,
+      req.body.pem,
+      issueTime
     );
-
     const vpJwt = await common.blockchainClient.createVP(
       account.didAddress,
       account.didPrivateKey,
@@ -45,7 +52,6 @@ module.exports = {
 
     console.log("\n\nVERIFIED VC:\n");
     console.log(verifiedVC);
-
     console.log("\n\nVERIFIED VP:\n");
     console.log(verifiedVP);
 
@@ -63,7 +69,10 @@ module.exports = {
       document
     );
 
-    res.status(200).json({ file: document.url });
+    res.status(200).json({
+      vc: verifiedVC,
+      vp: verifiedVP
+    });
   },
 
   getDocuments: async (req, res, next) => {

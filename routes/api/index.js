@@ -55,9 +55,9 @@ router
   );
 
 router
-  .route("/upload-document-on-behalf-of-user")
+  .route("/upload-document-and-notarize-on-behalf-of-user/")
   .post(
-    [auth.required, isAllowedUploadDocument, upload.single("img")],
+    [auth.required, isAllowedUploadDocument, upload.array("img")],
     DocumentController.uploadDocumentOnBehalfOfUser
   );
 
