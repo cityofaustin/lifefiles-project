@@ -30,6 +30,7 @@ module.exports = {
     const vcJwt = await common.blockchainClient.createVC(
       account.didAddress,
       account.didPrivateKey,
+      uploadForAccount.didAddress,
       document.did,
       req.body.type,
       document.hash,
@@ -113,7 +114,9 @@ module.exports = {
 
   deleteDocument: async (req, res, next) => {
     const filename = req.params.filename;
-    await common.dbClient.deleteDocument(filename);
+    let deletedDocument = await common.dbClient.deleteDocument(filename);
+    await common.dbClient.deleteShareRequestByDocumentId(deletedDocument._id);
+
     res.status(200).json({ message: "success" });
   },
 

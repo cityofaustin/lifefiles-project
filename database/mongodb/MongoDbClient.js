@@ -154,6 +154,13 @@ class MongoDbClient {
     return account.shareRequests;
   }
 
+  async deleteShareRequestByDocumentId(documentId) {
+    await ShareRequest.deleteMany({
+      documentId: documentId
+    });
+    return;
+  }
+
   async createShareRequest(accountRequestingId, accountId, documentTypeName) {
     const account = await Account.findById(accountId);
 

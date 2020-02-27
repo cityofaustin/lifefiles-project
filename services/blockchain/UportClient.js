@@ -33,6 +33,7 @@ class UportClient {
   async createVC(
     issuerAddress,
     issuerPrivateKey,
+    ownerAddress,
     documentDID,
     documentType,
     documentHash,
@@ -49,8 +50,10 @@ class UportClient {
       privateKey: issuerPrivateKey
     });
 
+    const subjectDid = "did:ethr:" + ownerAddress;
+
     const vcPayload = {
-      sub: documentDID,
+      sub: subjectDid,
       nbf: issueTime,
       vc: {
         "@context": ["https://www.w3.org/2018/credentials/v1"],
