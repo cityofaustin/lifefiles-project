@@ -44,6 +44,19 @@ module.exports = {
       .required()
   }),
 
+  shareRequestSchema: Joi.object().keys({
+    shareRequest: Joi.object()
+      .keys({
+        accountId: Joi.string()
+          .min(1)
+          .required(),
+        documentType: Joi.string()
+          .min(1)
+          .required()
+      })
+      .required()
+  }),
+
   roleSchema: Joi.object().keys({
     role: Joi.object()
       .keys({

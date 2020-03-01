@@ -7,6 +7,7 @@ const Resolver = require("did-resolver").Resolver;
 const getResolver = require("ethr-did-resolver").getResolver;
 const verifyCredential = require("did-jwt-vc").verifyCredential;
 const verifyPresentation = require("did-jwt-vc").verifyPresentation;
+const md5 = require("md5");
 
 const web3 = new Web3();
 
@@ -32,31 +33,43 @@ class UportClient {
   async createVC(
     issuerAddress,
     issuerPrivateKey,
+    ownerAddress,
     documentDID,
-    issueTime,
-    hash
+    documentType,
+    documentHash,
+    documentUrl,
+    sealHash,
+    notarizationType,
+    notaryInfo,
+    ownerSignature,
+    pem,
+    issueTime
   ) {
     const issuerEthrDid = new EthrDID({
       address: issuerAddress,
       privateKey: issuerPrivateKey
     });
 
+    const subjectDid = "did:ethr:" + ownerAddress;
+
     const vcPayload = {
-      sub: documentDID,
+      sub: subjectDid,
       nbf: issueTime,
       vc: {
         "@context": ["https://www.w3.org/2018/credentials/v1"],
         type: ["VerifiableCredential"],
         credentialSubject: {
-          driversLicense: {
-            type: "TexasDriversLicense",
-            hash: hash
+          document: {
+            type: documentType,
+            hash: documentHash,
+            urlHash: md5(documentUrl)
           },
-          issuerAffidavit: {
-            message: "I affirm this document is true"
-          },
-          ownerAffidavit: {
-            message: "I affirm this document is true"
+          notarization: {
+            sealHash: sealHash,
+            notarizationType: notarizationType,
+            notaryInfo: notaryInfo,
+            ownerSignature: ownerSignature,
+            pem: pem
           }
         }
       }

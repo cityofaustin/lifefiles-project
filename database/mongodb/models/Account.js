@@ -26,7 +26,10 @@ var AccountSchema = new mongoose.Schema(
     didPrivateKey: String,
     hash: String,
     salt: String,
-    documents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }]
+    documents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }],
+    shareRequests: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "ShareRequest" }
+    ]
   },
   { timestamps: true },
   { usePushEach: true }
@@ -67,10 +70,13 @@ AccountSchema.methods.generateJWT = function() {
 AccountSchema.methods.toAuthJSON = function() {
   return {
     username: this.username,
+    id: this._id,
     email: this.email,
     role: this.role,
     didAddress: this.didAddress,
-    token: this.generateJWT()
+    token: this.generateJWT(),
+    shareRequests: this.shareRequests,
+    documents: this.documents
   };
 };
 

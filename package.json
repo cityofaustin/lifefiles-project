@@ -1,19 +1,11 @@
 {
-  "name": "conduit-node",
+  "name": "mypass",
   "version": "1.0.0",
-  "description": "conduit on node",
+  "description": "mypass document locker",
   "main": "app.js",
   "scripts": {
-    "mongo:start": "docker run --name realworld-mongo -p 27017:27017 mongo & sleep 5",
     "start": "node ./app.js",
-    "dev": "nodemon ./app.js",
-    "test": "newman run ./tests/api-tests.postman.json -e ./tests/env-api-tests.postman.json",
-    "stop": "lsof -ti :3000 | xargs kill",
-    "mongo:stop": "docker stop realworld-mongo && docker rm realworld-mongo"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gothinkster/productionready-node-api.git"
+    "dev": "nodemon ./app.js"
   },
   "license": "ISC",
   "dependencies": {
@@ -30,6 +22,7 @@
     "express-jwt": "^5.3.1",
     "express-session": "^1.17.0",
     "gridfs-stream": "^1.1.1",
+    "ip": "^1.1.5",
     "joi-objectid": "^3.0.1",
     "jsonwebtoken": "^8.5.1",
     "md5": "^2.2.1",

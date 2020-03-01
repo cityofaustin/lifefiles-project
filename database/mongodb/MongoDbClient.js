@@ -2,11 +2,14 @@ const mongoose = require("mongoose");
 const grid = require("gridfs-stream");
 const request = require("request").defaults({ encoding: null });
 const md5 = require("md5");
+const ip = require("ip");
 
 const Account = require("./models/Account");
 const Document = require("./models/Document");
+const DocumentType = require("./models/DocumentType");
 const Role = require("./models/Role");
 const Permission = require("./models/Permission");
+const ShareRequest = require("./models/ShareRequest");
 const RolePermissionTable = require("./models/RolePermissionTable");
 const VerifiableCredential = require("./models/VerifiableCredential");
 const VerifiablePresentation = require("./models/VerifiablePresentation");
@@ -22,19 +25,89 @@ class MongoDbClient {
     this.cachedRolePermissionTable = undefined;
     this.mongoURI = process.env.MONGODB_URI;
 
-    this.fileConnection = mongoose.createConnection(this.mongoURI, mongoDbOptions);
+    this.fileConnection = mongoose.createConnection(
+      this.mongoURI,
+      mongoDbOptions
+    );
 
     this.fileConnection.once("open", () => {
       this.gfs = grid(this.fileConnection.db, mongoose.mongo);
       this.gfs.collection("uploads");
     });
 
-    mongoose.connect(this.mongoURI, mongoDbOptions).then(this.updateRolePermissionsTableCache());
+    mongoose.connect(this.mongoURI, mongoDbOptions).then(() => {
+      this.populateDefaultValues();
+      this.updateRolePermissionsTableCache();
+    });
+  }
+
+  // DB initial setup
+  async populateDefaultValues() {
+    const accounts = await this.getAllAccounts();
+    const documentTypes = await this.getAllDocumentTypes();
+
+    if (accounts.length === 0) {
+      console.log("\nAccounts are empty. Populating default values...");
+      let ownerAccount = {
+        account: {
+          username: "SallyOwner",
+          password: "owner",
+          role: "owner",
+          email: "owner@owner.com"
+        }
+      };
+      let ownerDid = {
+        did: {
+          address: "0x6efedeaec20e79071251fffa655F1bdDCa65c027",
+          privateKey:
+            "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415"
+        }
+      };
+      this.createAccount(ownerAccount.account, ownerDid.did);
+
+      let caseWorkerAccount = {
+        account: {
+          username: "BillyCaseWorker",
+          password: "caseworker",
+          role: "notary",
+          email: "caseworker@caseworker.com"
+        }
+      };
+      let caseWorkerDid = {
+        did: {
+          address: "0x2a6F1D5083fb19b9f2C653B598abCb5705eD0439",
+          privateKey:
+            "8ef83de6f0ccf32798f8afcd436936870af619511f2385e8aace87729e771a8b"
+        }
+      };
+      this.createAccount(caseWorkerAccount.account, caseWorkerDid.did);
+    }
+
+    if (documentTypes.length === 0) {
+      console.log("\nDocumentTypes are empty. Populating default values...");
+      let records = [
+        "Driver's License",
+        "Birth Certificate",
+        "MAP Card",
+        "Medical Records",
+        "Social Security Card",
+        "Passport",
+        "Marriage Certificate"
+      ];
+      for (let record of records) {
+        let fields = [
+          { fieldName: "name", required: true },
+          { fieldName: "dateofbirth", required: false }
+        ];
+
+        this.createDocumentType({ name: record, fields: fields });
+      }
+    }
   }
 
   // Cache
   async updateRolePermissionsTableCache() {
-    this.cachedRolePermissionTable = await this.getLatestRoleLPermissionTable();
+    this.cachedRolePermissionTable = await this.getLatestRolePermissionTable();
   }
 
   getCachedRolePermissionsTable() {
@@ -44,6 +117,14 @@ class MongoDbClient {
   // Accounts
   async getAccountById(id) {
     const account = await Account.findById(id);
+    return account;
+  }
+
+  async getAllAccountInfoById(id) {
+    const account = await Account.findById(id).populate([
+      "documents",
+      "shareRequests"
+    ]);
     return account;
   }
 
@@ -65,15 +146,104 @@ class MongoDbClient {
     return savedAccount;
   }
 
+  async getShareRequests(accountId) {
+    const account = await Account.findById(accountId).populate({
+      path: "shareRequests"
+    });
+
+    return account.shareRequests;
+  }
+
+  async deleteShareRequestByDocumentId(documentId) {
+    await ShareRequest.deleteMany({
+      documentId: documentId
+    });
+    return;
+  }
+
+  async createShareRequest(accountRequestingId, accountId, documentTypeName) {
+    const account = await Account.findById(accountId);
+
+    const documents = await this.getDocuments(accountId);
+    let documentUrl;
+    let documentId;
+
+    for (let document of documents) {
+      if (documentTypeName === document.type) {
+        documentUrl = document.url;
+        documentId = document._id;
+        break;
+      }
+    }
+
+    if (documentUrl === undefined) {
+      throw new Error("Document Not Found For Type: " + documentTypeName);
+    }
+
+    const shareRequest = new ShareRequest();
+    shareRequest.shareWithAccountId = accountRequestingId;
+    shareRequest.approved = false;
+    shareRequest.documentType = documentTypeName;
+    shareRequest.documentUrl = documentUrl;
+    shareRequest.documentId = documentId;
+    await shareRequest.save();
+
+    account.shareRequests.push(shareRequest);
+    await account.save();
+
+    return account;
+  }
+
+  async approveOrDenyShareRequest(shareRequestId, approved) {
+    const shareRequest = await ShareRequest.findById(shareRequestId);
+    shareRequest.approved = approved;
+
+    await shareRequest.save();
+
+    if (shareRequest.approved === true) {
+      const document = await Document.findById(shareRequest.documentId);
+      document.sharedWithAccountIds.push(shareRequest.shareWithAccountId);
+      await document.save();
+    }
+
+    return shareRequest;
+  }
+
+  // Document Types
+  async getAllDocumentTypes() {
+    const documentTypes = await DocumentType.find({});
+    return documentTypes;
+  }
+
+  async createDocumentType(documentType) {
+    const newDocumentType = new DocumentType();
+    newDocumentType.name = documentType.name;
+    for (let field of documentType.fields) {
+      newDocumentType.fields.push(field);
+    }
+    const documentTypeSaved = await newDocumentType.save();
+    return documentTypeSaved;
+  }
+
   // Documents
-  async uploadDocument(uploadedByAccount, uploadForAccount, file) {
+  async uploadDocument(
+    uploadedByAccount,
+    uploadForAccount,
+    file,
+    documentType
+  ) {
     const newDocument = new Document();
     newDocument.name = file.originalName;
     newDocument.url = file.filename;
     newDocument.uploadedBy = uploadedByAccount;
+    newDocument.belongsTo = uploadForAccount;
+    newDocument.type = documentType;
     const document = await newDocument.save();
 
-    const hash = await this.getHash(document.url);
+    const hash = await this.getHash(
+      document.url,
+      uploadForAccount.generateJWT()
+    );
     document.hash = hash;
     await document.save();
 
@@ -96,8 +266,23 @@ class MongoDbClient {
   }
 
   async getDocument(filename) {
+    let document = await Document.findOne({ url: filename });
+    return document;
+  }
+
+  async getDocumentData(filename) {
     const payload = await this.getDocumentPromise(filename);
     return payload;
+  }
+
+  async deleteDocument(filename) {
+    await this.deleteDocumentPromise(filename);
+
+    const document = await Document.findOneAndRemove({
+      url: filename
+    });
+
+    return document;
   }
 
   // Admin - Roles
@@ -128,7 +313,7 @@ class MongoDbClient {
   }
 
   // Admin - Role Permission Table
-  async getLatestRoleLPermissionTable() {
+  async getLatestRolePermissionTable() {
     // Get latest role permission table for role permissions table versioning
     const rolePermissionTable = await RolePermissionTable.findOne()
       .limit(1)
@@ -143,7 +328,9 @@ class MongoDbClient {
 
   async newRolePermissionTable(rolePermissionTable) {
     const newRolePermissionTable = new RolePermissionTable();
-    newRolePermissionTable.rolePermissionTable = JSON.stringify(rolePermissionTable);
+    newRolePermissionTable.rolePermissionTable = JSON.stringify(
+      rolePermissionTable
+    );
     const rolePermissionTableSaved = await newRolePermissionTable.save();
 
     this.updateRolePermissionsTableCache();
@@ -182,10 +369,18 @@ class MongoDbClient {
   }
 
   // Helpers
-  async getHash(documentUrl) {
+  async getHash(documentUrl, jwt) {
     return new Promise((resolve, reject) => {
       // Hash from URL
-      let localUrl = "http://localhost:" + (process.env.PORT || 5000) + "/api/documents/" + documentUrl;
+      let localUrl =
+        "http://" +
+        ip.address() +
+        ":" +
+        (process.env.PORT || 5000) +
+        "/api/documents/" +
+        documentUrl +
+        "/" +
+        jwt;
 
       request.get(localUrl, function(err, res, body) {
         const md5Hash = md5(body);
@@ -200,8 +395,24 @@ class MongoDbClient {
         if (!file || file.length === 0) {
           resolve({ error: "No file exists" });
         }
-        const readstream = this.gfs.createReadStream(file.filename);
+        let readstream;
+        try {
+          readstream = this.gfs.createReadStream(file.filename);
+        } catch (e) {
+          console.log({ error: e });
+        }
         resolve(readstream);
+      });
+    });
+  }
+
+  async deleteDocumentPromise(filename) {
+    return new Promise((resolve, reject) => {
+      this.gfs.files.deleteOne({ filename: filename }, (err, file) => {
+        if (!file || file.length === 0) {
+          resolve({ error: "No file exists" });
+        }
+        resolve();
       });
     });
   }

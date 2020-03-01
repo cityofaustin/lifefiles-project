@@ -3,7 +3,7 @@ const passport = require("passport");
 
 module.exports = {
   getAcccount: async (req, res, next) => {
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
     res.status(200).json({ account: account.toAuthJSON() });
   },
 
@@ -39,5 +39,49 @@ module.exports = {
         return res.status(422).json(info);
       }
     })(req, res, next);
+  },
+
+  getShareRequests: async (req, res, next) => {
+    const shareRequests = await common.dbClient.getShareRequests(
+      req.params.accountId
+    );
+
+    res.status(200).json(shareRequests);
+  },
+
+  getAvailableDocumentTypes: async (req, res, next) => {
+    const accountId = req.params.accountId;
+    const documents = await common.dbClient.getDocuments(accountId);
+    let documentTypes = [];
+    for (let document of documents) {
+      documentTypes.push(document.type);
+    }
+    res.status(200).json(documentTypes);
+  },
+
+  newShareRequest: async (req, res, next) => {
+    const accountRequestingId = req.payload.id;
+    const accountId = req.body.shareRequest.accountId;
+    const documentTypeName = req.body.shareRequest.documentType;
+
+    const shareRequest = await common.dbClient.createShareRequest(
+      accountRequestingId,
+      accountId,
+      documentTypeName
+    );
+
+    res.status(200).json(shareRequest);
+  },
+
+  approveOrDenyShareRequest: async (req, res, next) => {
+    const shareRequestId = req.body.shareRequestId;
+    const approved = req.body.approved;
+
+    const shareRequest = await common.dbClient.approveOrDenyShareRequest(
+      shareRequestId,
+      approved
+    );
+
+    res.status(200).json(shareRequest);
   }
 };
