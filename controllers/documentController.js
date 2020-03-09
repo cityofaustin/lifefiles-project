@@ -1,4 +1,5 @@
 const common = require("../common/common");
+const documentStorageHelper = require("../common/documentStorageHelper");
 
 module.exports = {
   uploadDocument: async (req, res, next) => {
@@ -14,10 +15,18 @@ module.exports = {
 
   uploadDocumentOnBehalfOfUser: async (req, res, next) => {
     const account = await common.dbClient.getAccountById(req.payload.id);
+    let sealMD5 = req.files[1].md5;
+
+    if (sealMD5 === undefined) {
+      let etag = req.files[1].etag;
+      etag = etag.replace(/\"/g, "");
+      sealMD5 = etag;
+    }
 
     const uploadForAccount = await common.dbClient.getAccountById(
       req.body.uploadForAccountId
     );
+
     const document = await common.dbClient.uploadDocument(
       account,
       uploadForAccount,
@@ -35,13 +44,14 @@ module.exports = {
       req.body.type,
       document.hash,
       document.url,
-      req.files[1].md5,
+      sealMD5,
       req.body.notarizationType,
       req.body.notaryInfo,
       req.body.ownerSignature,
       req.body.pem,
       issueTime
     );
+
     const vpJwt = await common.blockchainClient.createVP(
       account.didAddress,
       account.didPrivateKey,
@@ -90,6 +100,13 @@ module.exports = {
 
     const document = await common.dbClient.getDocument(filename);
 
+    if (document === undefined || document === null) {
+      res.status(404).json({
+        error: "Document Does Not Exists"
+      });
+      return;
+    }
+
     for (let sharedWithAccountId of document.sharedWithAccountIds) {
       if (sharedWithAccountId === accountId) {
         approved = true;
@@ -97,7 +114,7 @@ module.exports = {
     }
 
     if (document.belongsTo == accountId || approved === true) {
-      let payload = await common.dbClient.getDocumentData(filename);
+      const payload = await documentStorageHelper.getDocumentBytes(filename);
       if (payload.error !== undefined) {
         res.status(404).json({
           error: payload.error
@@ -115,6 +132,8 @@ module.exports = {
   deleteDocument: async (req, res, next) => {
     const filename = req.params.filename;
     let deletedDocument = await common.dbClient.deleteDocument(filename);
+    await documentStorageHelper.deleteDocumentBytes(filename);
+
     await common.dbClient.deleteShareRequestByDocumentId(deletedDocument._id);
 
     res.status(200).json({ message: "success" });

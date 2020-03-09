@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const grid = require("gridfs-stream");
-const request = require("request").defaults({ encoding: null });
-const md5 = require("md5");
-const ip = require("ip");
+const documentStorageHelper = require("../../common/documentStorageHelper");
 
 const Account = require("./models/Account");
 const Document = require("./models/Document");
@@ -234,16 +232,17 @@ class MongoDbClient {
   ) {
     const newDocument = new Document();
     newDocument.name = file.originalName;
-    newDocument.url = file.filename;
+    newDocument.url = file.key || file.filename;
     newDocument.uploadedBy = uploadedByAccount;
     newDocument.belongsTo = uploadForAccount;
     newDocument.type = documentType;
     const document = await newDocument.save();
 
-    const hash = await this.getHash(
+    const hash = await documentStorageHelper.getMD5(
       document.url,
       uploadForAccount.generateJWT()
     );
+
     document.hash = hash;
     await document.save();
 
@@ -274,10 +273,11 @@ class MongoDbClient {
     const payload = await this.getDocumentPromise(filename);
     return payload;
   }
+  async deleteDocumentData(filename) {
+    await this.deleteDocumentPromise(filename);
+  }
 
   async deleteDocument(filename) {
-    await this.deleteDocumentPromise(filename);
-
     const document = await Document.findOneAndRemove({
       url: filename
     });
@@ -366,27 +366,6 @@ class MongoDbClient {
     await document.save();
 
     return vp;
-  }
-
-  // Helpers
-  async getHash(documentUrl, jwt) {
-    return new Promise((resolve, reject) => {
-      // Hash from URL
-      let localUrl =
-        "http://" +
-        ip.address() +
-        ":" +
-        (process.env.PORT || 5000) +
-        "/api/documents/" +
-        documentUrl +
-        "/" +
-        jwt;
-
-      request.get(localUrl, function(err, res, body) {
-        const md5Hash = md5(body);
-        resolve(md5Hash);
-      });
-    });
   }
 
   async getDocumentPromise(filename) {
