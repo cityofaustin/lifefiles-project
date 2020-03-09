@@ -1,7 +1,6 @@
 const crypto = require("crypto");
 const multer = require("multer");
-var multerS3 = require("multer-s3");
-const GridFsStorage = require("multer-gridfs-storage");
+const multerS3 = require("multer-s3");
 const path = require("path");
 
 const AWS = require("aws-sdk");
