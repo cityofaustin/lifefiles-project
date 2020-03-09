@@ -6,9 +6,8 @@ const DocumentController = require("../../controllers/documentController");
 const AdminController = require("../../controllers/adminController");
 
 const auth = require("../middleware/auth");
-const upload = require("../middleware/upload");
+const s3Upload = require("../middleware/s3Upload");
 const { isAllowedUploadDocument } = require("../middleware/permission");
-
 const Schema = require("../middleware/schema");
 
 // Accounts
@@ -50,14 +49,14 @@ router
   .route("/documents/")
   .get(auth.required, DocumentController.getDocuments)
   .post(
-    [auth.required, isAllowedUploadDocument, upload.single("img")],
+    [auth.required, isAllowedUploadDocument, s3Upload.single("img")],
     DocumentController.uploadDocument
   );
 
 router
   .route("/upload-document-and-notarize-on-behalf-of-user/")
   .post(
-    [auth.required, isAllowedUploadDocument, upload.array("img")],
+    [auth.required, isAllowedUploadDocument, s3Upload.array("img")],
     DocumentController.uploadDocumentOnBehalfOfUser
   );
 
