@@ -1,4 +1,5 @@
 const common = require("../common/common");
+const permanent = require("../common/permanentClient");
 const passport = require("passport");
 
 module.exports = {
@@ -13,8 +14,17 @@ module.exports = {
   },
 
   newAccount: async (req, res, next) => {
+    const permanentArchiveNumber = await permanent.createArchive(
+      req.body.account.email
+    );
     const did = await common.blockchainClient.createNewDID();
-    const account = await common.dbClient.createAccount(req.body.account, did);
+
+    const account = await common.dbClient.createAccount(
+      req.body.account,
+      did,
+      permanentArchiveNumber
+    );
+
     return res.status(201).json({ account: account.toAuthJSON() });
   },
 

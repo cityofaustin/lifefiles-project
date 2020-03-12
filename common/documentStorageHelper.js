@@ -1,7 +1,11 @@
 const common = require("../common/common");
+const crypto = require("crypto");
+const path = require("path");
+const permanent = require("permanent-api-js");
 const request = require("request").defaults({ encoding: null });
 const md5 = require("md5");
 const ip = require("ip");
+const fs = require("fs");
 const streamBuffers = require("stream-buffers");
 
 const AWS = require("aws-sdk");
@@ -34,6 +38,34 @@ module.exports = {
     });
   },
 
+  upload: async file => {
+    if (process.env.DOCUMENT_STORAGE_CHOICE === "S3") {
+      const buf = crypto.randomBytes(16);
+      const key = buf.toString("hex") + path.extname(file.name);
+      let s3Res = await new Promise((resolve, reject) => {
+        s3.putObject(
+          {
+            ACL: "private",
+            ServerSideEncryption: "AES256",
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: key,
+            Body: fs.readFileSync(file.tempFilePath)
+          },
+          function(err, data) {
+            // Handle any error and exit
+            if (err) {
+              console.log("S3 Error");
+              console.log(err);
+            }
+            resolve(data);
+          }
+        );
+      });
+
+      return key;
+    }
+  },
+
   getDocumentBytes: async filename => {
     if (process.env.DOCUMENT_STORAGE_CHOICE === "S3") {
       return new Promise((resolve, reject) => {
@@ -45,7 +77,7 @@ module.exports = {
           function(err, data) {
             // Handle any error and exit
             if (err) {
-              console.log("s3 Error");
+              console.log("S3 Error");
               console.log(err);
             }
 
@@ -80,7 +112,7 @@ module.exports = {
           function(err, data) {
             // Handle any error and exit
             if (err) {
-              console.log("s3 Error");
+              console.log("S3 Error");
               console.log(err);
             }
 

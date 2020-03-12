@@ -1,28 +1,30 @@
 // Load .env files
 require("dotenv").config();
 
-let MongoDbClient = require("./database/mongodb/MongoDbClient");
-let UportClient = require("./services/blockchain/UportClient");
-let express = require("express");
-let bodyParser = require("body-parser");
-let session = require("express-session");
-let cors = require("cors");
-let router = require("./routes");
-let common = require("./common/common");
-let { errors } = require("celebrate");
+const MongoDbClient = require("./database/mongodb/MongoDbClient");
+const UportClient = require("./services/blockchain/UportClient");
+const express = require("express");
+const bodyParser = require("body-parser");
+const session = require("express-session");
+const cors = require("cors");
+const router = require("./routes");
+const common = require("./common/common");
+const { errors } = require("celebrate");
+const fileUpload = require("express-fileupload");
 require("./routes/middleware/passport");
 
 const app = express();
 
 // Set Up Clients.
-let dbClient = new MongoDbClient();
-let blockchainClient = new UportClient();
+const dbClient = new MongoDbClient();
+const blockchainClient = new UportClient();
 
 common.dbClient = dbClient;
 common.blockchainClient = blockchainClient;
 
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.json());
+app.use(fileUpload({ useTempFiles: true }));
 app.use(cors());
 app.use(
   session({
@@ -50,6 +52,6 @@ app.use(function(err, req, res, next) {
   });
 });
 
-var server = app.listen(process.env.PORT || 5000, function() {
+const server = app.listen(process.env.PORT || 5000, function() {
   console.log("Listening on port " + server.address().port);
 });
