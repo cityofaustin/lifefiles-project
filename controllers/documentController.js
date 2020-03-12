@@ -1,38 +1,69 @@
 const common = require("../common/common");
 const documentStorageHelper = require("../common/documentStorageHelper");
+const permanent = require("../common/permanentClient");
 
 module.exports = {
   uploadDocument: async (req, res, next) => {
     const account = await common.dbClient.getAccountById(req.payload.id);
-    const document = await common.dbClient.uploadDocument(
+    const file = req.files.img;
+
+    let key = await documentStorageHelper.upload(file);
+
+    let permanentOrgFileArchiveNumber = await permanent.addToPermanentArchive(
+      file,
+      key,
+      account.permanentOrgArchiveNumber
+    );
+
+    const document = await common.dbClient.createDocument(
       account,
       account,
-      req.file,
-      req.body.type
+      file.name,
+      key,
+      req.body.type,
+      permanentOrgFileArchiveNumber,
+      file.md5
     );
     res.status(200).json({ file: document.url });
   },
 
   uploadDocumentOnBehalfOfUser: async (req, res, next) => {
     const account = await common.dbClient.getAccountById(req.payload.id);
-    let sealMD5 = req.files[1].md5;
-
-    if (sealMD5 === undefined) {
-      let etag = req.files[1].etag;
-      etag = etag.replace(/\"/g, "");
-      sealMD5 = etag;
-    }
 
     const uploadForAccount = await common.dbClient.getAccountById(
       req.body.uploadForAccountId
     );
 
-    const document = await common.dbClient.uploadDocument(
+    const uploadOnBehalfOfFile = req.files.img[0];
+    const notarySealFile = req.files.img[1];
+
+    let key = await documentStorageHelper.upload(uploadOnBehalfOfFile);
+
+    let permanentOrgFileArchiveNumber = await permanent.addToPermanentArchive(
+      uploadOnBehalfOfFile,
+      key,
+      uploadForAccount.permanentOrgArchiveNumber
+    );
+
+    const document = await common.dbClient.createDocument(
       account,
       uploadForAccount,
-      req.files[0],
-      req.body.type
+      uploadOnBehalfOfFile.name,
+      key,
+      req.body.type,
+      permanentOrgFileArchiveNumber,
+      uploadOnBehalfOfFile.md5
     );
+
+    // Approve share request so person who uploaded it on behalf can have access
+    let shareRequest = await common.dbClient.createShareRequest(
+      account._id,
+      uploadForAccount._id,
+      req.body.type,
+      true
+    );
+
+    await common.dbClient.approveOrDenyShareRequest(shareRequest._id, true);
 
     // const issueTime = 1562950282;
     const issueTime = Math.floor(Date.now() / 1000);
@@ -44,7 +75,7 @@ module.exports = {
       req.body.type,
       document.hash,
       document.url,
-      sealMD5,
+      notarySealFile.md5,
       req.body.notarizationType,
       req.body.notaryInfo,
       req.body.ownerSignature,

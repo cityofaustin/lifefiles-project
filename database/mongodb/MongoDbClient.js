@@ -61,7 +61,7 @@ class MongoDbClient {
             "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415"
         }
       };
-      this.createAccount(ownerAccount.account, ownerDid.did);
+      this.createAccount(ownerAccount.account, ownerDid.did, "06fz-0000");
 
       let caseWorkerAccount = {
         account: {
@@ -78,7 +78,11 @@ class MongoDbClient {
             "8ef83de6f0ccf32798f8afcd436936870af619511f2385e8aace87729e771a8b"
         }
       };
-      this.createAccount(caseWorkerAccount.account, caseWorkerDid.did);
+      this.createAccount(
+        caseWorkerAccount.account,
+        caseWorkerDid.did,
+        "06fy-0000"
+      );
     }
 
     if (documentTypes.length === 0) {
@@ -131,11 +135,12 @@ class MongoDbClient {
     return accounts;
   }
 
-  async createAccount(account, did) {
+  async createAccount(account, did, permanentOrgArchiveNumber) {
     const newAccount = new Account();
     newAccount.username = account.username;
     newAccount.email = account.email;
     newAccount.role = account.role;
+    newAccount.permanentOrgArchiveNumber = permanentOrgArchiveNumber;
     newAccount.didAddress = did.address;
     newAccount.didPrivateKey = did.privateKey;
     newAccount.setPassword(account.password);
@@ -189,7 +194,7 @@ class MongoDbClient {
     account.shareRequests.push(shareRequest);
     await account.save();
 
-    return account;
+    return shareRequest;
   }
 
   async approveOrDenyShareRequest(shareRequestId, approved) {
@@ -224,32 +229,29 @@ class MongoDbClient {
   }
 
   // Documents
-  async uploadDocument(
+  async createDocument(
     uploadedByAccount,
     uploadForAccount,
-    file,
-    documentType
+    originalFileName,
+    fileKey,
+    documentType,
+    permanentOrgFileArchiveNumber,
+    md5
   ) {
     const newDocument = new Document();
-    newDocument.name = file.originalName;
-    newDocument.url = file.key || file.filename;
+    newDocument.name = originalFileName;
+    newDocument.url = fileKey;
     newDocument.uploadedBy = uploadedByAccount;
     newDocument.belongsTo = uploadForAccount;
     newDocument.type = documentType;
-    const document = await newDocument.save();
+    newDocument.permanentOrgFileArchiveNumber = permanentOrgFileArchiveNumber;
+    newDocument.hash = md5;
+    await newDocument.save();
 
-    const hash = await documentStorageHelper.getMD5(
-      document.url,
-      uploadForAccount.generateJWT()
-    );
-
-    document.hash = hash;
-    await document.save();
-
-    uploadForAccount.documents.push(document);
+    uploadForAccount.documents.push(newDocument);
     await uploadForAccount.save();
 
-    return document;
+    return newDocument;
   }
 
   async getDocuments(accountId) {

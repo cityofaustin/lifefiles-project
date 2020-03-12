@@ -22,6 +22,7 @@ var AccountSchema = new mongoose.Schema(
       index: true
     },
     role: String,
+    permanentOrgArchiveNumber: String,
     didAddress: String,
     didPrivateKey: String,
     hash: String,
