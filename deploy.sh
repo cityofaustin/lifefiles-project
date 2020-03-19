@@ -8,4 +8,8 @@ git clone https://github.com/cityofaustin/mypass.git || echo Already Cloned, Con
 cd mypass-backend
 git pull
 
+docker-compose down
+docker-compose build
+docker-compose up -d
+
 echo ~~FINISHED~~
