@@ -16,3 +16,10 @@ workflows:
   test-and-deploy:
     jobs:
       - build-and-test
+      - request-testing:
+          type: approval
+          requires:
+            - build-and-test
+      - deploy-aws:
+          requires:
+            - request-testing
