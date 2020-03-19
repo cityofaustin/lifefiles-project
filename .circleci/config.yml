@@ -11,6 +11,14 @@ jobs:
           steps:
             - run: npm install
             - run: npm test
+  deploy-aws:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: ssh -o StrictHostKeyChecking=no ubuntu@ec2-34-212-27-73.us-west-2.compute.amazonaws.com "bash -s" < deploy.sh
 
 workflows:
   test-and-deploy:
