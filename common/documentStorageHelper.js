@@ -1,7 +1,6 @@
 const common = require("../common/common");
 const crypto = require("crypto");
 const path = require("path");
-const permanent = require("permanent-api-js");
 const request = require("request").defaults({ encoding: null });
 const md5 = require("md5");
 const ip = require("ip");

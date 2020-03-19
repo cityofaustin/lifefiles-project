@@ -5,7 +5,20 @@ const passport = require("passport");
 module.exports = {
   getAcccount: async (req, res, next) => {
     const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
-    res.status(200).json({ account: account.toAuthJSON() });
+    let returnAccount = account.toAuthJSON();
+    let documentSharedAccounts = [];
+
+    for (let document of returnAccount.documents) {
+      for (let shareAccountId of document.sharedWithAccountIds) {
+        let shareAccount = await common.dbClient.getAccountById(shareAccountId);
+        documentSharedAccounts.push(shareAccount.toPublicInfo());
+      }
+    }
+
+    res.status(200).json({
+      account: returnAccount,
+      documentSharedAccounts: documentSharedAccounts
+    });
   },
 
   getAcccounts: async (req, res, next) => {

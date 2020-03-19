@@ -81,5 +81,15 @@ AccountSchema.methods.toAuthJSON = function() {
   };
 };
 
+AccountSchema.methods.toPublicInfo = function() {
+  return {
+    username: this.username,
+    id: this._id,
+    email: this.email,
+    role: this.role,
+    didAddress: this.didAddress
+  };
+};
+
 const Account = mongoose.model("Account", AccountSchema);
 module.exports = Account;
