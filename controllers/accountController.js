@@ -23,7 +23,13 @@ module.exports = {
 
   getAcccounts: async (req, res, next) => {
     const accounts = await common.dbClient.getAllAccounts();
-    res.status(200).json(accounts);
+    let returnAccounts = [];
+
+    for (let account of accounts) {
+      returnAccounts.push(account.toPublicInfo());
+    }
+
+    res.status(200).json(returnAccounts);
   },
 
   newAccount: async (req, res, next) => {
