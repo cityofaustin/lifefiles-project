@@ -1,6 +1,8 @@
 const common = require("../common/common");
 const permanent = require("../common/permanentClient");
+const documentStorageHelper = require("../common/documentStorageHelper");
 const passport = require("passport");
+var fs = require("fs");
 
 module.exports = {
   getAcccount: async (req, res, next) => {
@@ -38,10 +40,34 @@ module.exports = {
     );
     const did = await common.blockchainClient.createNewDID();
 
+    let profileImageUrl = "anon-user.png";
+
+    if (req.files && req.files.img) {
+      profileImageUrl = await documentStorageHelper.upload(req.files.img);
+    }
+
     const account = await common.dbClient.createAccount(
       req.body.account,
       did,
-      permanentArchiveNumber
+      permanentArchiveNumber,
+      profileImageUrl
+    );
+
+    return res.status(201).json({ account: account.toAuthJSON() });
+  },
+
+  updateAccount: async (req, res, next) => {
+    const accountId = req.payload.id;
+
+    let profileImageUrl = "anon-user.png";
+
+    if (req.files && req.files.img) {
+      profileImageUrl = await documentStorageHelper.upload(req.files.img);
+    }
+
+    const account = await common.dbClient.updateAccount(
+      accountId,
+      profileImageUrl
     );
 
     return res.status(201).json({ account: account.toAuthJSON() });
@@ -86,6 +112,21 @@ module.exports = {
       documentTypes.push(document.type);
     }
     res.status(200).json(documentTypes);
+  },
+
+  getProfileImage: async (req, res, next) => {
+    const account = await common.dbClient.getAccountById(req.payload.id);
+    let payload;
+
+    if (account.profileImageUrl === "anon-user.png") {
+      payload = fs.createReadStream("./assets/anon-user.png");
+    } else {
+      payload = await documentStorageHelper.getDocumentBytes(
+        req.params.imageurl
+      );
+    }
+
+    payload.pipe(res);
   },
 
   newShareRequest: async (req, res, next) => {

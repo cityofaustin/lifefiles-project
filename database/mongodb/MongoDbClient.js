@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const grid = require("gridfs-stream");
-const documentStorageHelper = require("../../common/documentStorageHelper");
 
 const Account = require("./models/Account");
 const Document = require("./models/Document");
@@ -49,6 +48,8 @@ class MongoDbClient {
       let ownerAccount = {
         account: {
           username: "SallyOwner",
+          firstName: "Sally",
+          lastName: "Owner",
           password: "owner",
           role: "owner",
           email: "owner@owner.com"
@@ -61,11 +62,18 @@ class MongoDbClient {
             "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415"
         }
       };
-      this.createAccount(ownerAccount.account, ownerDid.did, "06fz-0000");
+      this.createAccount(
+        ownerAccount.account,
+        ownerDid.did,
+        "06fz-0000",
+        "anon-user.png"
+      );
 
       let caseWorkerAccount = {
         account: {
           username: "BillyCaseWorker",
+          firstName: "Billy",
+          lastName: "Caseworker",
           password: "caseworker",
           role: "notary",
           email: "caseworker@caseworker.com"
@@ -81,7 +89,8 @@ class MongoDbClient {
       this.createAccount(
         caseWorkerAccount.account,
         caseWorkerDid.did,
-        "06fy-0000"
+        "06fy-0000",
+        "anon-user.png"
       );
     }
 
@@ -135,18 +144,33 @@ class MongoDbClient {
     return accounts;
   }
 
-  async createAccount(account, did, permanentOrgArchiveNumber) {
+  async createAccount(
+    accountReq,
+    did,
+    permanentOrgArchiveNumber,
+    profileImageUrl
+  ) {
     const newAccount = new Account();
-    newAccount.username = account.username;
-    newAccount.email = account.email;
-    newAccount.role = account.role;
+    newAccount.username = accountReq.username;
+    newAccount.firstName = accountReq.firstname;
+    newAccount.lastName = accountReq.lastname;
+    newAccount.email = accountReq.email;
+    newAccount.role = accountReq.role;
     newAccount.permanentOrgArchiveNumber = permanentOrgArchiveNumber;
     newAccount.didAddress = did.address;
     newAccount.didPrivateKey = did.privateKey;
-    newAccount.setPassword(account.password);
+    newAccount.profileImageUrl = profileImageUrl;
+    newAccount.setPassword(accountReq.password);
 
     const savedAccount = await newAccount.save();
     return savedAccount;
+  }
+
+  async updateAccount(accountId, profileImageUrl) {
+    const account = await Account.findById(accountId);
+    account.profileImageUrl = profileImageUrl;
+    await account.save();
+    return account;
   }
 
   async getShareRequests(accountId) {

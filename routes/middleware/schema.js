@@ -28,7 +28,13 @@ module.exports = {
           .required(),
         username: Joi.string()
           .min(1)
-          .required()
+          .required(),
+        firstname: Joi.string()
+          .min(1)
+          .optional(),
+        lastname: Joi.string()
+          .min(1)
+          .optional()
       })
       .required()
   }),

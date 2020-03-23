@@ -21,6 +21,9 @@ var AccountSchema = new mongoose.Schema(
       match: [/\S+@\S+\.\S+/, "is invalid"],
       index: true
     },
+    firstName: String,
+    lastName: String,
+    profileImageUrl: String,
     role: String,
     permanentOrgArchiveNumber: String,
     didAddress: String,
@@ -71,23 +74,29 @@ AccountSchema.methods.generateJWT = function() {
 AccountSchema.methods.toAuthJSON = function() {
   return {
     username: this.username,
+    firstName: this.firstName,
+    lastName: this.lastName,
     id: this._id,
     email: this.email,
     role: this.role,
     didAddress: this.didAddress,
     token: this.generateJWT(),
     shareRequests: this.shareRequests,
-    documents: this.documents
+    documents: this.documents,
+    profileImageUrl: this.profileImageUrl
   };
 };
 
 AccountSchema.methods.toPublicInfo = function() {
   return {
     username: this.username,
+    firstName: this.firstName,
+    lastName: this.lastName,
     id: this._id,
     email: this.email,
     role: this.role,
-    didAddress: this.didAddress
+    didAddress: this.didAddress,
+    profileImageUrl: this.profileImageUrl
   };
 };
 

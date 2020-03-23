@@ -15,6 +15,7 @@ router.route("/my-account").get(auth.required, AccountController.getAcccount);
 router
   .route("/accounts")
   .get(auth.required, AccountController.getAcccounts)
+  .put(auth.required, AccountController.updateAccount)
   .post(
     celebrate({
       body: Schema.userRegisterSchema
@@ -28,6 +29,7 @@ router.route("/accounts/login").post(
   }),
   AccountController.login
 );
+
 router
   .route("/account/:accountId/document-types/")
   .get(auth.required, AccountController.getAvailableDocumentTypes);
@@ -40,6 +42,10 @@ router
     AccountController.newShareRequest
   )
   .put(auth.required, AccountController.approveOrDenyShareRequest);
+
+router
+  .route("/profile-image/:imageurl")
+  .get(auth.required, AccountController.getProfileImage);
 
 // Documents
 router.route("/document-types/").get(DocumentController.getDocumentTypes);
