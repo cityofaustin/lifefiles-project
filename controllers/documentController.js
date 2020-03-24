@@ -7,7 +7,7 @@ module.exports = {
     const account = await common.dbClient.getAccountById(req.payload.id);
     const file = req.files.img;
 
-    let key = await documentStorageHelper.upload(file);
+    let key = await documentStorageHelper.upload(file, "document");
 
     let permanentOrgFileArchiveNumber = await permanent.addToPermanentArchive(
       file,
@@ -22,7 +22,8 @@ module.exports = {
       key,
       req.body.type,
       permanentOrgFileArchiveNumber,
-      file.md5
+      file.md5,
+      req.body.validuntildate
     );
     res.status(200).json({ file: document.url });
   },
@@ -37,7 +38,10 @@ module.exports = {
     const uploadOnBehalfOfFile = req.files.img[0];
     const notarySealFile = req.files.img[1];
 
-    let key = await documentStorageHelper.upload(uploadOnBehalfOfFile);
+    let key = await documentStorageHelper.upload(
+      uploadOnBehalfOfFile,
+      "document"
+    );
 
     let permanentOrgFileArchiveNumber = await permanent.addToPermanentArchive(
       uploadOnBehalfOfFile,
@@ -52,7 +56,8 @@ module.exports = {
       key,
       req.body.type,
       permanentOrgFileArchiveNumber,
-      uploadOnBehalfOfFile.md5
+      uploadOnBehalfOfFile.md5,
+      req.body.validuntildate
     );
 
     // Approve share request so person who uploaded it on behalf can have access
@@ -145,7 +150,10 @@ module.exports = {
     }
 
     if (document.belongsTo == accountId || approved === true) {
-      const payload = await documentStorageHelper.getDocumentBytes(filename);
+      const payload = await documentStorageHelper.getDocumentBytes(
+        filename,
+        "document"
+      );
       if (payload.error !== undefined) {
         res.status(404).json({
           error: payload.error
@@ -163,7 +171,7 @@ module.exports = {
   deleteDocument: async (req, res, next) => {
     const filename = req.params.filename;
     let deletedDocument = await common.dbClient.deleteDocument(filename);
-    await documentStorageHelper.deleteDocumentBytes(filename);
+    await documentStorageHelper.deleteDocumentBytes(filename, "document");
 
     await common.dbClient.deleteShareRequestByDocumentId(deletedDocument._id);
 

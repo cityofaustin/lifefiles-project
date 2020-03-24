@@ -23,6 +23,8 @@ var AccountSchema = new mongoose.Schema(
     },
     firstName: String,
     lastName: String,
+    phone: String,
+    organization: String,
     profileImageUrl: String,
     role: String,
     permanentOrgArchiveNumber: String,

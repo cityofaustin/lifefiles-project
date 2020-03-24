@@ -34,6 +34,12 @@ module.exports = {
           .optional(),
         lastname: Joi.string()
           .min(1)
+          .optional(),
+        phonenumber: Joi.string()
+          .min(1)
+          .optional(),
+        organization: Joi.string()
+          .min(1)
           .optional()
       })
       .required()
@@ -53,9 +59,6 @@ module.exports = {
   shareRequestSchema: Joi.object().keys({
     shareRequest: Joi.object()
       .keys({
-        accountId: Joi.string()
-          .min(1)
-          .required(),
         documentType: Joi.string()
           .min(1)
           .required()

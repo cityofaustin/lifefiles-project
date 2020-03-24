@@ -45,6 +45,8 @@ class MongoDbClient {
 
     if (accounts.length === 0) {
       console.log("\nAccounts are empty. Populating default values...");
+
+      // Sally
       let ownerAccount = {
         account: {
           username: "SallyOwner",
@@ -52,7 +54,9 @@ class MongoDbClient {
           lastName: "Owner",
           password: "owner",
           role: "owner",
-          email: "owner@owner.com"
+          email: "owner@owner.com",
+          phoneNumber: "555-555-5555",
+          organization: "-"
         }
       };
       let ownerDid = {
@@ -66,9 +70,10 @@ class MongoDbClient {
         ownerAccount.account,
         ownerDid.did,
         "06fz-0000",
-        "anon-user.png"
+        "sally.png"
       );
 
+      // Billy
       let caseWorkerAccount = {
         account: {
           username: "BillyCaseWorker",
@@ -76,7 +81,9 @@ class MongoDbClient {
           lastName: "Caseworker",
           password: "caseworker",
           role: "notary",
-          email: "caseworker@caseworker.com"
+          email: "caseworker@caseworker.com",
+          phoneNumber: "555-555-5555",
+          organization: "Banana Org"
         }
       };
       let caseWorkerDid = {
@@ -90,7 +97,61 @@ class MongoDbClient {
         caseWorkerAccount.account,
         caseWorkerDid.did,
         "06fy-0000",
-        "anon-user.png"
+        "billy.png"
+      );
+
+      // Karen
+      let caseWorkerAccountTwo = {
+        account: {
+          username: "KarenCaseWorker",
+          firstName: "Karen",
+          lastName: "Caseworker",
+          password: "caseworker",
+          role: "notary",
+          email: "karencaseworker@caseworker.com",
+          phoneNumber: "555-555-5555",
+          organization: "Apple Org"
+        }
+      };
+      let caseWorkerDidTwo = {
+        did: {
+          address: "0x0F4FBead5219388CD71FAa2bbd63C26Aad0ae2c5",
+          privateKey:
+            "403c9b0e55db5ff1434d07711baa34d76eecc2723cdb599a42f5f2cbf6fd3262"
+        }
+      };
+      this.createAccount(
+        caseWorkerAccountTwo.account,
+        caseWorkerDidTwo.did,
+        "06fy-0000",
+        "karen.png"
+      );
+
+      // Josh
+      let caseWorkerAccountThree = {
+        account: {
+          username: "JoshCaseWorker",
+          firstName: "Josh",
+          lastName: "Caseworker",
+          password: "caseworker",
+          role: "notary",
+          email: "joshcaseworker@caseworker.com",
+          phoneNumber: "555-555-5555",
+          organization: "Pear Org"
+        }
+      };
+      let caseWorkerDidThree = {
+        did: {
+          address: "0x56bf6887202d8aa6Df4Bc312e866E955FE0FC9aD",
+          privateKey:
+            "a2bf1a07ccb785b7baf041dc0135ae9bfbf049bd36068777e4796185fe1ff5c0"
+        }
+      };
+      this.createAccount(
+        caseWorkerAccountThree.account,
+        caseWorkerDidThree.did,
+        "06fy-0000",
+        "josh.png"
       );
     }
 
@@ -156,6 +217,8 @@ class MongoDbClient {
     newAccount.lastName = accountReq.lastname;
     newAccount.email = accountReq.email;
     newAccount.role = accountReq.role;
+    newAccount.phoneNumber = accountReq.phonenumber;
+    newAccount.organization = accountReq.organization;
     newAccount.permanentOrgArchiveNumber = permanentOrgArchiveNumber;
     newAccount.didAddress = did.address;
     newAccount.didPrivateKey = did.privateKey;
@@ -260,8 +323,14 @@ class MongoDbClient {
     fileKey,
     documentType,
     permanentOrgFileArchiveNumber,
-    md5
+    md5,
+    validUntilDate
   ) {
+    let date;
+    if (validUntilDate !== undefined && validUntilDate.contains("-")) {
+      date = new Date(validUntilDate);
+    }
+
     const newDocument = new Document();
     newDocument.name = originalFileName;
     newDocument.url = fileKey;
@@ -270,6 +339,7 @@ class MongoDbClient {
     newDocument.type = documentType;
     newDocument.permanentOrgFileArchiveNumber = permanentOrgFileArchiveNumber;
     newDocument.hash = md5;
+    newDocument.validUntilDate = date;
     await newDocument.save();
 
     uploadForAccount.documents.push(newDocument);

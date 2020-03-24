@@ -44,8 +44,8 @@ router
   .put(auth.required, AccountController.approveOrDenyShareRequest);
 
 router
-  .route("/profile-image/:imageurl")
-  .get(auth.required, AccountController.getProfileImage);
+  .route("/profile-image/:imageurl/:jwt")
+  .get(auth.image, AccountController.getProfileImage);
 
 // Documents
 router.route("/document-types/").get(DocumentController.getDocumentTypes);

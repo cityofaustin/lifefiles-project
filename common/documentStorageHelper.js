@@ -37,8 +37,13 @@ module.exports = {
     });
   },
 
-  upload: async file => {
+  upload: async (file, type) => {
     if (process.env.DOCUMENT_STORAGE_CHOICE === "S3") {
+      let bucketName = process.env.AWS_DOCUMENTS_BUCKET_NAME;
+      if (type === "profile-image") {
+        bucketName = process.env.AWS_PROFILE_IMAGES_BUCKET_NAME;
+      }
+
       const buf = crypto.randomBytes(16);
       const key = buf.toString("hex") + path.extname(file.name);
       let s3Res = await new Promise((resolve, reject) => {
@@ -46,7 +51,7 @@ module.exports = {
           {
             ACL: "private",
             ServerSideEncryption: "AES256",
-            Bucket: process.env.AWS_BUCKET_NAME,
+            Bucket: bucketName,
             Key: key,
             Body: fs.readFileSync(file.tempFilePath)
           },
@@ -55,6 +60,7 @@ module.exports = {
             if (err) {
               console.log("S3 Error");
               console.log(err);
+              return;
             }
             resolve(data);
           }
@@ -65,12 +71,17 @@ module.exports = {
     }
   },
 
-  getDocumentBytes: async filename => {
+  getDocumentBytes: async (filename, type) => {
     if (process.env.DOCUMENT_STORAGE_CHOICE === "S3") {
+      let bucketName = process.env.AWS_DOCUMENTS_BUCKET_NAME;
+      if (type === "profile-image") {
+        bucketName = process.env.AWS_PROFILE_IMAGES_BUCKET_NAME;
+      }
+
       return new Promise((resolve, reject) => {
         s3.getObject(
           {
-            Bucket: process.env.AWS_BUCKET_NAME,
+            Bucket: bucketName,
             Key: filename
           },
           function(err, data) {
@@ -78,6 +89,7 @@ module.exports = {
             if (err) {
               console.log("S3 Error");
               console.log(err);
+              return;
             }
 
             let myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer(
@@ -100,12 +112,17 @@ module.exports = {
     }
   },
 
-  deleteDocumentBytes: async filename => {
+  deleteDocumentBytes: async (filename, type) => {
     if (process.env.DOCUMENT_STORAGE_CHOICE === "S3") {
+      let bucketName = process.env.AWS_DOCUMENTS_BUCKET_NAME;
+      if (type === "profile-image") {
+        bucketName = process.env.AWS_PROFILE_IMAGES_BUCKET_NAME;
+      }
+
       return new Promise((resolve, reject) => {
         s3.deleteObject(
           {
-            Bucket: process.env.AWS_BUCKET_NAME,
+            Bucket: bucketName,
             Key: filename
           },
           function(err, data) {
@@ -113,6 +130,7 @@ module.exports = {
             if (err) {
               console.log("S3 Error");
               console.log(err);
+              return;
             }
 
             resolve("Delete Successful");

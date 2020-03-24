@@ -11,6 +11,7 @@ var DocumentSchema = new mongoose.Schema(
     vpJwt: String,
     type: String,
     permanentOrgFileArchiveNumber: String,
+    validUntilDate: Date,
     uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Account" },
     belongsTo: { type: mongoose.Schema.Types.ObjectId, ref: "Account" },
     sharedWithAccountIds: [String]

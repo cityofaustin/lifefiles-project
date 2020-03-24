@@ -43,7 +43,10 @@ module.exports = {
     let profileImageUrl = "anon-user.png";
 
     if (req.files && req.files.img) {
-      profileImageUrl = await documentStorageHelper.upload(req.files.img);
+      profileImageUrl = await documentStorageHelper.upload(
+        req.files.img,
+        "profile-image"
+      );
     }
 
     const account = await common.dbClient.createAccount(
@@ -105,7 +108,9 @@ module.exports = {
   },
 
   getAvailableDocumentTypes: async (req, res, next) => {
+    console.log("doc types");
     const accountId = req.params.accountId;
+    console.log("doc types + " + accountId);
     const documents = await common.dbClient.getDocuments(accountId);
     let documentTypes = [];
     for (let document of documents) {
@@ -122,7 +127,8 @@ module.exports = {
       payload = fs.createReadStream("./assets/anon-user.png");
     } else {
       payload = await documentStorageHelper.getDocumentBytes(
-        req.params.imageurl
+        req.params.imageurl,
+        "profile-image"
       );
     }
 
@@ -131,7 +137,7 @@ module.exports = {
 
   newShareRequest: async (req, res, next) => {
     const accountRequestingId = req.payload.id;
-    const accountId = req.body.shareRequest.accountId;
+    const accountId = req.params.accountId;
     const documentTypeName = req.body.shareRequest.documentType;
 
     const shareRequest = await common.dbClient.createShareRequest(
