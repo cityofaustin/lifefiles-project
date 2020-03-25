@@ -10,8 +10,13 @@ services:
       - .:/app
     links:
       - mongo
+
   mongo:
-    container_name: mongo
-    image: mongo
+    image: mongo:latest
     ports:
-      - "27017:27017"
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+
+volumes:
+  mongodb_data_container:
