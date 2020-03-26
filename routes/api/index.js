@@ -36,11 +36,18 @@ router
 
 router
   .route("/account/:accountId/share-requests/")
+  .get(auth.required, AccountController.getShareRequests);
+
+router
+  .route("/share-requests")
   .get(auth.required, AccountController.getShareRequests)
   .post(
     [auth.required, celebrate({ body: Schema.shareRequestSchema })],
     AccountController.newShareRequest
-  )
+  );
+
+router
+  .route("/share-requests/:shareRequestId")
   .put(auth.required, AccountController.approveOrDenyShareRequest);
 
 router
@@ -57,6 +64,10 @@ router
     [auth.required, isAllowedUploadDocument],
     DocumentController.uploadDocument
   );
+
+router
+  .route("/documents/:documentId")
+  .put(auth.required, DocumentController.updateDocument);
 
 router
   .route("/upload-document-and-notarize-on-behalf-of-user/")
@@ -97,6 +108,14 @@ router
     [auth.required, celebrate({ body: Schema.permissionSchema })],
     AdminController.newPermission
   );
+
+/* TODO:
+      REMOVE THIS DANGEROUS CALL WHEN WE GO TO PRODUCTION
+  */
+router.route("/reset-database/").post(AdminController.resetDatabase);
+/* TODO:
+      REMOVE THIS DANGEROUS CALL WHEN WE GO TO PRODUCTION
+  */
 
 router.use(function(err, req, res, next) {
   if (err.name === "ValidationError") {

@@ -3,6 +3,53 @@ const documentStorageHelper = require("../common/documentStorageHelper");
 const permanent = require("../common/permanentClient");
 
 module.exports = {
+  updateDocument: async (req, res, next) => {
+    const documentId = req.params.documentId;
+    const account = await common.dbClient.getAccountById(req.payload.id);
+    const document = await common.dbClient.getDocumentById(documentId);
+
+    if (!document.belongsTo._id.equals(account._id)) {
+      res.status(403).json({
+        error: "Account not authorized update this document"
+      });
+      return;
+    }
+
+    let md5 = document.hash;
+    let filename = document.name;
+    let permanentOrgFileArchiveNumber = document.permanentOrgFileArchiveNumber;
+    let key = document.url;
+    let validuntildate = req.body.validuntildate || document.validUntilDate;
+
+    if (
+      req.files !== undefined &&
+      req.files !== null &&
+      req.files.img !== undefined
+    ) {
+      const newFile = req.files.img;
+      filename = newFile.name;
+      md5 = newFile.md5;
+      key = await documentStorageHelper.upload(newFile, "document");
+
+      permanentOrgFileArchiveNumber = await permanent.addToPermanentArchive(
+        newFile,
+        key,
+        account.permanentOrgArchiveNumber
+      );
+    }
+
+    const updatedDocument = await common.dbClient.updateDocument(
+      documentId,
+      filename,
+      key,
+      permanentOrgFileArchiveNumber,
+      md5,
+      validuntildate
+    );
+
+    res.status(200).json({ updatedDocument });
+  },
+
   uploadDocument: async (req, res, next) => {
     const account = await common.dbClient.getAccountById(req.payload.id);
     const file = req.files.img;
@@ -14,6 +61,14 @@ module.exports = {
       key,
       account.permanentOrgArchiveNumber
     );
+
+    if (req.body.type === undefined) {
+      res.status(501).json({
+        error:
+          "Document Type Does Not Exist!, Must be of type: Passport, Birth Certificate..."
+      });
+      return;
+    }
 
     const document = await common.dbClient.createDocument(
       account,
@@ -64,8 +119,7 @@ module.exports = {
     let shareRequest = await common.dbClient.createShareRequest(
       account._id,
       uploadForAccount._id,
-      req.body.type,
-      true
+      req.body.type
     );
 
     await common.dbClient.approveOrDenyShareRequest(shareRequest._id, true);

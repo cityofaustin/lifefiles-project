@@ -61,6 +61,12 @@ module.exports = {
       .keys({
         documentType: Joi.string()
           .min(1)
+          .required(),
+        toAccountId: Joi.string()
+          .min(1)
+          .required(),
+        fromAccountId: Joi.string()
+          .min(1)
           .required()
       })
       .required()

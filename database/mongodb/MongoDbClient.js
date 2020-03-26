@@ -38,6 +38,12 @@ class MongoDbClient {
     });
   }
 
+  async resetDatabase() {
+    await Account.collection.drop();
+    await Document.collection.drop();
+    await ShareRequest.collection.drop();
+    await this.populateDefaultValues();
+  }
   // DB initial setup
   async populateDefaultValues() {
     const accounts = await this.getAllAccounts();
@@ -50,12 +56,12 @@ class MongoDbClient {
       let ownerAccount = {
         account: {
           username: "SallyOwner",
-          firstName: "Sally",
-          lastName: "Owner",
+          firstname: "Sally",
+          lastname: "Owner",
           password: "owner",
           role: "owner",
           email: "owner@owner.com",
-          phoneNumber: "555-555-5555",
+          phonenumber: "555-555-5555",
           organization: "-"
         }
       };
@@ -77,12 +83,12 @@ class MongoDbClient {
       let caseWorkerAccount = {
         account: {
           username: "BillyCaseWorker",
-          firstName: "Billy",
-          lastName: "Caseworker",
+          firstname: "Billy",
+          lastname: "Caseworker",
           password: "caseworker",
           role: "notary",
           email: "caseworker@caseworker.com",
-          phoneNumber: "555-555-5555",
+          phonenumber: "555-555-5555",
           organization: "Banana Org"
         }
       };
@@ -104,12 +110,12 @@ class MongoDbClient {
       let caseWorkerAccountTwo = {
         account: {
           username: "KarenCaseWorker",
-          firstName: "Karen",
-          lastName: "Caseworker",
+          firstname: "Karen",
+          lastname: "Caseworker",
           password: "caseworker",
           role: "notary",
           email: "karencaseworker@caseworker.com",
-          phoneNumber: "555-555-5555",
+          phonenumber: "555-555-5555",
           organization: "Apple Org"
         }
       };
@@ -131,12 +137,12 @@ class MongoDbClient {
       let caseWorkerAccountThree = {
         account: {
           username: "JoshCaseWorker",
-          firstName: "Josh",
-          lastName: "Caseworker",
+          firstname: "Josh",
+          lastname: "Caseworker",
           password: "caseworker",
           role: "notary",
           email: "joshcaseworker@caseworker.com",
-          phoneNumber: "555-555-5555",
+          phonenumber: "555-555-5555",
           organization: "Pear Org"
         }
       };
@@ -348,6 +354,37 @@ class MongoDbClient {
     return newDocument;
   }
 
+  async updateDocument(
+    documentId,
+    filename,
+    key,
+    permanentOrgFileArchiveNumber,
+    md5,
+    validUntilDate
+  ) {
+    let document = await Document.findById(documentId);
+
+    let date = validUntilDate;
+
+    if (
+      validUntilDate !== undefined &&
+      !(validUntilDate instanceof Date) &&
+      validUntilDate.includes("-")
+    ) {
+      date = new Date(validUntilDate);
+    }
+
+    document.name = filename;
+    document.url = key;
+
+    document.permanentOrgFileArchiveNumber = permanentOrgFileArchiveNumber;
+    document.hash = md5;
+    document.validUntilDate = date;
+    await document.save();
+
+    return document;
+  }
+
   async getDocuments(accountId) {
     const account = await Account.findById(accountId);
 
@@ -362,6 +399,11 @@ class MongoDbClient {
 
   async getDocument(filename) {
     let document = await Document.findOne({ url: filename });
+    return document;
+  }
+
+  async getDocumentById(documentId) {
+    let document = await Document.findById(documentId);
     return document;
   }
 

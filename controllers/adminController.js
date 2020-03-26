@@ -1,13 +1,20 @@
 const common = require("../common/common");
 
 module.exports = {
+  resetDatabase: async (req, res, next) => {
+    await common.dbClient.resetDatabase();
+    res.status(200).json({ message: "success" });
+  },
+
   getPermissions: async (req, res, next) => {
     const permissions = await common.dbClient.getAllPermissions();
     res.status(200).json({ permissions });
   },
 
   newPermission: async (req, res, next) => {
-    const permission = await common.dbClient.createPermission(req.body.permission);
+    const permission = await common.dbClient.createPermission(
+      req.body.permission
+    );
     return res.status(201).json({ permission: permission });
   },
 
@@ -22,7 +29,9 @@ module.exports = {
   },
 
   newRolePermissionTable: async (req, res, next) => {
-    const rolePermissionTable = await common.dbClient.newRolePermissionTable(req.body.rolePermissionTable);
+    const rolePermissionTable = await common.dbClient.newRolePermissionTable(
+      req.body.rolePermissionTable
+    );
     return res.status(201).json({ rolePermissionTable: rolePermissionTable });
   },
 
@@ -50,7 +59,9 @@ module.exports = {
         for (permission of permissions) {
           if (permission.paired === true) {
             if (role.name !== innerRole.name) {
-              rolePermissionTable[role.name + "-" + permission.name + "-" + innerRole.name] = true;
+              rolePermissionTable[
+                role.name + "-" + permission.name + "-" + innerRole.name
+              ] = true;
             }
           }
         }

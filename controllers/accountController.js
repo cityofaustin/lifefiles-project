@@ -100,17 +100,18 @@ module.exports = {
   },
 
   getShareRequests: async (req, res, next) => {
-    const shareRequests = await common.dbClient.getShareRequests(
-      req.params.accountId
-    );
+    let accountId = req.payload.id;
+    if (req.params && req.params.accountId) {
+      accountId = req.params.accountId;
+    }
+
+    const shareRequests = await common.dbClient.getShareRequests(accountId);
 
     res.status(200).json(shareRequests);
   },
 
   getAvailableDocumentTypes: async (req, res, next) => {
-    console.log("doc types");
     const accountId = req.params.accountId;
-    console.log("doc types + " + accountId);
     const documents = await common.dbClient.getDocuments(accountId);
     let documentTypes = [];
     for (let document of documents) {
@@ -136,22 +137,67 @@ module.exports = {
   },
 
   newShareRequest: async (req, res, next) => {
-    const accountRequestingId = req.payload.id;
-    const accountId = req.params.accountId;
+    const accountId = req.payload.id;
+
+    const fromAccountId = req.body.shareRequest.fromAccountId;
+    const toAccountId = req.body.shareRequest.toAccountId;
     const documentTypeName = req.body.shareRequest.documentType;
 
+    let authorized = false;
+
+    if (accountId == fromAccountId || accountId == toAccountId) {
+      authorized = true;
+    }
+
+    if (!authorized) {
+      res.status(403).json({
+        error: "Account not authorized to approve create this share request"
+      });
+      return;
+    }
+
+    let approved = false;
+
+    if (accountId == fromAccountId) {
+      approved = true;
+    }
+
     const shareRequest = await common.dbClient.createShareRequest(
-      accountRequestingId,
-      accountId,
+      toAccountId,
+      fromAccountId,
       documentTypeName
     );
+
+    if (approved) {
+      await common.dbClient.approveOrDenyShareRequest(
+        shareRequest._id,
+        approved
+      );
+    }
 
     res.status(200).json(shareRequest);
   },
 
   approveOrDenyShareRequest: async (req, res, next) => {
-    const shareRequestId = req.body.shareRequestId;
+    const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
+    const shareRequestId = req.params.shareRequestId;
     const approved = req.body.approved;
+
+    let authorized = false;
+
+    for (let shareRequest of account.shareRequests) {
+      if (shareRequest._id.equals(shareRequestId)) {
+        authorized = true;
+        break;
+      }
+    }
+
+    if (!authorized) {
+      res.status(403).json({
+        error: "Account not authorized to approve this share request"
+      });
+      return;
+    }
 
     const shareRequest = await common.dbClient.approveOrDenyShareRequest(
       shareRequestId,
