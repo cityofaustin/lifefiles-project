@@ -1,5 +1,6 @@
 const common = require("../common/common");
 const documentStorageHelper = require("../common/documentStorageHelper");
+const documentNotarization = require("../common/documentNotarization");
 const permanent = require("../common/permanentClient");
 
 module.exports = {
@@ -235,5 +236,83 @@ module.exports = {
   getDocumentTypes: async (req, res, next) => {
     const documentTypes = await common.dbClient.getAllDocumentTypes();
     res.status(200).json({ documentTypes: documentTypes });
+  },
+
+  createNotarizedDocument: async (req, res, next) => {
+    const notaryAccount = await common.dbClient.getAccountById(req.payload.id);
+    const ownerAccount = await common.dbClient.getAccountById(
+      req.body.ownerAccountId
+    );
+
+    const documentType = req.body.type;
+    const did = await common.blockchainClient.createNewDID();
+    const documentDID = "did:ethr:" + did.address;
+    const issueTime = Math.floor(Date.now() / 1000);
+    const issuanceDate = Date.now();
+    const expirationDate = new Date(req.body.expirationDate);
+    let notaryName = notaryAccount.firstName + notaryAccount.lastName;
+    notaryName = notaryName.replace(/\s/g, "");
+    const notaryId = "123456";
+
+    let fileInfo = await documentNotarization.createNotarizedDocument(
+      req.files.img[0],
+      req.files.img[1],
+      req.files.img[2],
+      documentDID
+    );
+
+    let s3FileRequst = {
+      name: "notarizedDocument.pdf",
+      tempFilePath: fileInfo.filename
+    };
+
+    let key = await documentStorageHelper.upload(s3FileRequst, "document");
+
+    const document = await common.dbClient.createDocument(
+      ownerAccount,
+      ownerAccount,
+      req.files.img[0].name +
+        "-" +
+        req.files.img[1].name +
+        "-" +
+        req.files.img[2].name,
+      key,
+      "Notarized " + documentType,
+      "",
+      fileInfo.md5,
+      expirationDate
+    );
+
+    let notarizedVCJwt = await common.blockchainClient.createNotarizedVC(
+      notaryAccount.didAddress,
+      notaryAccount.didPrivateKey,
+      ownerAccount.didAddress,
+      documentDID,
+      documentType,
+      fileInfo.md5,
+      issueTime,
+      issuanceDate,
+      expirationDate,
+      notaryName,
+      notaryId
+    );
+
+    const verifiedVC = await common.blockchainClient.verifyVC(notarizedVCJwt);
+
+    console.log("\n\nVERIFIED VC:\n");
+    console.log(verifiedVC);
+
+    await common.dbClient.createVerifiableCredential(
+      notarizedVCJwt,
+      JSON.stringify(verifiedVC),
+      ownerAccount,
+      document
+    );
+
+    res.status(200).json({
+      vc: notarizedVCJwt,
+      verifiedVC: verifiedVC,
+      documentUrl: document.url
+    });
   }
 };

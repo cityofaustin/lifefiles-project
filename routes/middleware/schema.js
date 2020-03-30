@@ -80,5 +80,14 @@ module.exports = {
           .required()
       })
       .required()
+  }),
+
+  createNotarizedDocumentSchema: Joi.object().keys({
+    ownerAccountId: Joi.string()
+      .min(1)
+      .required(),
+    expirationDate: Joi.string()
+      .min(1)
+      .required()
   })
 };

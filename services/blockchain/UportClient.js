@@ -79,6 +79,70 @@ class UportClient {
     return vcJwt;
   }
 
+  async createNotarizedVC(
+    issuerAddress,
+    issuerPrivateKey,
+    ownerAddress,
+    documentDID,
+    documentType,
+    documentHash,
+    issueTime,
+    issuanceDate,
+    expirationDate,
+    notaryName,
+    notaryId
+  ) {
+    const issuerEthrDid = new EthrDID({
+      address: issuerAddress,
+      privateKey: issuerPrivateKey
+    });
+
+    const ownerDID = "did:ethr:" + ownerAddress;
+    const issuerDID = "did:ethr:" + issuerAddress;
+
+    const vcPayload = {
+      sub: ownerDID,
+      nbf: issueTime,
+      vc: {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://www.w3.org/2018/credentials/examples/v1"
+        ],
+        id: "http://example.gov/credentials/3732",
+        type: ["VerifiableCredential", "TexasNotaryCredential"],
+        issuer: {
+          id: issuerDID,
+          name: notaryName,
+          notaryId: notaryId
+        },
+        issuanceDate: issuanceDate,
+        expirationDate: expirationDate,
+        credentialSubject: {
+          id: ownerDID,
+          TexasNotary: {
+            id: documentDID,
+            type: "certifiedCopy",
+            name: documentType,
+            documentHash: documentHash,
+            hashType: "MD5"
+          }
+        },
+        credentialStatus: {
+          id: "https://example.edu/status/24",
+          type: "CredentialStatusList2020"
+        },
+
+        credentialSchema: {
+          id: "https://foreverbox.com/texasnotarty.json",
+          type: "JsonSchemaValidator2020"
+        }
+      }
+    };
+
+    const vcJwt = await createVerifiableCredential(vcPayload, issuerEthrDid);
+    return vcJwt;
+  }
+
   async createVP(issuerAddress, issuerPrivateKey, vcJwt) {
     const issuerEthrDid = new EthrDID({
       address: issuerAddress,

@@ -57,6 +57,16 @@ router
 // Documents
 router.route("/document-types/").get(DocumentController.getDocumentTypes);
 
+router.route("/create-notarized-document/").post(
+  [
+    auth.required,
+    celebrate({
+      body: Schema.createNotarizedDocumentSchema
+    })
+  ],
+  DocumentController.createNotarizedDocument
+);
+
 router
   .route("/documents/")
   .get(auth.required, DocumentController.getDocuments)
@@ -112,7 +122,7 @@ router
 /* TODO:
       REMOVE THIS DANGEROUS CALL WHEN WE GO TO PRODUCTION
   */
-router.route("/reset-database/").post(AdminController.resetDatabase);
+// router.route("/reset-database/").post(AdminController.resetDatabase);
 /* TODO:
       REMOVE THIS DANGEROUS CALL WHEN WE GO TO PRODUCTION
   */

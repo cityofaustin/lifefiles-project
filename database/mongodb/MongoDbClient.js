@@ -333,7 +333,11 @@ class MongoDbClient {
     validUntilDate
   ) {
     let date;
-    if (validUntilDate !== undefined && validUntilDate.contains("-")) {
+    if (
+      validUntilDate !== undefined &&
+      !(validUntilDate instanceof Date) &&
+      validUntilDate.contains("-")
+    ) {
       date = new Date(validUntilDate);
     }
 
