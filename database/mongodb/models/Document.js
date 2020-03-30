@@ -3,7 +3,7 @@ var mongoose = require("mongoose");
 var DocumentSchema = new mongoose.Schema(
   {
     name: String,
-    url: String,
+    url: { type: String, index: true },
     notarized: Boolean,
     did: String,
     hash: String,

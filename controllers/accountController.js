@@ -61,19 +61,23 @@ module.exports = {
 
   updateAccount: async (req, res, next) => {
     const accountId = req.payload.id;
+    const account = await common.dbClient.getAccountById(accountId);
 
-    let profileImageUrl = "anon-user.png";
+    let profileImageUrl = account.profileImageUrl;
 
     if (req.files && req.files.img) {
-      profileImageUrl = await documentStorageHelper.upload(req.files.img);
+      profileImageUrl = await documentStorageHelper.upload(
+        req.files.img,
+        "profile-image"
+      );
     }
 
-    const account = await common.dbClient.updateAccount(
+    const updatedAccount = await common.dbClient.updateAccount(
       accountId,
       profileImageUrl
     );
 
-    return res.status(201).json({ account: account.toAuthJSON() });
+    return res.status(201).json({ account: updatedAccount.toAuthJSON() });
   },
 
   login: async (req, res, next) => {
@@ -151,7 +155,7 @@ module.exports = {
 
     if (!authorized) {
       res.status(403).json({
-        error: "Account not authorized to approve create this share request"
+        error: "Account not authorized to approve or create this share request"
       });
       return;
     }

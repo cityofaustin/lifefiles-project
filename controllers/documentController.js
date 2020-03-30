@@ -52,6 +52,21 @@ module.exports = {
   },
 
   uploadDocument: async (req, res, next) => {
+    if (req.files === undefined || req.files.img === undefined) {
+      res.status(501).json({
+        error: "Must include a file to upload."
+      });
+      return;
+    }
+
+    if (req.body.type === undefined) {
+      res.status(501).json({
+        error:
+          "Document Type Does Not Exist!, Must be of type: Passport, Birth Certificate..."
+      });
+      return;
+    }
+
     const account = await common.dbClient.getAccountById(req.payload.id);
     const file = req.files.img;
 
@@ -63,14 +78,6 @@ module.exports = {
       account.permanentOrgArchiveNumber
     );
 
-    if (req.body.type === undefined) {
-      res.status(501).json({
-        error:
-          "Document Type Does Not Exist!, Must be of type: Passport, Birth Certificate..."
-      });
-      return;
-    }
-
     const document = await common.dbClient.createDocument(
       account,
       account,
@@ -81,6 +88,8 @@ module.exports = {
       file.md5,
       req.body.validuntildate
     );
+
+    // fullUrl: "http://" + ip.address() +":" + (process.env.PORT || 5000) + "/api/documents/" + document.url + "/" + account.generateJWT()
     res.status(200).json({ file: document.url });
   },
 

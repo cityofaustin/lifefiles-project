@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const grid = require("gridfs-stream");
 
 const Account = require("./models/Account");
 const Document = require("./models/Document");
@@ -21,16 +20,6 @@ class MongoDbClient {
   constructor() {
     this.cachedRolePermissionTable = undefined;
     this.mongoURI = process.env.MONGODB_URI;
-
-    this.fileConnection = mongoose.createConnection(
-      this.mongoURI,
-      mongoDbOptions
-    );
-
-    this.fileConnection.once("open", () => {
-      this.gfs = grid(this.fileConnection.db, mongoose.mongo);
-      this.gfs.collection("uploads");
-    });
 
     mongoose.connect(this.mongoURI, mongoDbOptions).then(() => {
       this.populateDefaultValues();
@@ -411,14 +400,6 @@ class MongoDbClient {
     return document;
   }
 
-  async getDocumentData(filename) {
-    const payload = await this.getDocumentPromise(filename);
-    return payload;
-  }
-  async deleteDocumentData(filename) {
-    await this.deleteDocumentPromise(filename);
-  }
-
   async deleteDocument(filename) {
     const document = await Document.findOneAndRemove({
       url: filename
@@ -508,34 +489,6 @@ class MongoDbClient {
     await document.save();
 
     return vp;
-  }
-
-  async getDocumentPromise(filename) {
-    return new Promise((resolve, reject) => {
-      this.gfs.files.findOne({ filename: filename }, (err, file) => {
-        if (!file || file.length === 0) {
-          resolve({ error: "No file exists" });
-        }
-        let readstream;
-        try {
-          readstream = this.gfs.createReadStream(file.filename);
-        } catch (e) {
-          console.log({ error: e });
-        }
-        resolve(readstream);
-      });
-    });
-  }
-
-  async deleteDocumentPromise(filename) {
-    return new Promise((resolve, reject) => {
-      this.gfs.files.deleteOne({ filename: filename }, (err, file) => {
-        if (!file || file.length === 0) {
-          resolve({ error: "No file exists" });
-        }
-        resolve();
-      });
-    });
   }
 }
 
