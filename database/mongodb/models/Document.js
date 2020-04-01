@@ -29,6 +29,7 @@ DocumentSchema.methods.getPublicInfo = function(account) {
 
 DocumentSchema.methods.toPublicInfo = function() {
   return {
+    id: this._id,
     name: this.name,
     url: this.url,
     did: this.did,

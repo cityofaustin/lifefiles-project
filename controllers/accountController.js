@@ -173,7 +173,7 @@ module.exports = {
     );
 
     if (approved) {
-      await common.dbClient.approveOrDenyShareRequest(
+      shareRequest = await common.dbClient.approveOrDenyShareRequest(
         shareRequest._id,
         approved
       );
