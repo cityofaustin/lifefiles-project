@@ -48,7 +48,8 @@ router
 
 router
   .route("/share-requests/:shareRequestId")
-  .put(auth.required, AccountController.approveOrDenyShareRequest);
+  .put(auth.required, AccountController.approveOrDenyShareRequest)
+  .delete(auth.required, AccountController.deleteShareRequest);
 
 router
   .route("/profile-image/:imageurl/:jwt")

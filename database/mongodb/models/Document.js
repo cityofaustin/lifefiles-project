@@ -19,5 +19,30 @@ var DocumentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+DocumentSchema.methods.getPublicInfo = function(account) {
+  if (account.email === undefined) {
+    return account;
+  } else {
+    return account.toPublicInfo();
+  }
+};
+
+DocumentSchema.methods.toPublicInfo = function() {
+  return {
+    name: this.name,
+    url: this.url,
+    did: this.did,
+    hash: this.hash,
+    vcJwt: this.vcJwt,
+    vpJwt: this.vpJwt,
+    type: this.type,
+    permanentOrgFileArchiveNumber: this.permanentOrgFileArchiveNumber,
+    validUntilDate: this.validUntilDate,
+    sharedWithAccountIds: this.sharedWithAccountIds,
+    uploadedBy: this.getPublicInfo(this.uploadedBy),
+    belongsTo: this.getPublicInfo(this.belongsTo)
+  };
+};
+
 const Document = mongoose.model("Document", DocumentSchema);
 module.exports = Document;

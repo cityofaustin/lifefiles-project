@@ -48,7 +48,7 @@ module.exports = {
       validuntildate
     );
 
-    res.status(200).json({ updatedDocument });
+    res.status(200).json({ updatedDocument: updatedDocument.toPublicInfo() });
   },
 
   uploadDocument: async (req, res, next) => {
@@ -90,7 +90,10 @@ module.exports = {
     );
 
     // fullUrl: "http://" + ip.address() +":" + (process.env.PORT || 5000) + "/api/documents/" + document.url + "/" + account.generateJWT()
-    res.status(200).json({ file: document.url });
+
+    res
+      .status(200)
+      .json({ file: document.url, document: document.toPublicInfo() });
   },
 
   uploadDocumentOnBehalfOfUser: async (req, res, next) => {

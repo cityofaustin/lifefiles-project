@@ -209,5 +209,15 @@ module.exports = {
     );
 
     res.status(200).json(shareRequest);
+  },
+
+  deleteShareRequest: async (req, res, next) => {
+    const shareRequestId = req.params.shareRequestId;
+    const shareRequestAccountOwnerId = req.payload.id;
+    await common.dbClient.deleteShareRequest(
+      shareRequestAccountOwnerId,
+      shareRequestId
+    );
+    res.status(200).json({ message: "success" });
   }
 };
