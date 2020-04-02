@@ -166,7 +166,7 @@ module.exports = {
       approved = true;
     }
 
-    const shareRequest = await common.dbClient.createShareRequest(
+    let shareRequest = await common.dbClient.createShareRequest(
       toAccountId,
       fromAccountId,
       documentTypeName
