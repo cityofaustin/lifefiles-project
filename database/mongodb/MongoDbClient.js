@@ -478,13 +478,20 @@ class MongoDbClient {
   }
 
   // Blockchain
-  async createVerifiableCredential(vcJwt, verifiedVC, issuer, document) {
+  async createVerifiableCredential(
+    vcJwt,
+    verifiedVC,
+    issuer,
+    document,
+    privateKey
+  ) {
     const newVC = new VerifiableCredential();
     newVC.vcJwt = vcJwt;
     newVC.verifiedVC = verifiedVC;
     newVC.issuer = issuer;
     newVC.document = document;
     newVC.documentDid = document.did;
+    newVC.documentDidPrivateKey = privateKey;
     const vc = await newVC.save();
 
     document.vcJwt = vcJwt;

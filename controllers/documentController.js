@@ -258,13 +258,17 @@ module.exports = {
 
     const documentType = req.body.type;
     const did = await common.blockchainClient.createNewDID();
+
     const documentDID = "did:ethr:" + did.address;
     const issueTime = Math.floor(Date.now() / 1000);
     const issuanceDate = Date.now();
     const expirationDate = new Date(req.body.expirationDate);
+    const validityTimeSeconds = Math.round(
+      (expirationDate - new Date()) / 1000
+    );
     let notaryName = notaryAccount.firstName + notaryAccount.lastName;
     notaryName = notaryName.replace(/\s/g, "");
-    const notaryId = "123456";
+    const notaryId = "" + req.body.notaryId;
 
     let fileInfo = await documentNotarization.createNotarizedDocument(
       req.files.img[0],
@@ -281,7 +285,7 @@ module.exports = {
     let key = await documentStorageHelper.upload(s3FileRequst, "document");
 
     const document = await common.dbClient.createDocument(
-      ownerAccount,
+      notaryAccount,
       ownerAccount,
       req.files.img[0].name +
         "-" +
@@ -309,22 +313,27 @@ module.exports = {
       notaryId
     );
 
-    const verifiedVC = await common.blockchainClient.verifyVC(notarizedVCJwt);
+    common.blockchainClient.storeJwtOnEthereumBlockchain(
+      notarizedVCJwt,
+      did,
+      validityTimeSeconds
+    );
 
-    console.log("\n\nVERIFIED VC:\n");
-    console.log(verifiedVC);
+    const verifiedVC = await common.blockchainClient.verifyVC(notarizedVCJwt);
 
     await common.dbClient.createVerifiableCredential(
       notarizedVCJwt,
       JSON.stringify(verifiedVC),
       ownerAccount,
-      document
+      document,
+      did.privateKey
     );
 
     res.status(200).json({
       vc: notarizedVCJwt,
       verifiedVC: verifiedVC,
-      documentUrl: document.url
+      document: document.toPublicInfo(),
+      didStatus: "https://etherscan.io/address/" + did.address
     });
   }
 };

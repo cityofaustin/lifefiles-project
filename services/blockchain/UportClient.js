@@ -8,8 +8,19 @@ const getResolver = require("ethr-did-resolver").getResolver;
 const verifyCredential = require("did-jwt-vc").verifyCredential;
 const verifyPresentation = require("did-jwt-vc").verifyPresentation;
 const md5 = require("md5");
+const DidRegistryContract = require("ethr-did-registry");
 
-const web3 = new Web3();
+const web3 = new Web3(new Web3.providers.HttpProvider(process.env.INFURA_URI));
+const didRegContract = new web3.eth.Contract(DidRegistryContract.abi);
+didRegContract.options.address = "0xdca7ef03e98e0dc2b855be647c39abe984fcf21b"; // mainnet
+
+const NAME_KEY =
+  "0x6469642f7376632f76636a777400000000000000000000000000000000000000"; // did/svc/vcjwt
+const FUND_ACCOUNT_GAS_PRICE = 3000000000;
+const CONTRACT_GAS_PRICE = 2000000000;
+const REFUND_GAS_PRICE = 1000000000;
+const CONTRACT_DEFAULT_GAS = 100000;
+const FUND_ACCOUNT_GAS = 21000;
 
 class UportClient {
   constructor() {
@@ -169,6 +180,91 @@ class UportClient {
   async verifyVP(vpJwt) {
     const verifiedVP = await verifyPresentation(vpJwt, this.resolver);
     return verifiedVP;
+  }
+
+  async storeJwtOnEthereumBlockchain(vcJwt, did, validityTime) {
+    const fundingAccount = web3.eth.accounts.privateKeyToAccount(
+      process.env.ETH_FUNDING_PRIVATE_KEY
+    );
+
+    const didAccount = web3.eth.accounts.privateKeyToAccount(
+      "0x" + did.privateKey
+    );
+
+    const identity = did.address;
+    const value = web3.utils.asciiToHex(vcJwt);
+
+    const gasEstimate = await didRegContract.methods
+      .setAttribute(identity, NAME_KEY, value, validityTime)
+      .estimateGas({ from: identity, gasPrice: CONTRACT_GAS_PRICE });
+
+    let payAmount = CONTRACT_DEFAULT_GAS;
+
+    if (gasEstimate * 1.5 < payAmount) {
+      payAmount = gasEstimate * 1.5;
+    }
+
+    web3.eth.accounts.wallet.clear();
+    web3.eth.accounts.wallet.add(fundingAccount);
+    web3.eth.accounts.wallet.add(didAccount);
+    web3.eth.transactionPollingTimeout = 3600;
+
+    console.log("Starting Eth Transactions with account: " + identity);
+    web3.eth
+      .sendTransaction({
+        from: fundingAccount.address,
+        to: didAccount.address,
+        value: payAmount * CONTRACT_GAS_PRICE,
+        gasPrice: FUND_ACCOUNT_GAS_PRICE,
+        gas: FUND_ACCOUNT_GAS
+      })
+      .on("receipt", function(receipt) {
+        console.log(
+          identity +
+            " Has Been Funded With " +
+            web3.fromWei(value, "ether") +
+            "..."
+        );
+
+        didRegContract.methods
+          .setAttribute(identity, NAME_KEY, value, validityTime)
+          .send({
+            from: identity,
+            gasPrice: CONTRACT_GAS_PRICE,
+            gas: payAmount
+          })
+          .on("receipt", function(receipt) {
+            console.log(identity + " VC Has Been Registed On The Blockchain!");
+
+            web3.eth.getBalance(identity, function(err, result) {
+              if (err) {
+                console.log(err);
+              } else {
+                let leftOver = result - REFUND_GAS_PRICE * FUND_ACCOUNT_GAS;
+                web3.eth
+                  .sendTransaction({
+                    from: didAccount.address,
+                    to: fundingAccount.address,
+                    value: leftOver,
+                    gasPrice: REFUND_GAS_PRICE,
+                    gas: FUND_ACCOUNT_GAS
+                  })
+                  .on("error", function(error, receipt) {
+                    console.log(error);
+                    console.log(receipt);
+                  });
+              }
+            });
+          })
+          .on("error", function(error, receipt) {
+            console.log(error);
+            console.log(receipt);
+          });
+      })
+      .on("error", function(error, receipt) {
+        console.log(error);
+        console.log(receipt);
+      });
   }
 }
 

@@ -86,6 +86,12 @@ module.exports = {
     ownerAccountId: Joi.string()
       .min(1)
       .required(),
+    notaryId: Joi.string()
+      .min(1)
+      .required(),
+    type: Joi.string()
+      .min(1)
+      .required(),
     expirationDate: Joi.string()
       .min(1)
       .required()
