@@ -11,6 +11,11 @@ const md5 = require("md5");
 const DidRegistryContract = require("ethr-did-registry");
 
 const web3 = new Web3(new Web3.providers.HttpProvider(process.env.INFURA_URI));
+const fundingAccount = web3.eth.accounts.privateKeyToAccount(
+  process.env.ETH_FUNDING_PRIVATE_KEY
+);
+web3.eth.accounts.wallet.add(fundingAccount);
+
 const didRegContract = new web3.eth.Contract(DidRegistryContract.abi);
 didRegContract.options.address = "0xdca7ef03e98e0dc2b855be647c39abe984fcf21b"; // mainnet
 
@@ -19,7 +24,7 @@ const NAME_KEY =
 const FUND_ACCOUNT_GAS_PRICE = 3000000000;
 const CONTRACT_GAS_PRICE = 2000000000;
 const REFUND_GAS_PRICE = 1000000000;
-const CONTRACT_DEFAULT_GAS = 100000;
+const CONTRACT_DEFAULT_GAS = 200000;
 const FUND_ACCOUNT_GAS = 21000;
 
 class UportClient {
@@ -32,6 +37,17 @@ class UportClient {
     };
 
     this.resolver = new Resolver(getResolver(providerConfig));
+    this.setNonce();
+  }
+
+  async setNonce() {
+    this.nonce = 0;
+    let transactionCount = await web3.eth.getTransactionCount(
+      fundingAccount.address
+    );
+    if (!isNaN(transactionCount)) {
+      this.nonce = transactionCount;
+    }
   }
 
   async createNewDID() {
@@ -183,10 +199,6 @@ class UportClient {
   }
 
   async storeJwtOnEthereumBlockchain(vcJwt, did, validityTime) {
-    const fundingAccount = web3.eth.accounts.privateKeyToAccount(
-      process.env.ETH_FUNDING_PRIVATE_KEY
-    );
-
     const didAccount = web3.eth.accounts.privateKeyToAccount(
       "0x" + did.privateKey
     );
@@ -204,8 +216,6 @@ class UportClient {
       payAmount = gasEstimate * 1.5;
     }
 
-    web3.eth.accounts.wallet.clear();
-    web3.eth.accounts.wallet.add(fundingAccount);
     web3.eth.accounts.wallet.add(didAccount);
     web3.eth.transactionPollingTimeout = 3600;
 
@@ -213,19 +223,22 @@ class UportClient {
     web3.eth
       .sendTransaction({
         from: fundingAccount.address,
-        to: didAccount.address,
+        to: identity,
         value: payAmount * CONTRACT_GAS_PRICE,
         gasPrice: FUND_ACCOUNT_GAS_PRICE,
-        gas: FUND_ACCOUNT_GAS
+        gas: FUND_ACCOUNT_GAS,
+        nonce: this.nonce
       })
       .on("receipt", function(receipt) {
         console.log(
           identity +
             " Has Been Funded With " +
-            web3.fromWei(value, "ether") +
-            "..."
+            payAmount +
+            " * " +
+            CONTRACT_GAS_PRICE +
+            ". Gas Estimate: " +
+            gasEstimate
         );
-
         didRegContract.methods
           .setAttribute(identity, NAME_KEY, value, validityTime)
           .send({
@@ -241,18 +254,23 @@ class UportClient {
                 console.log(err);
               } else {
                 let leftOver = result - REFUND_GAS_PRICE * FUND_ACCOUNT_GAS;
-                web3.eth
-                  .sendTransaction({
-                    from: didAccount.address,
-                    to: fundingAccount.address,
-                    value: leftOver,
-                    gasPrice: REFUND_GAS_PRICE,
-                    gas: FUND_ACCOUNT_GAS
-                  })
-                  .on("error", function(error, receipt) {
-                    console.log(error);
-                    console.log(receipt);
-                  });
+
+                if (leftOver >= REFUND_GAS_PRICE * FUND_ACCOUNT_GAS) {
+                  web3.eth
+                    .sendTransaction({
+                      from: identity,
+                      to: fundingAccount.address,
+                      value: leftOver,
+                      gasPrice: REFUND_GAS_PRICE,
+                      gas: FUND_ACCOUNT_GAS
+                    })
+                    .on("error", function(error, receipt) {
+                      console.log(error);
+                      console.log(receipt);
+                    });
+                } else {
+                  console.log(identity + " Does Not Have Enough For Refund.");
+                }
               }
             });
           })
@@ -265,6 +283,8 @@ class UportClient {
         console.log(error);
         console.log(receipt);
       });
+
+    this.nonce++;
   }
 }
 
