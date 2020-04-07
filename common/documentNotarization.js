@@ -38,7 +38,6 @@ module.exports = {
 
     let pdfRes = await pdf.create(html, {});
     let fileInfo = await getFileInfoPromise(pdfRes);
-    console.log(fileInfo);
     return fileInfo;
   }
 };
