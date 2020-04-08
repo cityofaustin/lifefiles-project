@@ -37,17 +37,7 @@ class UportClient {
     };
 
     this.resolver = new Resolver(getResolver(providerConfig));
-    this.setNonce();
-  }
-
-  async setNonce() {
-    this.nonce = 0;
-    let transactionCount = await web3.eth.getTransactionCount(
-      fundingAccount.address
-    );
-    if (!isNaN(transactionCount)) {
-      this.nonce = transactionCount;
-    }
+    this.nonceOverhead = 0;
   }
 
   async createNewDID() {
@@ -219,81 +209,81 @@ class UportClient {
     web3.eth.accounts.wallet.add(didAccount);
     web3.eth.transactionPollingTimeout = 3600;
 
-    let transactionCount = await web3.eth.getTransactionCount(
-      fundingAccount.address
-    );
-    if (!isNaN(transactionCount)) {
-      if (this.nonce < transactionCount) {
-        this.nonce = transactionCount;
-      }
-    }
+    let nonce =
+      (await web3.eth.getTransactionCount(fundingAccount.address)) +
+      this.nonceOverhead;
+
+    this.nonceOverhead++;
+
+    let sendTransactionReceipt;
+    let didRegContractReceipt;
 
     console.log("Starting Eth Transactions with account: " + identity);
-    web3.eth
-      .sendTransaction({
+
+    try {
+      sendTransactionReceipt = await web3.eth.sendTransaction({
         from: fundingAccount.address,
         to: identity,
         value: payAmount * CONTRACT_GAS_PRICE,
         gasPrice: FUND_ACCOUNT_GAS_PRICE,
         gas: FUND_ACCOUNT_GAS,
-        nonce: this.nonce,
-      })
-      .on("receipt", function (receipt) {
-        console.log(
-          identity +
-            " Has Been Funded With " +
-            payAmount +
-            " * " +
-            CONTRACT_GAS_PRICE +
-            ". Gas Estimate: " +
-            gasEstimate
-        );
-        didRegContract.methods
-          .setAttribute(identity, NAME_KEY, value, validityTime)
-          .send({
-            from: identity,
-            gasPrice: CONTRACT_GAS_PRICE,
-            gas: payAmount,
-          })
-          .on("receipt", function (receipt) {
-            console.log(identity + " VC Has Been Registed On The Blockchain!");
-
-            web3.eth.getBalance(identity, function (err, result) {
-              if (err) {
-                console.log(err);
-              } else {
-                let leftOver = result - REFUND_GAS_PRICE * FUND_ACCOUNT_GAS;
-
-                if (leftOver >= REFUND_GAS_PRICE * FUND_ACCOUNT_GAS) {
-                  web3.eth
-                    .sendTransaction({
-                      from: identity,
-                      to: fundingAccount.address,
-                      value: leftOver,
-                      gasPrice: REFUND_GAS_PRICE,
-                      gas: FUND_ACCOUNT_GAS,
-                    })
-                    .on("error", function (error, receipt) {
-                      console.log(error);
-                      console.log(receipt);
-                    });
-                } else {
-                  console.log(identity + " Does Not Have Enough For Refund.");
-                }
-              }
-            });
-          })
-          .on("error", function (error, receipt) {
-            console.log(error);
-            console.log(receipt);
-          });
-      })
-      .on("error", function (error, receipt) {
-        console.log(error);
-        console.log(receipt);
+        nonce: nonce,
       });
+      console.log(
+        identity +
+          " Has Been Funded With " +
+          payAmount +
+          " * " +
+          CONTRACT_GAS_PRICE +
+          ". Gas Estimate: " +
+          gasEstimate
+      );
+    } catch (err) {
+      console.log("Send transaction error:");
+      console.log(err);
+    }
 
-    this.nonce++;
+    this.nonceOverhead--;
+
+    try {
+      didRegContractReceipt = await didRegContract.methods
+        .setAttribute(identity, NAME_KEY, value, validityTime)
+        .send({
+          from: identity,
+          gasPrice: CONTRACT_GAS_PRICE,
+          gas: payAmount,
+        });
+
+      console.log(identity + " VC Has Been Registed On The Blockchain!");
+    } catch (err) {
+      console.log("Did Reg Contract error:");
+      console.log(err);
+    }
+
+    web3.eth.getBalance(identity, function (err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        let leftOver = result - REFUND_GAS_PRICE * FUND_ACCOUNT_GAS;
+
+        if (leftOver >= REFUND_GAS_PRICE * FUND_ACCOUNT_GAS) {
+          web3.eth
+            .sendTransaction({
+              from: identity,
+              to: fundingAccount.address,
+              value: leftOver,
+              gasPrice: REFUND_GAS_PRICE,
+              gas: FUND_ACCOUNT_GAS,
+            })
+            .on("error", function (error, receipt) {
+              console.log(error);
+              console.log(receipt);
+            });
+        } else {
+          console.log(identity + " Does Not Have Enough For Refund.");
+        }
+      }
+    });
   }
 }
 
