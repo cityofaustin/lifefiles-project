@@ -203,7 +203,7 @@ class UportClient {
     let payAmount = CONTRACT_DEFAULT_GAS;
 
     if (gasEstimate * 1.5 < payAmount) {
-      payAmount = gasEstimate * 1.5;
+      payAmount = Math.round(gasEstimate * 1.5);
     }
 
     web3.eth.accounts.wallet.add(didAccount);
