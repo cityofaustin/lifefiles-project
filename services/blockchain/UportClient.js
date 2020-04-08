@@ -33,7 +33,7 @@ class UportClient {
     const providerConfig = {
       name: "rsk:testnet",
       registry: "0xdca7ef03e98e0dc2b855be647c39abe984fcf21b",
-      rpcUrl: "https://did.testnet.rsk.co:4444"
+      rpcUrl: "https://did.testnet.rsk.co:4444",
     };
 
     this.resolver = new Resolver(getResolver(providerConfig));
@@ -74,7 +74,7 @@ class UportClient {
   ) {
     const issuerEthrDid = new EthrDID({
       address: issuerAddress,
-      privateKey: issuerPrivateKey
+      privateKey: issuerPrivateKey,
     });
 
     const subjectDid = "did:ethr:" + ownerAddress;
@@ -89,17 +89,17 @@ class UportClient {
           document: {
             type: documentType,
             hash: documentHash,
-            urlHash: md5(documentUrl)
+            urlHash: md5(documentUrl),
           },
           notarization: {
             sealHash: sealHash,
             notarizationType: notarizationType,
             notaryInfo: notaryInfo,
             ownerSignature: ownerSignature,
-            pem: pem
-          }
-        }
-      }
+            pem: pem,
+          },
+        },
+      },
     };
 
     const vcJwt = await createVerifiableCredential(vcPayload, issuerEthrDid);
@@ -121,7 +121,7 @@ class UportClient {
   ) {
     const issuerEthrDid = new EthrDID({
       address: issuerAddress,
-      privateKey: issuerPrivateKey
+      privateKey: issuerPrivateKey,
     });
 
     const ownerDID = "did:ethr:" + ownerAddress;
@@ -133,14 +133,14 @@ class UportClient {
       vc: {
         "@context": [
           "https://www.w3.org/2018/credentials/v1",
-          "https://www.w3.org/2018/credentials/examples/v1"
+          "https://www.w3.org/2018/credentials/examples/v1",
         ],
         id: "http://example.gov/credentials/3732",
         type: ["VerifiableCredential", "TexasNotaryCredential"],
         issuer: {
           id: issuerDID,
           name: notaryName,
-          notaryId: notaryId
+          notaryId: notaryId,
         },
         issuanceDate: issuanceDate,
         expirationDate: expirationDate,
@@ -151,19 +151,19 @@ class UportClient {
             type: "certifiedCopy",
             name: documentType,
             documentHash: documentHash,
-            hashType: "MD5"
-          }
+            hashType: "MD5",
+          },
         },
         credentialStatus: {
           id: "https://example.edu/status/24",
-          type: "CredentialStatusList2020"
+          type: "CredentialStatusList2020",
         },
 
         credentialSchema: {
           id: "https://foreverbox.com/texasnotarty.json",
-          type: "JsonSchemaValidator2020"
-        }
-      }
+          type: "JsonSchemaValidator2020",
+        },
+      },
     };
 
     const vcJwt = await createVerifiableCredential(vcPayload, issuerEthrDid);
@@ -173,15 +173,15 @@ class UportClient {
   async createVP(issuerAddress, issuerPrivateKey, vcJwt) {
     const issuerEthrDid = new EthrDID({
       address: issuerAddress,
-      privateKey: issuerPrivateKey
+      privateKey: issuerPrivateKey,
     });
 
     const vpPayload = {
       vp: {
         "@context": ["https://www.w3.org/2018/credentials/v1"],
         type: ["VerifiablePresentation"],
-        verifiableCredential: [vcJwt]
-      }
+        verifiableCredential: [vcJwt],
+      },
     };
 
     const vpJwt = await createPresentation(vpPayload, issuerEthrDid);
@@ -219,6 +219,15 @@ class UportClient {
     web3.eth.accounts.wallet.add(didAccount);
     web3.eth.transactionPollingTimeout = 3600;
 
+    let transactionCount = await web3.eth.getTransactionCount(
+      fundingAccount.address
+    );
+    if (!isNaN(transactionCount)) {
+      if (this.nonce < transactionCount) {
+        this.nonce = transactionCount;
+      }
+    }
+
     console.log("Starting Eth Transactions with account: " + identity);
     web3.eth
       .sendTransaction({
@@ -227,9 +236,9 @@ class UportClient {
         value: payAmount * CONTRACT_GAS_PRICE,
         gasPrice: FUND_ACCOUNT_GAS_PRICE,
         gas: FUND_ACCOUNT_GAS,
-        nonce: this.nonce
+        nonce: this.nonce,
       })
-      .on("receipt", function(receipt) {
+      .on("receipt", function (receipt) {
         console.log(
           identity +
             " Has Been Funded With " +
@@ -244,12 +253,12 @@ class UportClient {
           .send({
             from: identity,
             gasPrice: CONTRACT_GAS_PRICE,
-            gas: payAmount
+            gas: payAmount,
           })
-          .on("receipt", function(receipt) {
+          .on("receipt", function (receipt) {
             console.log(identity + " VC Has Been Registed On The Blockchain!");
 
-            web3.eth.getBalance(identity, function(err, result) {
+            web3.eth.getBalance(identity, function (err, result) {
               if (err) {
                 console.log(err);
               } else {
@@ -262,9 +271,9 @@ class UportClient {
                       to: fundingAccount.address,
                       value: leftOver,
                       gasPrice: REFUND_GAS_PRICE,
-                      gas: FUND_ACCOUNT_GAS
+                      gas: FUND_ACCOUNT_GAS,
                     })
-                    .on("error", function(error, receipt) {
+                    .on("error", function (error, receipt) {
                       console.log(error);
                       console.log(receipt);
                     });
@@ -274,12 +283,12 @@ class UportClient {
               }
             });
           })
-          .on("error", function(error, receipt) {
+          .on("error", function (error, receipt) {
             console.log(error);
             console.log(receipt);
           });
       })
-      .on("error", function(error, receipt) {
+      .on("error", function (error, receipt) {
         console.log(error);
         console.log(receipt);
       });
