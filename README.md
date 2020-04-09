@@ -37,7 +37,7 @@ The project timeline can be found here: [Timeline](https://docs.google.com/sprea
 
 ## Project Update
 
-<img src="/docs/MyPassOverview2020.png" align="middle" width="900" >
+<img src="/docs/MyPassOverview.png" align="middle" width="900" >
 
 See the README.md files for respective notes in the server and webclient folders.
 
