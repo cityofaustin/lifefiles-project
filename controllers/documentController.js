@@ -2,6 +2,7 @@ const common = require("../common/common");
 const documentStorageHelper = require("../common/documentStorageHelper");
 const documentNotarization = require("../common/documentNotarization");
 const permanent = require("../common/permanentClient");
+const secureKeyStorage = require("../common/secureKeyStorage");
 
 module.exports = {
   updateDocument: async (req, res, next) => {
@@ -11,7 +12,7 @@ module.exports = {
 
     if (!document.belongsTo._id.equals(account._id)) {
       res.status(403).json({
-        error: "Account not authorized update this document"
+        error: "Account not authorized update this document",
       });
       return;
     }
@@ -54,7 +55,7 @@ module.exports = {
   uploadDocument: async (req, res, next) => {
     if (req.files === undefined || req.files.img === undefined) {
       res.status(501).json({
-        error: "Must include a file to upload."
+        error: "Must include a file to upload.",
       });
       return;
     }
@@ -62,7 +63,7 @@ module.exports = {
     if (req.body.type === undefined) {
       res.status(501).json({
         error:
-          "Document Type Does Not Exist!, Must be of type: Passport, Birth Certificate..."
+          "Document Type Does Not Exist!, Must be of type: Passport, Birth Certificate...",
       });
       return;
     }
@@ -185,7 +186,7 @@ module.exports = {
 
     res.status(200).json({
       vc: verifiedVC,
-      vp: verifiedVP
+      vp: verifiedVP,
     });
   },
 
@@ -205,7 +206,7 @@ module.exports = {
 
     if (document === undefined || document === null) {
       res.status(404).json({
-        error: "Document Does Not Exists"
+        error: "Document Does Not Exists",
       });
       return;
     }
@@ -223,14 +224,14 @@ module.exports = {
       );
       if (payload.error !== undefined) {
         res.status(404).json({
-          error: payload.error
+          error: payload.error,
         });
       } else {
         payload.pipe(res);
       }
     } else {
       res.status(403).json({
-        error: "Account not authorized to view this document"
+        error: "Account not authorized to view this document",
       });
     }
   },
@@ -279,7 +280,7 @@ module.exports = {
 
     let s3FileRequst = {
       name: "notarizedDocument.pdf",
-      tempFilePath: fileInfo.filename
+      tempFilePath: fileInfo.filename,
     };
 
     let key = await documentStorageHelper.upload(s3FileRequst, "document");
@@ -299,9 +300,13 @@ module.exports = {
       expirationDate
     );
 
+    let notaryPrivateKey = await secureKeyStorage.retrieve(
+      notaryAccount.didPrivateKeyGuid
+    );
+
     let notarizedVCJwt = await common.blockchainClient.createNotarizedVC(
       notaryAccount.didAddress,
-      notaryAccount.didPrivateKey,
+      notaryPrivateKey.data.value,
       ownerAccount.didAddress,
       documentDID,
       documentType,
@@ -333,7 +338,7 @@ module.exports = {
       vc: notarizedVCJwt,
       verifiedVC: verifiedVC,
       document: document.toPublicInfo(),
-      didStatus: "https://etherscan.io/address/" + did.address
+      didStatus: "https://etherscan.io/address/" + did.address,
     });
-  }
+  },
 };

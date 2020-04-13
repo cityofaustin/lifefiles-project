@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const EthCrypto = require("eth-crypto");
+const secureKeyStorage = require("../../common/secureKeyStorage");
 
 const Account = require("./models/Account");
 const Document = require("./models/Document");
@@ -13,7 +15,7 @@ const VerifiablePresentation = require("./models/VerifiablePresentation");
 let mongoDbOptions = {
   useUnifiedTopology: true,
   useNewUrlParser: true,
-  useCreateIndex: true
+  useCreateIndex: true,
 };
 
 class MongoDbClient {
@@ -51,16 +53,27 @@ class MongoDbClient {
           role: "owner",
           email: "owner@owner.com",
           phonenumber: "555-555-5555",
-          organization: "-"
-        }
+          organization: "-",
+        },
       };
       let ownerDid = {
         did: {
           address: "0x6efedeaec20e79071251fffa655F1bdDCa65c027",
+          publicEncryptionKey: EthCrypto.publicKeyByPrivateKey(
+            "0x" +
+              "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415"
+          ),
           privateKey:
-            "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415"
-        }
+            "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415",
+          privateKeyGuid: "5663aaf5-2b94-4854-a862-07a7fe75e400",
+        },
       };
+
+      await secureKeyStorage.store(
+        ownerDid.did.privateKeyGuid,
+        ownerDid.did.privateKey
+      );
+
       this.createAccount(
         ownerAccount.account,
         ownerDid.did,
@@ -78,16 +91,27 @@ class MongoDbClient {
           role: "notary",
           email: "caseworker@caseworker.com",
           phonenumber: "555-555-5555",
-          organization: "Banana Org"
-        }
+          organization: "Banana Org",
+        },
       };
       let caseWorkerDid = {
         did: {
           address: "0x2a6F1D5083fb19b9f2C653B598abCb5705eD0439",
+          publicEncryptionKey: EthCrypto.publicKeyByPrivateKey(
+            "0x" +
+              "8ef83de6f0ccf32798f8afcd436936870af619511f2385e8aace87729e771a8b"
+          ),
           privateKey:
-            "8ef83de6f0ccf32798f8afcd436936870af619511f2385e8aace87729e771a8b"
-        }
+            "8ef83de6f0ccf32798f8afcd436936870af619511f2385e8aace87729e771a8b",
+        },
+        privateKeyGuid: "53d9269b-a90b-423e-be17-e2a6517790b1",
       };
+
+      await secureKeyStorage.store(
+        caseWorkerDid.did.privateKeyGuid,
+        caseWorkerDid.did.privateKey
+      );
+
       this.createAccount(
         caseWorkerAccount.account,
         caseWorkerDid.did,
@@ -105,16 +129,27 @@ class MongoDbClient {
           role: "notary",
           email: "karencaseworker@caseworker.com",
           phonenumber: "555-555-5555",
-          organization: "Apple Org"
-        }
+          organization: "Apple Org",
+        },
       };
       let caseWorkerDidTwo = {
         did: {
           address: "0x0F4FBead5219388CD71FAa2bbd63C26Aad0ae2c5",
+          publicEncryptionKey: EthCrypto.publicKeyByPrivateKey(
+            "0x" +
+              "403c9b0e55db5ff1434d07711baa34d76eecc2723cdb599a42f5f2cbf6fd3262"
+          ),
           privateKey:
-            "403c9b0e55db5ff1434d07711baa34d76eecc2723cdb599a42f5f2cbf6fd3262"
-        }
+            "403c9b0e55db5ff1434d07711baa34d76eecc2723cdb599a42f5f2cbf6fd3262",
+        },
+        privateKeyGuid: "6ee64b8e-0623-4cad-8162-26e49e74b2dc",
       };
+
+      await secureKeyStorage.store(
+        caseWorkerDidTwo.did.privateKeyGuid,
+        caseWorkerDidTwo.did.privateKey
+      );
+
       this.createAccount(
         caseWorkerAccountTwo.account,
         caseWorkerDidTwo.did,
@@ -132,16 +167,27 @@ class MongoDbClient {
           role: "notary",
           email: "joshcaseworker@caseworker.com",
           phonenumber: "555-555-5555",
-          organization: "Pear Org"
-        }
+          organization: "Pear Org",
+        },
       };
       let caseWorkerDidThree = {
         did: {
           address: "0x56bf6887202d8aa6Df4Bc312e866E955FE0FC9aD",
+          publicEncryptionKey: EthCrypto.publicKeyByPrivateKey(
+            "0x" +
+              "a2bf1a07ccb785b7baf041dc0135ae9bfbf049bd36068777e4796185fe1ff5c0"
+          ),
           privateKey:
-            "a2bf1a07ccb785b7baf041dc0135ae9bfbf049bd36068777e4796185fe1ff5c0"
-        }
+            "a2bf1a07ccb785b7baf041dc0135ae9bfbf049bd36068777e4796185fe1ff5c0",
+        },
+        privateKeyGuid: "22161991-55f9-45fc-b6c5-de8e339701f1",
       };
+
+      await secureKeyStorage.store(
+        caseWorkerDidThree.did.privateKeyGuid,
+        caseWorkerDidThree.did.privateKey
+      );
+
       this.createAccount(
         caseWorkerAccountThree.account,
         caseWorkerDidThree.did,
@@ -159,12 +205,12 @@ class MongoDbClient {
         "Medical Records",
         "Social Security Card",
         "Passport",
-        "Marriage Certificate"
+        "Marriage Certificate",
       ];
       for (let record of records) {
         let fields = [
           { fieldName: "name", required: true },
-          { fieldName: "dateofbirth", required: false }
+          { fieldName: "dateofbirth", required: false },
         ];
 
         this.createDocumentType({ name: record, fields: fields });
@@ -190,7 +236,7 @@ class MongoDbClient {
   async getAllAccountInfoById(id) {
     const account = await Account.findById(id).populate([
       "documents",
-      "shareRequests"
+      "shareRequests",
     ]);
     return account;
   }
@@ -215,8 +261,10 @@ class MongoDbClient {
     newAccount.phoneNumber = accountReq.phonenumber;
     newAccount.organization = accountReq.organization;
     newAccount.permanentOrgArchiveNumber = permanentOrgArchiveNumber;
+
     newAccount.didAddress = did.address;
-    newAccount.didPrivateKey = did.privateKey;
+    newAccount.didPublicEncryptionKey = did.publicEncryptionKey;
+    newAccount.didPrivateKeyGuid = did.privateKeyGuid;
     newAccount.profileImageUrl = profileImageUrl;
     newAccount.setPassword(accountReq.password);
 
@@ -233,7 +281,7 @@ class MongoDbClient {
 
   async getShareRequests(accountId) {
     const account = await Account.findById(accountId).populate({
-      path: "shareRequests"
+      path: "shareRequests",
     });
 
     return account.shareRequests;
@@ -241,7 +289,7 @@ class MongoDbClient {
 
   async deleteShareRequestByDocumentId(documentId) {
     await ShareRequest.deleteMany({
-      documentId: documentId
+      documentId: documentId,
     });
     return;
   }
@@ -253,7 +301,7 @@ class MongoDbClient {
     account.save();
 
     await ShareRequest.deleteMany({
-      _id: shareRequestId
+      _id: shareRequestId,
     });
     return;
   }
@@ -400,8 +448,8 @@ class MongoDbClient {
 
     let documents = await Document.find({
       _id: {
-        $in: account.documents
-      }
+        $in: account.documents,
+      },
     });
 
     return documents;
@@ -419,7 +467,7 @@ class MongoDbClient {
 
   async deleteDocument(filename) {
     const document = await Document.findOneAndRemove({
-      url: filename
+      url: filename,
     });
 
     return document;

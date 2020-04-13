@@ -12,7 +12,6 @@ const common = require("./common/common");
 const { errors } = require("celebrate");
 const fileUpload = require("express-fileupload");
 require("./routes/middleware/passport");
-
 const app = express();
 
 // Set Up Clients.
@@ -31,7 +30,7 @@ app.use(
     secret: process.env.SESSION_SECRET,
     cookie: { maxAge: 60000 },
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
   })
 );
 app.use(errors());
@@ -39,7 +38,7 @@ app.use(errors());
 app.use(router);
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   console.log(err.stack);
 
   res.status(err.status || 500);
@@ -47,11 +46,11 @@ app.use(function(err, req, res, next) {
   res.json({
     errors: {
       message: err.message,
-      error: err
-    }
+      error: err,
+    },
   });
 });
 
-const server = app.listen(process.env.PORT || 5000, function() {
+const server = app.listen(process.env.PORT || 5000, function () {
   console.log("Listening on port " + server.address().port);
 });

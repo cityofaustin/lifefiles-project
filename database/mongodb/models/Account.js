@@ -11,7 +11,7 @@ var AccountSchema = new mongoose.Schema(
       unique: true,
       required: [true, "can't be blank"],
       match: [/^[a-zA-Z0-9]+$/, "is invalid"],
-      index: true
+      index: true,
     },
     email: {
       type: String,
@@ -19,7 +19,7 @@ var AccountSchema = new mongoose.Schema(
       unique: true,
       required: [true, "can't be blank"],
       match: [/\S+@\S+\.\S+/, "is invalid"],
-      index: true
+      index: true,
     },
     firstName: String,
     lastName: String,
@@ -29,13 +29,14 @@ var AccountSchema = new mongoose.Schema(
     role: String,
     permanentOrgArchiveNumber: String,
     didAddress: String,
-    didPrivateKey: String,
+    didPublicEncryptionKey: String,
+    didPrivateKeyGuid: String,
     hash: String,
     salt: String,
     documents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }],
     shareRequests: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "ShareRequest" }
-    ]
+      { type: mongoose.Schema.Types.ObjectId, ref: "ShareRequest" },
+    ],
   },
   { timestamps: true },
   { usePushEach: true }
@@ -43,21 +44,21 @@ var AccountSchema = new mongoose.Schema(
 
 AccountSchema.plugin(uniqueValidator, { message: "is already taken." });
 
-AccountSchema.methods.validPassword = function(password) {
+AccountSchema.methods.validPassword = function (password) {
   var hash = crypto
     .pbkdf2Sync(password, this.salt, 10000, 512, "sha512")
     .toString("hex");
   return this.hash === hash;
 };
 
-AccountSchema.methods.setPassword = function(password) {
+AccountSchema.methods.setPassword = function (password) {
   this.salt = crypto.randomBytes(16).toString("hex");
   this.hash = crypto
     .pbkdf2Sync(password, this.salt, 10000, 512, "sha512")
     .toString("hex");
 };
 
-AccountSchema.methods.generateJWT = function() {
+AccountSchema.methods.generateJWT = function () {
   var today = new Date();
   var exp = new Date(today);
   exp.setDate(today.getDate() + 60);
@@ -67,13 +68,13 @@ AccountSchema.methods.generateJWT = function() {
       id: this._id,
       username: this.username,
       role: this.role,
-      exp: parseInt(exp.getTime() / 1000)
+      exp: parseInt(exp.getTime() / 1000),
     },
     process.env.AUTH_SECRET
   );
 };
 
-AccountSchema.methods.toAuthJSON = function() {
+AccountSchema.methods.toAuthJSON = function () {
   return {
     username: this.username,
     firstName: this.firstName,
@@ -82,14 +83,15 @@ AccountSchema.methods.toAuthJSON = function() {
     email: this.email,
     role: this.role,
     didAddress: this.didAddress,
+    didPublicEncryptionKey: this.didPublicEncryptionKey,
     token: this.generateJWT(),
     shareRequests: this.shareRequests,
     documents: this.documents,
-    profileImageUrl: this.profileImageUrl
+    profileImageUrl: this.profileImageUrl,
   };
 };
 
-AccountSchema.methods.toPublicInfo = function() {
+AccountSchema.methods.toPublicInfo = function () {
   return {
     username: this.username,
     firstName: this.firstName,
@@ -100,7 +102,8 @@ AccountSchema.methods.toPublicInfo = function() {
     email: this.email,
     role: this.role,
     didAddress: this.didAddress,
-    profileImageUrl: this.profileImageUrl
+    didPublicEncryptionKey: this.didPublicEncryptionKey,
+    profileImageUrl: this.profileImageUrl,
   };
 };
 

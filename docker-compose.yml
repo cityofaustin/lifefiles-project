@@ -10,6 +10,7 @@ services:
       - .:/app
     links:
       - mongo
+      - myvault
 
   mongo:
     image: mongo:latest
@@ -17,6 +18,20 @@ services:
       - 27017:27017
     volumes:
       - mongodb_data_container:/data/db
+
+  myvault:
+    image: vault:latest
+    ports:
+      - 8200:8200
+    container_name: myvault
+    volumes:
+      - ./file:/vault/file:rw
+      - ./config:/vault/config:rw
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+    cap_add:
+      - IPC_LOCK
+    entrypoint: vault server -config=/vault/config/vault.json
 
 volumes:
   mongodb_data_container:

@@ -1,10 +1,21 @@
 const common = require("../common/common");
 const permanent = require("../common/permanentClient");
 const documentStorageHelper = require("../common/documentStorageHelper");
+const secureKeyStorage = require("../common/secureKeyStorage");
 const passport = require("passport");
-var fs = require("fs");
+const fs = require("fs");
+const EthCrypto = require("eth-crypto");
+const uuidv4 = require("uuid").v4;
 
 module.exports = {
+  getEncryptionKey: async (req, res, next) => {
+    account = await common.dbClient.getAccountById(req.payload.id);
+
+    console.log(account.didPrivateKeyGuid);
+    let key = await secureKeyStorage.retrieve(account.didPrivateKeyGuid);
+    res.status(200).json({ encryptionKey: key.data.value });
+  },
+
   getAcccount: async (req, res, next) => {
     const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
     let returnAccount = account.toAuthJSON();
@@ -19,7 +30,7 @@ module.exports = {
 
     res.status(200).json({
       account: returnAccount,
-      documentSharedAccounts: documentSharedAccounts
+      documentSharedAccounts: documentSharedAccounts,
     });
   },
 
@@ -38,7 +49,15 @@ module.exports = {
     const permanentArchiveNumber = await permanent.createArchive(
       req.body.account.email
     );
-    const did = await common.blockchainClient.createNewDID();
+    const uuid = uuidv4();
+
+    let did = await common.blockchainClient.createNewDID();
+    did.publicEncryptionKey = EthCrypto.publicKeyByPrivateKey(
+      "0x" + did.privateKey
+    );
+    did.privateKeyGuid = uuid;
+
+    await secureKeyStorage.store(uuid, did.privateKey);
 
     let profileImageUrl = "anon-user.png";
 
@@ -155,7 +174,7 @@ module.exports = {
 
     if (!authorized) {
       res.status(403).json({
-        error: "Account not authorized to approve or create this share request"
+        error: "Account not authorized to approve or create this share request",
       });
       return;
     }
@@ -198,7 +217,7 @@ module.exports = {
 
     if (!authorized) {
       res.status(403).json({
-        error: "Account not authorized to approve this share request"
+        error: "Account not authorized to approve this share request",
       });
       return;
     }
@@ -219,5 +238,5 @@ module.exports = {
       shareRequestId
     );
     res.status(200).json({ message: "success" });
-  }
+  },
 };

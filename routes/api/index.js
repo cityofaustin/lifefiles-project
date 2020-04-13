@@ -18,14 +18,14 @@ router
   .put(auth.required, AccountController.updateAccount)
   .post(
     celebrate({
-      body: Schema.userRegisterSchema
+      body: Schema.userRegisterSchema,
     }),
     AccountController.newAccount
   );
 
 router.route("/accounts/login").post(
   celebrate({
-    body: Schema.userLoginSchema
+    body: Schema.userLoginSchema,
   }),
   AccountController.login
 );
@@ -55,6 +55,10 @@ router
   .route("/profile-image/:imageurl/:jwt")
   .get(auth.image, AccountController.getProfileImage);
 
+router
+  .route("/get-encryption-key")
+  .get(auth.required, AccountController.getEncryptionKey);
+
 // Documents
 router.route("/document-types/").get(DocumentController.getDocumentTypes);
 
@@ -62,8 +66,8 @@ router.route("/create-notarized-document/").post(
   [
     auth.required,
     celebrate({
-      body: Schema.createNotarizedDocumentSchema
-    })
+      body: Schema.createNotarizedDocumentSchema,
+    }),
   ],
   DocumentController.createNotarizedDocument
 );
@@ -128,14 +132,14 @@ router
       REMOVE THIS DANGEROUS CALL WHEN WE GO TO PRODUCTION
   */
 
-router.use(function(err, req, res, next) {
+router.use(function (err, req, res, next) {
   if (err.name === "ValidationError") {
     return res.status(422).json({
-      errors: Object.keys(err.errors).reduce(function(errors, key) {
+      errors: Object.keys(err.errors).reduce(function (errors, key) {
         errors[key] = err.errors[key].message;
 
         return errors;
-      }, {})
+      }, {}),
     });
   }
 
