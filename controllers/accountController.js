@@ -10,8 +10,6 @@ const uuidv4 = require("uuid").v4;
 module.exports = {
   getEncryptionKey: async (req, res, next) => {
     account = await common.dbClient.getAccountById(req.payload.id);
-
-    console.log(account.didPrivateKeyGuid);
     let key = await secureKeyStorage.retrieve(account.didPrivateKeyGuid);
     res.status(200).json({ encryptionKey: key.data.value });
   },
