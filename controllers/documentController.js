@@ -306,7 +306,7 @@ module.exports = {
 
     let notarizedVCJwt = await common.blockchainClient.createNotarizedVC(
       notaryAccount.didAddress,
-      notaryPrivateKey.data.value,
+      notaryPrivateKey,
       ownerAccount.didAddress,
       documentDID,
       documentType,

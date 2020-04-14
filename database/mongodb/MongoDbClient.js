@@ -103,8 +103,8 @@ class MongoDbClient {
           ),
           privateKey:
             "8ef83de6f0ccf32798f8afcd436936870af619511f2385e8aace87729e771a8b",
+          privateKeyGuid: "53d9269b-a90b-423e-be17-e2a6517790b1",
         },
-        privateKeyGuid: "53d9269b-a90b-423e-be17-e2a6517790b1",
       };
 
       await secureKeyStorage.store(
@@ -141,8 +141,8 @@ class MongoDbClient {
           ),
           privateKey:
             "403c9b0e55db5ff1434d07711baa34d76eecc2723cdb599a42f5f2cbf6fd3262",
+          privateKeyGuid: "6ee64b8e-0623-4cad-8162-26e49e74b2dc",
         },
-        privateKeyGuid: "6ee64b8e-0623-4cad-8162-26e49e74b2dc",
       };
 
       await secureKeyStorage.store(
@@ -179,8 +179,8 @@ class MongoDbClient {
           ),
           privateKey:
             "a2bf1a07ccb785b7baf041dc0135ae9bfbf049bd36068777e4796185fe1ff5c0",
+          privateKeyGuid: "22161991-55f9-45fc-b6c5-de8e339701f1",
         },
-        privateKeyGuid: "22161991-55f9-45fc-b6c5-de8e339701f1",
       };
 
       await secureKeyStorage.store(
