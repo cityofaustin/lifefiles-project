@@ -306,6 +306,7 @@ class MongoDbClient {
     return;
   }
 
+  // TODO: Make document id / url explicit in share request params
   async createShareRequest(accountRequestingId, accountId, documentTypeName) {
     const account = await Account.findById(accountId);
     const documents = await this.getDocuments(accountId);
@@ -384,14 +385,12 @@ class MongoDbClient {
     documentType,
     permanentOrgFileArchiveNumber,
     md5,
-    validUntilDate
+    validUntilDate,
+    encryptionPubKey
   ) {
     let date;
-    if (
-      validUntilDate !== undefined &&
-      !(validUntilDate instanceof Date) &&
-      validUntilDate.contains("-")
-    ) {
+    console.log(typeof validUntilDate);
+    if (validUntilDate !== undefined && !(validUntilDate instanceof Date)) {
       date = new Date(validUntilDate);
     }
 
@@ -400,6 +399,7 @@ class MongoDbClient {
     newDocument.url = fileKey;
     newDocument.uploadedBy = uploadedByAccount;
     newDocument.belongsTo = uploadForAccount;
+    newDocument.encryptionPubKey = encryptionPubKey;
     newDocument.type = documentType;
     newDocument.permanentOrgFileArchiveNumber = permanentOrgFileArchiveNumber;
     newDocument.hash = md5;

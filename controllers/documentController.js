@@ -87,7 +87,8 @@ module.exports = {
       req.body.type,
       permanentOrgFileArchiveNumber,
       file.md5,
-      req.body.validuntildate
+      req.body.validuntildate,
+      req.body.encryptionPubKey
     );
 
     // fullUrl: "http://" + ip.address() +":" + (process.env.PORT || 5000) + "/api/documents/" + document.url + "/" + account.generateJWT()
@@ -297,7 +298,8 @@ module.exports = {
       "Notarized " + documentType,
       "",
       fileInfo.md5,
-      expirationDate
+      expirationDate,
+      ""
     );
 
     let notaryPrivateKey = await secureKeyStorage.retrieve(

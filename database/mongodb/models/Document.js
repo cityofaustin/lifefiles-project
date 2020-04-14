@@ -10,16 +10,17 @@ var DocumentSchema = new mongoose.Schema(
     vcJwt: String,
     vpJwt: String,
     type: String,
+    encryptionPubKey: String,
     permanentOrgFileArchiveNumber: String,
     validUntilDate: Date,
     uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Account" },
     belongsTo: { type: mongoose.Schema.Types.ObjectId, ref: "Account" },
-    sharedWithAccountIds: [String]
+    sharedWithAccountIds: [String],
   },
   { timestamps: true }
 );
 
-DocumentSchema.methods.getPublicInfo = function(account) {
+DocumentSchema.methods.getPublicInfo = function (account) {
   if (account.email === undefined) {
     return account;
   } else {
@@ -27,7 +28,7 @@ DocumentSchema.methods.getPublicInfo = function(account) {
   }
 };
 
-DocumentSchema.methods.toPublicInfo = function() {
+DocumentSchema.methods.toPublicInfo = function () {
   return {
     id: this._id,
     name: this.name,
@@ -37,11 +38,12 @@ DocumentSchema.methods.toPublicInfo = function() {
     vcJwt: this.vcJwt,
     vpJwt: this.vpJwt,
     type: this.type,
+    encryptionPubKey: this.encryptionPubKey,
     permanentOrgFileArchiveNumber: this.permanentOrgFileArchiveNumber,
     validUntilDate: this.validUntilDate,
     sharedWithAccountIds: this.sharedWithAccountIds,
     uploadedBy: this.getPublicInfo(this.uploadedBy),
-    belongsTo: this.getPublicInfo(this.belongsTo)
+    belongsTo: this.getPublicInfo(this.belongsTo),
   };
 };
 

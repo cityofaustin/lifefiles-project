@@ -76,7 +76,13 @@ router
   .route("/documents/")
   .get(auth.required, DocumentController.getDocuments)
   .post(
-    [auth.required, isAllowedUploadDocument],
+    [
+      auth.required,
+      celebrate({
+        body: Schema.uploadDocumentSchema,
+      }),
+      isAllowedUploadDocument,
+    ],
     DocumentController.uploadDocument
   );
 
