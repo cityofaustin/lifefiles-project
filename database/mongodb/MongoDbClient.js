@@ -340,22 +340,23 @@ class MongoDbClient {
     return shareRequest;
   }
 
-  async approveOrDenyShareRequest(shareRequestId, approved) {
+  async approveOrDenyShareRequest(shareRequestId, approved, key) {
     const shareRequest = await ShareRequest.findById(shareRequestId);
     shareRequest.approved = approved;
+    shareRequest.documentUrl = key;
 
     await shareRequest.save();
 
-    if (shareRequest.approved === true) {
-      const document = await Document.findById(shareRequest.documentId);
-
-      if (
-        !document.sharedWithAccountIds.includes(shareRequest.shareWithAccountId)
-      ) {
-        document.sharedWithAccountIds.push(shareRequest.shareWithAccountId);
-      }
-      await document.save();
-    }
+    // if (shareRequest.approved === true) {
+    //   const document = await Document.findById(shareRequest.documentId);
+    //
+    //   if (
+    //     !document.sharedWithAccountIds.includes(shareRequest.shareWithAccountId)
+    //   ) {
+    //     document.sharedWithAccountIds.push(shareRequest.shareWithAccountId);
+    //   }
+    //   await document.save();
+    // }
 
     return shareRequest;
   }
