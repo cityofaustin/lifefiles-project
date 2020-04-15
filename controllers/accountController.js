@@ -14,7 +14,7 @@ module.exports = {
     res.status(200).json({ encryptionKey: key });
   },
 
-  getAcccount: async (req, res, next) => {
+  getAccount: async (req, res, next) => {
     const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
     let returnAccount = account.toAuthJSON();
     let documentSharedAccounts = [];
@@ -32,7 +32,7 @@ module.exports = {
     });
   },
 
-  getAcccounts: async (req, res, next) => {
+  getAccounts: async (req, res, next) => {
     const accounts = await common.dbClient.getAllAccounts();
     let returnAccounts = [];
 
