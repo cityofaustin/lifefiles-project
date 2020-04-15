@@ -159,14 +159,15 @@ module.exports = {
 
   newShareRequest: async (req, res, next) => {
     const accountId = req.payload.id;
+    const file = (req.files && req.files.img) ? req.files.img : undefined;
 
-    const fromAccountId = req.body.shareRequest.fromAccountId;
-    const toAccountId = req.body.shareRequest.toAccountId;
-    const documentTypeName = req.body.shareRequest.documentType;
+    const fromAccountId = req.body.fromAccountId;
+    const toAccountId = req.body.toAccountId;
+    const documentTypeName = req.body.documentType;
 
     let authorized = false;
 
-    if (accountId == fromAccountId || accountId == toAccountId) {
+    if (accountId === fromAccountId || accountId === toAccountId) {
       authorized = true;
     }
 
@@ -179,8 +180,12 @@ module.exports = {
 
     let approved = false;
 
-    if (accountId == fromAccountId) {
+    let key = undefined;
+    if (accountId === fromAccountId) {
       approved = true;
+      if(file) {
+        key = await documentStorageHelper.upload(file, "document");
+      }
     }
 
     let shareRequest = await common.dbClient.createShareRequest(
@@ -192,7 +197,8 @@ module.exports = {
     if (approved) {
       shareRequest = await common.dbClient.approveOrDenyShareRequest(
         shareRequest._id,
-        approved
+        approved,
+        key
       );
     }
 

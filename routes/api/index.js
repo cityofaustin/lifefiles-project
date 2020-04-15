@@ -42,7 +42,7 @@ router
   .route("/share-requests")
   .get(auth.required, AccountController.getShareRequests)
   .post(
-    [auth.required, celebrate({ body: Schema.shareRequestSchema })],
+    [auth.required],
     AccountController.newShareRequest
   );
 
