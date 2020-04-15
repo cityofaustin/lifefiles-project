@@ -1,9 +1,9 @@
-const { Safe } = require("./safe");
+const { FileSafe } = require("./FileSafe");
 let vault;
 let safe;
 
 if (process.env.ENVIRONMENT === "DEVELOPMENT") {
-  safe = new Safe("safe.dat", process.env.FILE_SAFE_KEY);
+  safe = new FileSafe("safe.dat", process.env.FILE_SAFE_KEY);
   try {
     safe.decrypt();
   } catch (err) {

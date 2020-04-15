@@ -1,7 +1,7 @@
 const FileSystem = require("fs");
 const Crypto = require("crypto");
 
-class Safe {
+class FileSafe {
   constructor(filePath) {
     this.filePath = filePath;
   }
@@ -38,4 +38,4 @@ class Safe {
   }
 }
 
-exports.Safe = Safe;
+exports.FileSafe = FileSafe;
