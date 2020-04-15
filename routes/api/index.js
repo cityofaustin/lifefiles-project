@@ -10,11 +10,11 @@ const { isAllowedUploadDocument } = require("../middleware/permission");
 const Schema = require("../middleware/schema");
 
 // Accounts
-router.route("/my-account").get(auth.required, AccountController.getAcccount);
+router.route("/my-account").get(auth.required, AccountController.getAccount);
 
 router
   .route("/accounts")
-  .get(auth.required, AccountController.getAcccounts)
+  .get(auth.required, AccountController.getAccounts)
   .put(auth.required, AccountController.updateAccount)
   .post(
     celebrate({

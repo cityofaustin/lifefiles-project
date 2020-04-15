@@ -55,7 +55,7 @@ module.exports = {
       let data = safe.decrypt();
       return data[guid];
     } else {
-      const value = vault.read("secret/" + guid);
+      const value = await vault.read("secret/" + guid);
       return value.data.value;
     }
   },
