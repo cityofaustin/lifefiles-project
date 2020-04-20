@@ -53,7 +53,11 @@ module.exports = {
   },
 
   uploadDocument: async (req, res, next) => {
-    if (req.files === undefined || req.files.img === undefined) {
+    if (
+      req.files === undefined ||
+      req.files === null ||
+      req.files.img === undefined
+    ) {
       res.status(501).json({
         error: "Must include a file to upload.",
       });
@@ -69,9 +73,18 @@ module.exports = {
     }
 
     const account = await common.dbClient.getAccountById(req.payload.id);
-    const file = req.files.img;
 
-    let key = await documentStorageHelper.upload(file, "document");
+    const file =
+      req.files.img[0] === undefined ? req.files.img : req.files.img[0];
+
+    const thumbnailFile =
+      req.files.img[1] === undefined ? undefined : req.files.img[1];
+
+    const key = await documentStorageHelper.upload(file, "document");
+    const thumbnailKey =
+      thumbnailFile === undefined
+        ? undefined
+        : await documentStorageHelper.upload(thumbnailFile, "document");
 
     let permanentOrgFileArchiveNumber = await permanent.addToPermanentArchive(
       file,
@@ -84,6 +97,7 @@ module.exports = {
       account,
       file.name,
       key,
+      thumbnailKey,
       req.body.type,
       permanentOrgFileArchiveNumber,
       file.md5,
@@ -93,9 +107,11 @@ module.exports = {
 
     // fullUrl: "http://" + ip.address() +":" + (process.env.PORT || 5000) + "/api/documents/" + document.url + "/" + account.generateJWT()
 
-    res
-      .status(200)
-      .json({ file: document.url, document: document.toPublicInfo() });
+    res.status(200).json({
+      file: document.url,
+      thumbnailUrl: document.thumbnailUrl,
+      document: document.toPublicInfo(),
+    });
   },
 
   uploadDocumentOnBehalfOfUser: async (req, res, next) => {

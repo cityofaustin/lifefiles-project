@@ -383,6 +383,7 @@ class MongoDbClient {
     uploadForAccount,
     originalFileName,
     fileKey,
+    thumbnailKey,
     documentType,
     permanentOrgFileArchiveNumber,
     md5,
@@ -390,7 +391,6 @@ class MongoDbClient {
     encryptionPubKey
   ) {
     let date;
-    console.log(typeof validUntilDate);
     if (validUntilDate !== undefined && !(validUntilDate instanceof Date)) {
       date = new Date(validUntilDate);
     }
@@ -398,6 +398,7 @@ class MongoDbClient {
     const newDocument = new Document();
     newDocument.name = originalFileName;
     newDocument.url = fileKey;
+    newDocument.thumbnailUrl = thumbnailKey;
     newDocument.uploadedBy = uploadedByAccount;
     newDocument.belongsTo = uploadForAccount;
     newDocument.encryptionPubKey = encryptionPubKey;
@@ -457,7 +458,9 @@ class MongoDbClient {
   }
 
   async getDocument(filename) {
-    let document = await Document.findOne({ url: filename });
+    let document = await Document.findOne({
+      $or: [{ url: filename }, { thumbnailUrl: filename }],
+    });
     return document;
   }
 

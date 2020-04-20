@@ -4,6 +4,7 @@ var DocumentSchema = new mongoose.Schema(
   {
     name: String,
     url: { type: String, index: true },
+    thumbnailUrl: { type: String, index: true },
     notarized: Boolean,
     did: String,
     hash: String,
@@ -33,6 +34,7 @@ DocumentSchema.methods.toPublicInfo = function () {
     id: this._id,
     name: this.name,
     url: this.url,
+    thumbnailUrl: this.thumbnailUrl,
     did: this.did,
     hash: this.hash,
     vcJwt: this.vcJwt,
