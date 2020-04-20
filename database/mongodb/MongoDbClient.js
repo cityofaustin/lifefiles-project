@@ -340,10 +340,11 @@ class MongoDbClient {
     return shareRequest;
   }
 
-  async approveOrDenyShareRequest(shareRequestId, approved, key) {
+  async approveOrDenyShareRequest(shareRequestId, approved, key, thumbnailKey) {
     const shareRequest = await ShareRequest.findById(shareRequestId);
     shareRequest.approved = approved;
     shareRequest.documentUrl = key;
+    shareRequest.documentThumbnailUrl = thumbnailKey;
 
     await shareRequest.save();
 
@@ -418,6 +419,7 @@ class MongoDbClient {
     documentId,
     filename,
     key,
+    thumbnailKey,
     permanentOrgFileArchiveNumber,
     md5,
     validUntilDate
@@ -436,6 +438,7 @@ class MongoDbClient {
 
     document.name = filename;
     document.url = key;
+    document.thumbnailUrl = thumbnailKey;
 
     document.permanentOrgFileArchiveNumber = permanentOrgFileArchiveNumber;
     document.hash = md5;

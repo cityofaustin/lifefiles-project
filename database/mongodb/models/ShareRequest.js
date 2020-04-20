@@ -4,7 +4,8 @@ var ShareRequestSchema = new mongoose.Schema({
   shareWithAccountId: String,
   documentType: String,
   approved: Boolean,
-  documentUrl: String
+  documentUrl: String,
+  documentThumbnailUrl: String
 });
 
 const ShareRequest = mongoose.model("ShareRequest", ShareRequestSchema);
