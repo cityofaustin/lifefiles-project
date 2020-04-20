@@ -24,7 +24,10 @@ common.blockchainClient = blockchainClient;
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.json());
 app.use(fileUpload({ useTempFiles: true }));
-app.use(cors());
+
+// Using NGIX cors config
+//app.use(cors());
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
