@@ -46,6 +46,7 @@ DocumentSchema.methods.toPublicInfo = function () {
     sharedWithAccountIds: this.sharedWithAccountIds,
     uploadedBy: this.getPublicInfo(this.uploadedBy),
     belongsTo: this.getPublicInfo(this.belongsTo),
+    updatedAt: this.updatedAt
   };
 };
 
