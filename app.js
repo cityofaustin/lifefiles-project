@@ -25,8 +25,10 @@ app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.json());
 app.use(fileUpload({ useTempFiles: true }));
 
-// Using NGIX cors config
-//app.use(cors());
+// Using NGIX cors config if production
+if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+  app.use(cors());
+}
 
 app.use(
   session({

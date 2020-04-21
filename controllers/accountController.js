@@ -159,8 +159,11 @@ module.exports = {
 
   newShareRequest: async (req, res, next) => {
     const accountId = req.payload.id;
-    const file = (req.files && req.files.img) ? req.files.img : undefined;
-
+    const file = (req.files && req.files.img && req.files.img[0])
+      ? req.files.img[0] : undefined;
+    const thumbnailFile = (req.files && req.files.img && req.files.img[1])
+      ? req.files.img[1] : undefined;
+    
     const fromAccountId = req.body.fromAccountId;
     const toAccountId = req.body.toAccountId;
     const documentTypeName = req.body.documentType;
@@ -181,10 +184,14 @@ module.exports = {
     let approved = false;
 
     let key = undefined;
+    let thumbnailKey = undefined;
     if (accountId === fromAccountId) {
       approved = true;
       if(file) {
         key = await documentStorageHelper.upload(file, "document");
+      }
+      if(thumbnailFile) {
+        thumbnailKey = await documentStorageHelper.upload(thumbnailFile, "document");
       }
     }
 
@@ -198,7 +205,8 @@ module.exports = {
       shareRequest = await common.dbClient.approveOrDenyShareRequest(
         shareRequest._id,
         approved,
-        key
+        key,
+        thumbnailKey
       );
     }
 

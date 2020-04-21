@@ -21,6 +21,7 @@ module.exports = {
     let filename = document.name;
     let permanentOrgFileArchiveNumber = document.permanentOrgFileArchiveNumber;
     let key = document.url;
+    let thumbnailKey = document.thumbnailUrl;
     let validuntildate = req.body.validuntildate || document.validUntilDate;
 
     if (
@@ -28,22 +29,34 @@ module.exports = {
       req.files !== null &&
       req.files.img !== undefined
     ) {
-      const newFile = req.files.img;
+      const newFile =
+      req.files.img[0] === undefined ? req.files.img : req.files.img[0];
+
+      const newThumbnailFile =
+      req.files.img[1] === undefined ? undefined : req.files.img[1];
+
       filename = newFile.name;
       md5 = newFile.md5;
       key = await documentStorageHelper.upload(newFile, "document");
-
+      
       permanentOrgFileArchiveNumber = await permanent.addToPermanentArchive(
         newFile,
         key,
         account.permanentOrgArchiveNumber
       );
+
+      if(newThumbnailFile) {
+        thumbnailKey = newThumbnailFile === undefined
+        ? undefined
+        : await documentStorageHelper.upload(newThumbnailFile, "document");
+      }
     }
 
     const updatedDocument = await common.dbClient.updateDocument(
       documentId,
       filename,
       key,
+      thumbnailKey,
       permanentOrgFileArchiveNumber,
       md5,
       validuntildate
