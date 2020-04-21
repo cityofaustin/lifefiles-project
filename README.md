@@ -6,7 +6,7 @@ The MyPass application is secure document storage solution designed to help peop
 
 ## Getting Started
 
-## Quick Start
+### First launch the backend server
 
 Change the env.template to be a .env file and update to your values
 
@@ -27,7 +27,9 @@ $ yarn start
 ```
 
 Hit the api endpoints at: http://localhost:5000/api/
-  
+
+### Next Launch the React Frontend
+The Frontend for this project can be found at: https://github.com/cityofaustin/mypass-frontend
 
 ## Project Info
 
