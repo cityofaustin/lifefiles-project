@@ -8,17 +8,15 @@ const getResolver = require("ethr-did-resolver").getResolver;
 const verifyCredential = require("did-jwt-vc").verifyCredential;
 const verifyPresentation = require("did-jwt-vc").verifyPresentation;
 const md5 = require("md5");
+const axios = require("axios");
 const DidRegistryContract = require("ethr-did-registry");
 
-const web3 = new Web3(new Web3.providers.HttpProvider(process.env.INFURA_URI));
-const fundingAccount = web3.eth.accounts.privateKeyToAccount(
-  process.env.ETH_FUNDING_PRIVATE_KEY
-);
-web3.eth.accounts.wallet.add(fundingAccount);
-
-const didRegContract = new web3.eth.Contract(DidRegistryContract.abi);
-didRegContract.options.address = "0xdca7ef03e98e0dc2b855be647c39abe984fcf21b"; // mainnet
-
+const ETHER_GAS_STATION_API = "https://ethgasstation.info/api/ethgasAPI.json";
+const ENS_REGISTRY_PUBLIC_RESOLVER_ABI_JSON = require("./contracts/publicResolverAbi.json");
+const ENS_REGISTRY_PUBLIC_RESOLVER_ADDRESS =
+  "0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41";
+const ENS_NODE =
+  "0x3442daf145b62820466398f343a5666abd6b41e9144476431b4360e0007a214e";
 const NAME_KEY =
   "0x6469642f7376632f76636a777400000000000000000000000000000000000000"; // did/svc/vcjwt
 const FUND_ACCOUNT_GAS_PRICE = 3000000000;
@@ -26,6 +24,26 @@ const CONTRACT_GAS_PRICE = 2000000000;
 const REFUND_GAS_PRICE = 1000000000;
 const CONTRACT_DEFAULT_GAS = 200000;
 const FUND_ACCOUNT_GAS = 21000;
+
+const web3 = new Web3(new Web3.providers.HttpProvider(process.env.INFURA_URI));
+
+const ensContract = new web3.eth.Contract(
+  JSON.parse(ENS_REGISTRY_PUBLIC_RESOLVER_ABI_JSON.result),
+  ENS_REGISTRY_PUBLIC_RESOLVER_ADDRESS
+);
+
+const fundingAccount = web3.eth.accounts.privateKeyToAccount(
+  process.env.ETH_FUNDING_PRIVATE_KEY
+);
+const ethDomainAccount = web3.eth.accounts.privateKeyToAccount(
+  process.env.ETH_MYPASS_DOMAIN_PRIVATE_KEY
+);
+
+web3.eth.accounts.wallet.add(fundingAccount);
+web3.eth.accounts.wallet.add(ethDomainAccount);
+
+const didRegContract = new web3.eth.Contract(DidRegistryContract.abi);
+didRegContract.options.address = "0xdca7ef03e98e0dc2b855be647c39abe984fcf21b"; // mainnet
 
 class UportClient {
   constructor() {
@@ -186,6 +204,38 @@ class UportClient {
   async verifyVP(vpJwt) {
     const verifiedVP = await verifyPresentation(vpJwt, this.resolver);
     return verifiedVP;
+  }
+
+  async getTxtRecord(didKey) {
+    let res = await ensContract.methods.text(ENS_NODE, didKey).call();
+    return res;
+  }
+
+  async setTxtRecord(didKey, nameValue) {
+    let gasEstimate = await ensContract.methods
+      .setText(ENS_NODE, didKey, nameValue)
+      .estimateGas({ from: ethDomainAccount.address });
+
+    let gasStationPrice = await axios.get(ETHER_GAS_STATION_API);
+
+    let setTextReceipt;
+
+    console.log(
+      "Starting Set Txt Record With Eth Domain Address: " +
+        ethDomainAccount.address
+    );
+    try {
+      setTextReceipt = await ensContract.methods
+        .setText(ENS_NODE, didKey, nameValue)
+        .send({
+          from: ethDomainAccount.address,
+          gasPrice: 100000000 * gasStationPrice.data.safeLow,
+          gas: gasEstimate,
+        });
+    } catch (err) {
+      console.log("Ens Contract Error:");
+      console.log(err);
+    }
   }
 
   async storeJwtOnEthereumBlockchain(vcJwt, did, validityTime) {

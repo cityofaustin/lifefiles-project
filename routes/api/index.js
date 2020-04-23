@@ -41,10 +41,7 @@ router
 router
   .route("/share-requests")
   .get(auth.required, AccountController.getShareRequests)
-  .post(
-    [auth.required],
-    AccountController.newShareRequest
-  );
+  .post([auth.required], AccountController.newShareRequest);
 
 router
   .route("/share-requests/:shareRequestId")
@@ -61,6 +58,7 @@ router
 
 // Documents
 router.route("/document-types/").get(DocumentController.getDocumentTypes);
+router.route("/txt-record/:recordId").get(DocumentController.getTxtRecord);
 
 router.route("/create-notarized-document/").post(
   [

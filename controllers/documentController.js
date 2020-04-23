@@ -30,25 +30,26 @@ module.exports = {
       req.files.img !== undefined
     ) {
       const newFile =
-      req.files.img[0] === undefined ? req.files.img : req.files.img[0];
+        req.files.img[0] === undefined ? req.files.img : req.files.img[0];
 
       const newThumbnailFile =
-      req.files.img[1] === undefined ? undefined : req.files.img[1];
+        req.files.img[1] === undefined ? undefined : req.files.img[1];
 
       filename = newFile.name;
       md5 = newFile.md5;
       key = await documentStorageHelper.upload(newFile, "document");
-      
+
       permanentOrgFileArchiveNumber = await permanent.addToPermanentArchive(
         newFile,
         key,
         account.permanentOrgArchiveNumber
       );
 
-      if(newThumbnailFile) {
-        thumbnailKey = newThumbnailFile === undefined
-        ? undefined
-        : await documentStorageHelper.upload(newThumbnailFile, "document");
+      if (newThumbnailFile) {
+        thumbnailKey =
+          newThumbnailFile === undefined
+            ? undefined
+            : await documentStorageHelper.upload(newThumbnailFile, "document");
       }
     }
 
@@ -281,6 +282,14 @@ module.exports = {
     res.status(200).json({ documentTypes: documentTypes });
   },
 
+  getTxtRecord: async (req, res, next) => {
+    let txtRecord = await common.blockchainClient.getTxtRecord(
+      req.params.recordId
+    );
+
+    res.status(200).json({ txtRecord: txtRecord });
+  },
+
   createNotarizedDocument: async (req, res, next) => {
     const notaryAccount = await common.dbClient.getAccountById(req.payload.id);
     const ownerAccount = await common.dbClient.getAccountById(
@@ -297,6 +306,7 @@ module.exports = {
     const validityTimeSeconds = Math.round(
       (expirationDate - new Date()) / 1000
     );
+
     let notaryName = notaryAccount.firstName + notaryAccount.lastName;
     notaryName = notaryName.replace(/\s/g, "");
     const notaryId = "" + req.body.notaryId;
@@ -323,6 +333,7 @@ module.exports = {
         req.files.img[1].name +
         "-" +
         req.files.img[2].name,
+      key,
       key,
       "Notarized " + documentType,
       "",
@@ -364,6 +375,22 @@ module.exports = {
       document,
       did.privateKey
     );
+
+    // Check if owner is in mypass.eth txt record
+    let txtRecord = await common.blockchainClient.getTxtRecord(
+      "did:ethr:" + ownerAccount.didAddress
+    );
+
+    if (txtRecord === "" || txtRecord === undefined) {
+      console.log(
+        ownerAccount.didAddress +
+          " Not found in txt record. Adding to txt record..."
+      );
+      common.blockchainClient.setTxtRecord(
+        "did:ethr:" + ownerAccount.didAddress,
+        ownerAccount.firstName + " " + ownerAccount.lastName
+      );
+    }
 
     res.status(200).json({
       vc: notarizedVCJwt,
