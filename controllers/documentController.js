@@ -232,23 +232,32 @@ module.exports = {
     const accountId = req.payload.id;
     const filename = req.params.filename;
     let approved = false;
-
+    let shareRequest;
     const document = await common.dbClient.getDocument(filename);
 
     if (document === undefined || document === null) {
+      shareRequest = await common.dbClient.getShareRequestByUrl(filename);
+    }
+
+    if (
+      (document === undefined || document === null) &&
+      (shareRequest === undefined || shareRequest === null)
+    ) {
       res.status(404).json({
         error: "Document Does Not Exists",
       });
       return;
     }
 
-    for (let sharedWithAccountId of document.sharedWithAccountIds) {
-      if (sharedWithAccountId === accountId) {
-        approved = true;
-      }
+    if (
+      shareRequest !== undefined &&
+      shareRequest !== null &&
+      shareRequest.shareWithAccountId === accountId
+    ) {
+      approved = true;
     }
 
-    if (document.belongsTo == accountId || approved === true) {
+    if (approved === true || document.belongsTo == accountId) {
       const payload = await documentStorageHelper.getDocumentBytes(
         filename,
         "document"
@@ -377,11 +386,11 @@ module.exports = {
     );
 
     // Check if owner is in mypass.eth txt record
-    let txtRecord = await common.blockchainClient.getTxtRecord(
+    let ownertxtRecord = await common.blockchainClient.getTxtRecord(
       "did:ethr:" + ownerAccount.didAddress
     );
 
-    if (txtRecord === "" || txtRecord === undefined) {
+    if (ownertxtRecord === "" || ownertxtRecord === undefined) {
       console.log(
         ownerAccount.didAddress +
           " Not found in txt record. Adding to txt record..."
@@ -389,6 +398,22 @@ module.exports = {
       common.blockchainClient.setTxtRecord(
         "did:ethr:" + ownerAccount.didAddress,
         ownerAccount.firstName + " " + ownerAccount.lastName
+      );
+    }
+
+    // Check if notary is in mypass.eth txt record
+    let notarytxtRecord = await common.blockchainClient.getTxtRecord(
+      "did:ethr:" + notaryAccount.didAddress
+    );
+
+    if (notarytxtRecord === "" || notarytxtRecord === undefined) {
+      console.log(
+        notaryAccount.didAddress +
+          " Not found in txt record. Adding to txt record..."
+      );
+      common.blockchainClient.setTxtRecord(
+        "did:ethr:" + notaryAccount.didAddress,
+        notaryAccount.firstName + " " + notaryAccount.lastName
       );
     }
 

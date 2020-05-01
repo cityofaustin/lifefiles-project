@@ -287,6 +287,13 @@ class MongoDbClient {
     return account.shareRequests;
   }
 
+  async getShareRequestByUrl(url) {
+    let shareRequest = await ShareRequest.findOne({
+      $or: [{ documentUrl: url }, { documentThumbnailUrl: url }],
+    });
+    return shareRequest;
+  }
+
   async deleteShareRequestByDocumentId(documentId) {
     await ShareRequest.deleteMany({
       documentId: documentId,
@@ -297,12 +304,15 @@ class MongoDbClient {
   async deleteShareRequest(shareRequestAccountOwnerId, shareRequestId) {
     let account = await Account.findById(shareRequestAccountOwnerId);
 
+    // Remove share request from owner
     await account.shareRequests.pull({ _id: shareRequestId });
-    account.save();
+    await account.save();
 
+    // Delete Share Request
     await ShareRequest.deleteMany({
       _id: shareRequestId,
     });
+
     return;
   }
 
@@ -347,17 +357,6 @@ class MongoDbClient {
     shareRequest.documentThumbnailUrl = thumbnailKey;
 
     await shareRequest.save();
-
-    // if (shareRequest.approved === true) {
-    //   const document = await Document.findById(shareRequest.documentId);
-    //
-    //   if (
-    //     !document.sharedWithAccountIds.includes(shareRequest.shareWithAccountId)
-    //   ) {
-    //     document.sharedWithAccountIds.push(shareRequest.shareWithAccountId);
-    //   }
-    //   await document.save();
-    // }
 
     return shareRequest;
   }

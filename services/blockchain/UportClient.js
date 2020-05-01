@@ -147,7 +147,6 @@ class UportClient {
         type: ["VerifiableCredential", "TexasNotaryCredential"],
         issuer: {
           id: issuerDID,
-          name: notaryName,
           notaryId: notaryId,
         },
         issuanceDate: issuanceDate,
