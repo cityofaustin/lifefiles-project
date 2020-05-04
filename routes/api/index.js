@@ -89,7 +89,7 @@ router
   .put(auth.required, DocumentController.updateDocument);
 
 router
-  .route("/upload-document-and-notarize-on-behalf-of-user/")
+  .route("/upload-document-on-behalf-of-user/")
   .post(
     [auth.required, isAllowedUploadDocument],
     DocumentController.uploadDocumentOnBehalfOfUser

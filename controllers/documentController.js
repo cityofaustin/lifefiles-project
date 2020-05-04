@@ -129,95 +129,97 @@ module.exports = {
   },
 
   uploadDocumentOnBehalfOfUser: async (req, res, next) => {
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    if (
+      req.files === undefined ||
+      req.files === null ||
+      req.files.img.length !== 4
+    ) {
+      res.status(501).json({
+        error: "Must include files to upload.",
+      });
+      return;
+    }
 
+    if (req.body.type === undefined) {
+      res.status(501).json({
+        error:
+          "Document Type Does Not Exist!, Must be of type: Passport, Birth Certificate...",
+      });
+      return;
+    }
+
+    if (req.body.uploadForAccountId === undefined) {
+      res.status(501).json({
+        error: "Must include accountId that you are uploading on behalf",
+      });
+    }
+
+    const account = await common.dbClient.getAccountById(req.payload.id);
     const uploadForAccount = await common.dbClient.getAccountById(
       req.body.uploadForAccountId
     );
 
-    const uploadOnBehalfOfFile = req.files.img[0];
-    const notarySealFile = req.files.img[1];
+    const documentFile = req.files.img[0];
 
-    let key = await documentStorageHelper.upload(
-      uploadOnBehalfOfFile,
+    const documentThumbnailFile = req.files.img[1];
+
+    const documentForAccountFile = req.files.img[2];
+
+    const documentForAccountThumbnailFile = req.files.img[3];
+
+    const key = await documentStorageHelper.upload(documentFile, "document");
+    const thumbnailKey = await documentStorageHelper.upload(
+      documentThumbnailFile,
       "document"
     );
 
     let permanentOrgFileArchiveNumber = await permanent.addToPermanentArchive(
-      uploadOnBehalfOfFile,
+      documentForAccountFile,
       key,
       uploadForAccount.permanentOrgArchiveNumber
     );
 
-    const document = await common.dbClient.createDocument(
-      account,
-      uploadForAccount,
-      uploadOnBehalfOfFile.name,
-      key,
-      req.body.type,
-      permanentOrgFileArchiveNumber,
-      uploadOnBehalfOfFile.md5,
-      req.body.validuntildate
+    const keyForAccount = await documentStorageHelper.upload(
+      documentForAccountFile,
+      "document"
+    );
+    const thumbnailKeyForAccount = await documentStorageHelper.upload(
+      documentForAccountThumbnailFile,
+      "document"
     );
 
-    // Approve share request so person who uploaded it on behalf can have access
+    const document = await common.dbClient.createDocument(
+      uploadForAccount,
+      uploadForAccount,
+      documentForAccountFile.name,
+      keyForAccount,
+      thumbnailKeyForAccount,
+      req.body.type,
+      permanentOrgFileArchiveNumber,
+      documentForAccountFile.md5,
+      req.body.validuntildate,
+      req.body.encryptionPubKey,
+      false
+    );
+
     let shareRequest = await common.dbClient.createShareRequest(
       account._id,
       uploadForAccount._id,
       req.body.type
     );
 
-    await common.dbClient.approveOrDenyShareRequest(shareRequest._id, true);
-
-    // const issueTime = 1562950282;
-    const issueTime = Math.floor(Date.now() / 1000);
-    const vcJwt = await common.blockchainClient.createVC(
-      account.didAddress,
-      account.didPrivateKey,
-      uploadForAccount.didAddress,
-      document.did,
-      req.body.type,
-      document.hash,
-      document.url,
-      notarySealFile.md5,
-      req.body.notarizationType,
-      req.body.notaryInfo,
-      req.body.ownerSignature,
-      req.body.pem,
-      issueTime
-    );
-
-    const vpJwt = await common.blockchainClient.createVP(
-      account.didAddress,
-      account.didPrivateKey,
-      vcJwt
-    );
-
-    const verifiedVC = await common.blockchainClient.verifyVC(vcJwt);
-    const verifiedVP = await common.blockchainClient.verifyVP(vpJwt);
-
-    console.log("\n\nVERIFIED VC:\n");
-    console.log(verifiedVC);
-    console.log("\n\nVERIFIED VP:\n");
-    console.log(verifiedVP);
-
-    await common.dbClient.createVerifiableCredential(
-      vcJwt,
-      JSON.stringify(verifiedVC),
-      account,
-      document
-    );
-
-    await common.dbClient.createVerifiablePresentation(
-      vpJwt,
-      JSON.stringify(verifiedVP),
-      account,
-      document
+    shareRequest = await common.dbClient.approveOrDenyShareRequest(
+      shareRequest._id,
+      true,
+      key,
+      thumbnailKey
     );
 
     res.status(200).json({
-      vc: verifiedVC,
-      vp: verifiedVP,
+      file: document.url,
+      shareRequest: shareRequest,
+      thumbnailUrl: document.thumbnailUrl,
+      document: document.toPublicInfo(),
     });
   },
 

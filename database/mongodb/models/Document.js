@@ -14,6 +14,7 @@ var DocumentSchema = new mongoose.Schema(
     encryptionPubKey: String,
     permanentOrgFileArchiveNumber: String,
     validUntilDate: Date,
+    claimed: Boolean,
     uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Account" },
     belongsTo: { type: mongoose.Schema.Types.ObjectId, ref: "Account" },
     sharedWithAccountIds: [String],
@@ -43,10 +44,11 @@ DocumentSchema.methods.toPublicInfo = function () {
     encryptionPubKey: this.encryptionPubKey,
     permanentOrgFileArchiveNumber: this.permanentOrgFileArchiveNumber,
     validUntilDate: this.validUntilDate,
+    claimed: this.claimed,
     sharedWithAccountIds: this.sharedWithAccountIds,
     uploadedBy: this.getPublicInfo(this.uploadedBy),
     belongsTo: this.getPublicInfo(this.belongsTo),
-    updatedAt: this.updatedAt
+    updatedAt: this.updatedAt,
   };
 };
 

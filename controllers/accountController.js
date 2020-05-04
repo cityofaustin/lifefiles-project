@@ -225,6 +225,15 @@ module.exports = {
     const shareRequestId = req.params.shareRequestId;
     const approved = req.body.approved;
 
+    const file =
+      req.files && req.files.img && req.files.img[0]
+        ? req.files.img[0]
+        : undefined;
+    const thumbnailFile =
+      req.files && req.files.img && req.files.img[1]
+        ? req.files.img[1]
+        : undefined;
+
     let authorized = false;
 
     for (let shareRequest of account.shareRequests) {
@@ -241,9 +250,23 @@ module.exports = {
       return;
     }
 
+    let key;
+    let thumbnailKey;
+    if (file) {
+      key = await documentStorageHelper.upload(file, "document");
+    }
+    if (thumbnailFile) {
+      thumbnailKey = await documentStorageHelper.upload(
+        thumbnailFile,
+        "document"
+      );
+    }
+
     const shareRequest = await common.dbClient.approveOrDenyShareRequest(
       shareRequestId,
-      approved
+      approved,
+      key,
+      thumbnailKey
     );
 
     res.status(200).json(shareRequest);

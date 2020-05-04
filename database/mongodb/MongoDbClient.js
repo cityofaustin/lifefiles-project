@@ -388,7 +388,8 @@ class MongoDbClient {
     permanentOrgFileArchiveNumber,
     md5,
     validUntilDate,
-    encryptionPubKey
+    encryptionPubKey,
+    claimed = true
   ) {
     let date;
     if (validUntilDate !== undefined && !(validUntilDate instanceof Date)) {
@@ -406,6 +407,7 @@ class MongoDbClient {
     newDocument.permanentOrgFileArchiveNumber = permanentOrgFileArchiveNumber;
     newDocument.hash = md5;
     newDocument.validUntilDate = date;
+    newDocument.claimed = claimed;
     await newDocument.save();
 
     uploadForAccount.documents.push(newDocument);
