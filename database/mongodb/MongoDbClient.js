@@ -294,9 +294,10 @@ class MongoDbClient {
     return shareRequest;
   }
 
-  async deleteShareRequestByDocumentId(documentId) {
+  // NOTE: share request doesn't have document id but it has document type
+  async deleteShareRequestByDocumentType(documentType) {
     await ShareRequest.deleteMany({
-      documentId: documentId,
+      documentType: documentType,
     });
     return;
   }
