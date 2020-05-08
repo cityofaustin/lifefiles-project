@@ -23,6 +23,7 @@ module.exports = {
     let key = document.url;
     let thumbnailKey = document.thumbnailUrl;
     let validuntildate = req.body.validuntildate || document.validUntilDate;
+    let claimed = req.body.claimed || document.claimed;
 
     if (
       req.files !== undefined &&
@@ -60,7 +61,8 @@ module.exports = {
       thumbnailKey,
       permanentOrgFileArchiveNumber,
       md5,
-      validuntildate
+      validuntildate,
+      claimed
     );
 
     res.status(200).json({ updatedDocument: updatedDocument.toPublicInfo() });

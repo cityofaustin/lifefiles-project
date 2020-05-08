@@ -424,7 +424,8 @@ class MongoDbClient {
     thumbnailKey,
     permanentOrgFileArchiveNumber,
     md5,
-    validUntilDate
+    validUntilDate,
+    claimed
   ) {
     let document = await Document.findById(documentId);
 
@@ -445,6 +446,7 @@ class MongoDbClient {
     document.permanentOrgFileArchiveNumber = permanentOrgFileArchiveNumber;
     document.hash = md5;
     document.validUntilDate = date;
+    document.claimed = claimed;
     await document.save();
 
     return document;
