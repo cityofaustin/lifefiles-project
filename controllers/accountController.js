@@ -14,7 +14,7 @@ module.exports = {
     res.status(200).json({ encryptionKey: key });
   },
 
-  getAccount: async (req, res, next) => {
+  myAccount: async (req, res, next) => {
     const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
     let returnAccount = account.toAuthJSON();
     let documentSharedAccounts = [];
@@ -26,6 +26,10 @@ module.exports = {
       }
     }
 
+    if (returnAccount.role === "admin") {
+      adminInfo = await common.dbClient.getAdminData(req.payload.id);
+      returnAccount.adminInfo = adminInfo;
+    }
     res.status(200).json({
       account: returnAccount,
       documentSharedAccounts: documentSharedAccounts,

@@ -285,7 +285,7 @@ module.exports = {
     let deletedDocument = await common.dbClient.deleteDocument(filename);
     await documentStorageHelper.deleteDocumentBytes(filename, "document");
 
-    await common.dbClient.deleteShareRequestByDocumentType(deletedDocument.type);
+    await common.dbClient.deleteShareRequestByDocumentId(deletedDocument.type);
 
     res.status(200).json({ message: "success" });
   },

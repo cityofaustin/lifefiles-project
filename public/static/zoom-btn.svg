@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="179.305" height="48.307" viewBox="0 0 179.305 48.307">
+  <g id="Group_1394" data-name="Group 1394" transform="translate(-931.586 -546.468)">
+    <g id="Group_1342" data-name="Group 1342" transform="translate(931.586 546.468)">
+      <rect id="Rectangle_928" data-name="Rectangle 928" width="179.305" height="48.307" rx="22" fill="#2362c7"/>
+      <text id="Zoom_in" data-name="Zoom in" transform="translate(60.102 32.25)" fill="#fff" font-size="20" font-family="Montserrat-Regular, Montserrat"><tspan x="0" y="0">Zoom in</tspan></text>
+    </g>
+    <g id="Group_1393" data-name="Group 1393">
+      <path id="Path_18" data-name="Path 18" d="M40.372,39.364l-7.149-7.34a13.033,13.033,0,0,0,2.84-8.157A12.707,12.707,0,0,0,23.532,11,12.7,12.7,0,0,0,11,23.867,12.7,12.7,0,0,0,23.532,36.735a12.269,12.269,0,0,0,7.938-2.91l2.9,2.972,4.252,4.362a1.215,1.215,0,0,0,1.754,0A1.288,1.288,0,0,0,40.372,39.364ZM23.532,34.174A10.187,10.187,0,0,1,13.488,23.867,10.193,10.193,0,0,1,23.532,13.555a10.313,10.313,0,0,1,0,20.619Z" transform="translate(934.943 544.186)" fill="#fff"/>
+      <g id="Group_1094" data-name="Group 1094" transform="translate(236 132)">
+        <line id="Line_284" data-name="Line 284" y2="11.603" transform="translate(722.301 430.5)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+        <line id="Line_285" data-name="Line 285" x2="11.603" transform="translate(716.5 436.301)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="2"/>
+      </g>
+    </g>
+  </g>
+</svg>

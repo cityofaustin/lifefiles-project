@@ -10,7 +10,7 @@ const { isAllowedUploadDocument } = require("../middleware/permission");
 const Schema = require("../middleware/schema");
 
 // Accounts
-router.route("/my-account").get(auth.required, AccountController.getAccount);
+router.route("/my-account").get(auth.required, AccountController.myAccount);
 
 router
   .route("/accounts")

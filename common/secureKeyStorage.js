@@ -1,8 +1,11 @@
 const { FileSafe } = require("./FileSafe");
+const common = require("../common/common");
+const Crypto = require("crypto");
 let vault;
 let safe;
 
-if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+if (process.env.ENVIRONMENT === "HEROKU") {
+} else if (process.env.ENVIRONMENT === "DEVELOPMENT") {
   safe = new FileSafe("safe.dat", process.env.FILE_SAFE_KEY);
   try {
     safe.decrypt();
@@ -42,7 +45,16 @@ if (process.env.ENVIRONMENT === "DEVELOPMENT") {
 
 module.exports = {
   store: async (guid, key) => {
-    if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+    if (process.env.ENVIRONMENT === "HEROKU") {
+      let cipher = Crypto.createCipher(
+        "aes-256-cbc",
+        process.env.FILE_SAFE_KEY
+      );
+      let encryptedKey = cipher.update(key, "utf8", "hex");
+      encryptedKey += cipher.final("hex");
+
+      await common.dbClient.store(guid, encryptedKey);
+    } else if (process.env.ENVIRONMENT === "DEVELOPMENT") {
       let data = safe.decrypt();
       data[guid] = key;
       safe.encrypt(data);
@@ -51,7 +63,22 @@ module.exports = {
     }
   },
   retrieve: async (guid) => {
-    if (process.env.ENVIRONMENT === "DEVELOPMENT") {
+    if (process.env.ENVIRONMENT === "HEROKU") {
+      const keyObj = await common.dbClient.retrieve(guid);
+
+      let decipher = Crypto.createDecipher(
+        "aes-256-cbc",
+        process.env.FILE_SAFE_KEY
+      );
+
+      let decryptedKey = decipher.update(keyObj.encryptedKey, "hex", "utf8");
+      decryptedKey += decipher.final("utf8");
+
+      return decryptedKey;
+    } else if (
+      process.env.ENVIRONMENT === "DEVELOPMENT" ||
+      process.env.ENVIRONMENT === "HEROKU"
+    ) {
       let data = safe.decrypt();
       return data[guid];
     } else {

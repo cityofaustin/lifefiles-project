@@ -1,0 +1,24 @@
+{
+  "name": "MyPass",
+  "description": "MyPass Quickstart",
+  "repository": "https://github.com/cityofaustin/mypass",
+  "addons": ["mongolab"],
+
+  "env": {
+    "FILE_SAFE_KEY": {
+      "description": "Secret used to encrypt documents",
+      "generator": "secret"
+    },
+    "AUTH_SECRET": {
+      "description": "Secret used to encrypt sessions",
+      "generator": "secret"
+    },
+    "ENVIRONMENT": {
+      "description": "Current environmnet",
+      "value": "HEROKU"
+    }
+  },
+  "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/master/public/node.svg",
+  "keywords": ["node", "express", "heroku"],
+  "image": "heroku/nodejs"
+}

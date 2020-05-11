@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="105" height="60" viewBox="0 0 105 60">
+  <defs>
+    <filter id="Rectangle_1158" x="0" y="0" width="105" height="60" filterUnits="userSpaceOnUse">
+      <feOffset dy="1" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_1594" data-name="Group 1594" transform="translate(-254.5 -498.5)">
+    <g transform="matrix(1, 0, 0, 1, 254.5, 498.5)" filter="url(#Rectangle_1158)">
+      <rect id="Rectangle_1158-2" data-name="Rectangle 1158" width="96" height="51" rx="12" transform="translate(4.5 3.5)" fill="#fff"/>
+    </g>
+    <g id="Group_1593" data-name="Group 1593" transform="translate(270.037 511)">
+      <g id="Group_977" data-name="Group 977" transform="translate(0 -2)">
+        <path id="Subtraction_21" data-name="Subtraction 21" d="M26.515,37.151H2.741a2.745,2.745,0,0,1-1.933-.8A2.7,2.7,0,0,1,0,34.44V2.712A2.7,2.7,0,0,1,.809.8,2.744,2.744,0,0,1,2.741,0H20.156V6.935A2.365,2.365,0,0,0,22.53,9.288h6.726V34.44a2.7,2.7,0,0,1-.809,1.915A2.744,2.744,0,0,1,26.515,37.151ZM28.309,7.937H22.528a1.007,1.007,0,0,1-1.011-1V1l6.791,6.936Z" transform="translate(0 0)" fill="#818181"/>
+        <g id="Group_1102" data-name="Group 1102" transform="translate(7.012 12.774)">
+          <path id="Path_1243" data-name="Path 1243" d="M7.713,0A7.713,7.713,0,1,1,0,7.713,7.713,7.713,0,0,1,7.713,0Z" fill="#fff"/>
+          <g id="Group_1071" data-name="Group 1071" transform="translate(4.531 4.564)">
+            <line id="Line_276" data-name="Line 276" y2="6.906" transform="translate(3.453)" fill="none" stroke="#818181" stroke-linecap="round" stroke-width="1"/>
+            <line id="Line_277" data-name="Line 277" x2="6.592" transform="translate(0 3.453)" fill="none" stroke="#818181" stroke-linecap="round" stroke-width="1"/>
+          </g>
+        </g>
+      </g>
+    </g>
+    <text id="New_File" data-name="New 
+File" transform="translate(309 524)" fill="#818181" font-size="16" font-family="Montserrat-Regular, Montserrat"><tspan x="0" y="0">New </tspan><tspan x="0" y="19">File</tspan></text>
+  </g>
+</svg>
