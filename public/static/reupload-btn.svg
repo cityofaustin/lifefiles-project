@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="157.122" height="34" viewBox="0 0 157.122 34">
+  <g id="Group_1393" data-name="Group 1393" transform="translate(0 -21)">
+    <path id="Path_1236" data-name="Path 1236" d="M10.911,0h135.3c6.026,0,10.911,4.477,10.911,10V24c0,5.523-4.885,10-10.911,10H10.911C4.885,34,0,29.523,0,24V10C0,4.477,4.885,0,10.911,0Z" transform="translate(0 21)" fill="#95a3b9"/>
+    <text id="Re-Upload" transform="translate(37.561 45)" fill="#fff" font-size="20" font-family="Montserrat-Regular, Montserrat"><tspan x="0" y="0">Re-Upload</tspan></text>
+    <g id="upload" transform="translate(11.284 29.232)">
+      <g id="Group_1032" data-name="Group 1032" transform="translate(3.887)">
+        <g id="Group_1031" data-name="Group 1031" transform="translate(0)">
+          <path id="Path_1134" data-name="Path 1134" d="M136.744,4.632,132.858.19a.554.554,0,0,0-.835,0l-3.887,4.442a.555.555,0,0,0,.418.921h2.221V12.77a.555.555,0,0,0,.555.555h2.221a.555.555,0,0,0,.555-.555V5.552h2.221a.555.555,0,0,0,.418-.921Z" transform="translate(-127.998)" fill="#fff"/>
+        </g>
+      </g>
+      <g id="Group_1034" data-name="Group 1034" transform="translate(0 12.215)">
+        <g id="Group_1033" data-name="Group 1033" transform="translate(0)">
+          <path id="Path_1135" data-name="Path 1135" d="M30.436,352v3.331H18.221V352H16v4.442a1.11,1.11,0,0,0,1.11,1.11H31.547a1.109,1.109,0,0,0,1.11-1.11V352Z" transform="translate(-16 -352)" fill="#fff"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

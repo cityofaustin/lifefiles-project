@@ -1,0 +1,12 @@
+<svg id="Group_1410" data-name="Group 1410" xmlns="http://www.w3.org/2000/svg" width="24.719" height="31.389" viewBox="0 0 24.719 31.389">
+  <g id="Group_977" data-name="Group 977" transform="translate(0 0)">
+    <path id="Subtraction_21" data-name="Subtraction 21" d="M22.4,31.389H2.316a2.319,2.319,0,0,1-1.633-.673A2.284,2.284,0,0,1,0,29.1V2.291A2.284,2.284,0,0,1,.683.673,2.318,2.318,0,0,1,2.316,0H17.03V5.859a2,2,0,0,0,2.006,1.988h5.683V29.1a2.284,2.284,0,0,1-.683,1.618A2.319,2.319,0,0,1,22.4,31.389ZM23.918,6.706H19.034a.851.851,0,0,1-.854-.846V.845l5.738,5.86Z" transform="translate(0 0)" fill="#fcfcfc"/>
+    <g id="Group_1102" data-name="Group 1102" transform="translate(5.925 10.792)">
+      <path id="Path_1243" data-name="Path 1243" d="M6.517,0A6.517,6.517,0,1,1,0,6.517,6.517,6.517,0,0,1,6.517,0Z" fill="#fcfcfc"/>
+      <g id="Group_1071" data-name="Group 1071" transform="translate(3.828 3.856)">
+        <line id="Line_276" data-name="Line 276" y2="5.835" transform="translate(2.917)" fill="none" stroke="#fcfcfc" stroke-linecap="round" stroke-width="3"/>
+        <line id="Line_277" data-name="Line 277" x2="5.57" transform="translate(0 2.917)" fill="none" stroke="#fcfcfc" stroke-linecap="round" stroke-width="3"/>
+      </g>
+    </g>
+  </g>
+</svg>

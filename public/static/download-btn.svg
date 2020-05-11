@@ -1,0 +1,16 @@
+<svg id="Group_1103" data-name="Group 1103" xmlns="http://www.w3.org/2000/svg" width="178.303" height="45.278" viewBox="0 0 178.303 45.278">
+  <g id="Group_1341" data-name="Group 1341" transform="translate(0 0)">
+    <rect id="Rectangle_928" data-name="Rectangle 928" width="178.303" height="45.278" rx="22" fill="#2362c7"/>
+    <text id="Download" transform="translate(57.097 29.232)" fill="#fff" font-size="20" font-family="Montserrat-Regular, Montserrat"><tspan x="0" y="0">Download</tspan></text>
+    <g id="Group_1032" data-name="Group 1032" transform="translate(23.806 8.354)">
+      <g id="Group_1031" data-name="Group 1031" transform="translate(0)">
+        <path id="Path_1134" data-name="Path 1134" d="M140.928,13.188l-5.746,6.738a.805.805,0,0,1-1.235,0L128.2,13.188a.857.857,0,0,1-.13-.9.821.821,0,0,1,.747-.494H132.1V.842A.832.832,0,0,1,132.923,0h3.283a.832.832,0,0,1,.821.842V11.791h3.283a.818.818,0,0,1,.747.494A.857.857,0,0,1,140.928,13.188Z" transform="translate(-127.998 0)" fill="#fff"/>
+      </g>
+    </g>
+    <g id="Group_1034" data-name="Group 1034" transform="translate(18.178 28.609)">
+      <g id="Group_1033" data-name="Group 1033" transform="translate(0)">
+        <path id="Path_1135" data-name="Path 1135" d="M36.556,352v5.053H19.162V352H16v6.738a1.635,1.635,0,0,0,1.581,1.684H38.137a1.634,1.634,0,0,0,1.581-1.684V352Z" transform="translate(-16 -352)" fill="#fff"/>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="291" height="111" viewBox="0 0 291 111">
+  <defs>
+    <filter id="Rectangle_895" x="0" y="22" width="291" height="89" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Component_33_2" data-name="Component 33 – 2" transform="translate(9)">
+    <g id="Group_1035" data-name="Group 1035" transform="translate(-848 -422)">
+      <g transform="matrix(1, 0, 0, 1, 839, 422)" filter="url(#Rectangle_895)">
+        <rect id="Rectangle_895-2" data-name="Rectangle 895" width="273" height="71" rx="11" transform="translate(9 28)" fill="#fff"/>
+      </g>
+      <g id="upload" transform="translate(857 465)" opacity="0.6">
+        <g id="Group_1032" data-name="Group 1032" transform="translate(24.867)">
+          <g id="Group_1031" data-name="Group 1031" transform="translate(0)">
+            <path id="Path_1134" data-name="Path 1134" d="M147.951,10.567,139.084.433a1.264,1.264,0,0,0-1.905,0l-8.867,10.133a1.266,1.266,0,0,0,.953,2.1h5.067V29.133A1.267,1.267,0,0,0,135.6,30.4h5.067a1.267,1.267,0,0,0,1.267-1.267V12.667H147a1.266,1.266,0,0,0,.953-2.1Z" transform="translate(-127.998)" fill="#484848"/>
+          </g>
+        </g>
+        <g id="Group_1034" data-name="Group 1034" transform="translate(16 27.867)">
+          <g id="Group_1033" data-name="Group 1033" transform="translate(0)">
+            <path id="Path_1135" data-name="Path 1135" d="M48.933,352v7.6H21.067V352H16v10.133a2.533,2.533,0,0,0,2.533,2.533H51.467A2.531,2.531,0,0,0,54,362.133V352Z" transform="translate(-16 -352)" fill="#484848"/>
+          </g>
+        </g>
+      </g>
+      <text id="Upload_File" data-name="Upload File" transform="translate(931 497)" fill="#484848" font-size="30" font-family="Montserrat-Regular, Montserrat" opacity="0.6"><tspan x="0" y="0">Upload File</tspan></text>
+    </g>
+    <text id="or_by_clicking_here" data-name="or by clicking here" transform="translate(136.5 19)" fill="#484848" font-size="20" font-family="Montserrat-Regular, Montserrat" opacity="0.4"><tspan x="-91.69" y="0">or by clicking here</tspan></text>
+  </g>
+</svg>
