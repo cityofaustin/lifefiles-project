@@ -294,9 +294,10 @@ class MongoDbClient {
     return shareRequest;
   }
 
-  async deleteShareRequestByDocumentId(documentId) {
+  // NOTE: share request doesn't have document id but it has document type
+  async deleteShareRequestByDocumentType(documentType) {
     await ShareRequest.deleteMany({
-      documentId: documentId,
+      documentType: documentType,
     });
     return;
   }
@@ -423,7 +424,8 @@ class MongoDbClient {
     thumbnailKey,
     permanentOrgFileArchiveNumber,
     md5,
-    validUntilDate
+    validUntilDate,
+    claimed
   ) {
     let document = await Document.findById(documentId);
 
@@ -444,6 +446,7 @@ class MongoDbClient {
     document.permanentOrgFileArchiveNumber = permanentOrgFileArchiveNumber;
     document.hash = md5;
     document.validUntilDate = date;
+    document.claimed = claimed;
     await document.save();
 
     return document;
