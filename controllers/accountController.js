@@ -1,15 +1,12 @@
 const common = require("../common/common");
-const permanent = require("../common/permanentClient");
 const documentStorageHelper = require("../common/documentStorageHelper");
 const secureKeyStorage = require("../common/secureKeyStorage");
 const passport = require("passport");
 const fs = require("fs");
-const EthCrypto = require("eth-crypto");
-const uuidv4 = require("uuid").v4;
 
 module.exports = {
   getEncryptionKey: async (req, res, next) => {
-    account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAccountById(req.payload.id);
     let key = await secureKeyStorage.retrieve(account.didPrivateKeyGuid);
     res.status(200).json({ encryptionKey: key });
   },
@@ -26,13 +23,16 @@ module.exports = {
       }
     }
 
-    if (returnAccount.role === "admin") {
-      adminInfo = await common.dbClient.getAdminData(req.payload.id);
-      returnAccount.adminInfo = adminInfo;
-    }
+    const accountType = account.accountType;
+
+    let viewFeatures = await common.dbClient.getViewFeatureStringByManyIds(
+      accountType.viewFeatures
+    );
+
     res.status(200).json({
       account: returnAccount,
       documentSharedAccounts: documentSharedAccounts,
+      viewFeatures: viewFeatures,
     });
   },
 
@@ -45,39 +45,6 @@ module.exports = {
     }
 
     res.status(200).json(returnAccounts);
-  },
-
-  newAccount: async (req, res, next) => {
-    const permanentArchiveNumber = await permanent.createArchive(
-      req.body.account.email
-    );
-    const uuid = uuidv4();
-
-    let did = await common.blockchainClient.createNewDID();
-    did.publicEncryptionKey = EthCrypto.publicKeyByPrivateKey(
-      "0x" + did.privateKey
-    );
-    did.privateKeyGuid = uuid;
-
-    await secureKeyStorage.store(uuid, did.privateKey);
-
-    let profileImageUrl = "anon-user.png";
-
-    if (req.files && req.files.img) {
-      profileImageUrl = await documentStorageHelper.upload(
-        req.files.img,
-        "profile-image"
-      );
-    }
-
-    const account = await common.dbClient.createAccount(
-      req.body.account,
-      did,
-      permanentArchiveNumber,
-      profileImageUrl
-    );
-
-    return res.status(201).json({ account: account.toAuthJSON() });
   },
 
   updateAccount: async (req, res, next) => {

@@ -2,6 +2,9 @@
 require("dotenv").config();
 var Util = require("./common/Util");
 
+// TODO: Add helmet
+// const helmet = require("helmet");
+
 // Loading from admin page
 if (process.env.ENVIRONMENT === "HEROKU" && !Util.hasAllRequiredKeys()) {
   const express = require("express");
@@ -9,7 +12,7 @@ if (process.env.ENVIRONMENT === "HEROKU" && !Util.hasAllRequiredKeys()) {
 
   app.use(express.static(__dirname + "/public-admin"));
 
-  const server = app.listen(process.env.PORT || 5000, function () {
+  const server = app.listen(process.env.PORT || 5000, function() {
     console.log("Listening on port " + server.address().port);
   });
   return;
@@ -57,7 +60,7 @@ app.use(errors());
 app.use(router);
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
   console.log(err.stack);
 
   res.status(err.status || 500);
@@ -70,6 +73,6 @@ app.use(function (err, req, res, next) {
   });
 });
 
-const server = app.listen(process.env.PORT || 5000, function () {
+const server = app.listen(process.env.PORT || 5000, function() {
   console.log("Listening on port " + server.address().port);
 });

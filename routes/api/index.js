@@ -9,19 +9,63 @@ const auth = require("../middleware/auth");
 const { isAllowedUploadDocument } = require("../middleware/permission");
 const Schema = require("../middleware/schema");
 
+// Admin
+router
+  .route("/my-admin-account")
+  .get(auth.required, AdminController.myAdminAccount);
+
+// Admin - Document Types
+router
+  .route("/admin-document-types")
+  .post(auth.required, AdminController.addDocumentType);
+
+router
+  .route("/admin-document-types/:docTypeId")
+  .delete(auth.required, AdminController.deleteDocumentType);
+
+// Admin - Account Types
+router
+  .route("/admin-account-types")
+  .get(auth.required, (req, res, next) =>
+    AdminController.genericGet(req, res, next, "AccountType")
+  )
+  .post(auth.required, (req, res, next) =>
+    AdminController.genericPost(req, res, next, "AccountType")
+  );
+
+// Admin - View Features
+router
+  .route("/admin-view-features")
+  .get(auth.required, (req, res, next) =>
+    AdminController.genericGet(req, res, next, "ViewFeature")
+  )
+  .post(auth.required, (req, res, next) =>
+    AdminController.genericPost(req, res, next, "ViewFeature")
+  );
+
+// router
+//   .route("/admin-document-types/:document-type-id/fields")
+//   .post(auth.required, AdminController.addDocumentTypeField)
+//   .delete(auth.required, AdminController.deleteDocumentTypeField);
+
+// Admin - Create New Accounts
+router.route("/admin-create-new-account").post(
+  [
+    auth.required,
+    celebrate({
+      body: Schema.userRegisterSchema,
+    }),
+  ],
+  AdminController.newAccount
+);
+
 // Accounts
 router.route("/my-account").get(auth.required, AccountController.myAccount);
 
 router
   .route("/accounts")
   .get(auth.required, AccountController.getAccounts)
-  .put(auth.required, AccountController.updateAccount)
-  .post(
-    celebrate({
-      body: Schema.userRegisterSchema,
-    }),
-    AccountController.newAccount
-  );
+  .put(auth.required, AccountController.updateAccount);
 
 router.route("/accounts/login").post(
   celebrate({
@@ -136,10 +180,10 @@ router
       REMOVE THIS DANGEROUS CALL WHEN WE GO TO PRODUCTION
   */
 
-router.use(function (err, req, res, next) {
+router.use(function(err, req, res, next) {
   if (err.name === "ValidationError") {
     return res.status(422).json({
-      errors: Object.keys(err.errors).reduce(function (errors, key) {
+      errors: Object.keys(err.errors).reduce(function(errors, key) {
         errors[key] = err.errors[key].message;
 
         return errors;

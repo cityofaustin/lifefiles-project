@@ -1,6 +1,138 @@
 const common = require("../common/common");
+const permanent = require("../common/permanentClient");
+const uuidv4 = require("uuid").v4;
+const secureKeyStorage = require("../common/secureKeyStorage");
+const EthCrypto = require("eth-crypto");
 
 module.exports = {
+  myAdminAccount: async (req, res, next) => {
+    const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
+
+    if (account.role !== "admin") {
+      res.status(403).json({
+        error: "Account not authorized",
+      });
+      return;
+    }
+
+    let returnAccount = account.toAuthJSON();
+    adminInfo = await common.dbClient.getAdminData(req.payload.id);
+    returnAccount.adminInfo = adminInfo;
+
+    res.status(200).json({
+      account: returnAccount,
+    });
+  },
+
+  addDocumentType: async (req, res, next) => {
+    await common.dbClient.createDocumentType(req.body);
+  },
+
+  deleteDocumentType: async (req, res, next) => {
+    const docTypeId = req.params.docTypeId;
+    await common.dbClient.deleteDocumentType(docTypeId);
+  },
+
+  newAccount: async (req, res, next) => {
+    const adminAccountId = req.payload.id;
+    const adminLevel = await common.dbClient.getAccountAdminLevelById(
+      adminAccountId
+    );
+    const newAccountType = await common.dbClient.getAccountTypeByRole(
+      req.body.account.role
+    );
+
+    if (newAccountType === undefined || newAccountType === null) {
+      res.status(403).json({
+        error: "Role does not exist",
+      });
+      return;
+    }
+
+    // Admin/itSpecialist can only create less powerful accounts
+    if (adminLevel >= newAccountType.adminLevel) {
+      res.status(403).json({
+        error: "Account not authorized to create accounts with this role level",
+      });
+      return;
+    }
+
+    const permanentArchiveNumber = await permanent.createArchive(
+      req.body.account.email
+    );
+    const uuid = uuidv4();
+
+    let did = await common.blockchainClient.createNewDID();
+    did.publicEncryptionKey = EthCrypto.publicKeyByPrivateKey(
+      "0x" + did.privateKey
+    );
+    did.privateKeyGuid = uuid;
+
+    await secureKeyStorage.store(uuid, did.privateKey);
+
+    let profileImageUrl = "anon-user.png";
+
+    if (req.files && req.files.img) {
+      profileImageUrl = await documentStorageHelper.upload(
+        req.files.img,
+        "profile-image"
+      );
+    }
+
+    const account = await common.dbClient.createAccount(
+      req.body.account,
+      did,
+      permanentArchiveNumber,
+      profileImageUrl
+    );
+
+    return res.status(201).json({ account: account.toAuthJSON() });
+  },
+
+  genericGet: async (req, res, next, type) => {
+    const adminLevel = await common.dbClient.getAccountAdminLevelById(
+      req.payload.id
+    );
+
+    if (adminLevel !== 0) {
+      res.status(403).json({
+        error: "Account not authorized to hit this route",
+      });
+      return;
+    }
+
+    let getResponse = await common.dbClient.genericGet(type);
+    res.status(200).json({ response: getResponse });
+  },
+
+  genericPost: async (req, res, next, type) => {
+    const adminLevel = await common.dbClient.getAccountAdminLevelById(
+      req.payload.id
+    );
+
+    if (adminLevel !== 0) {
+      res.status(403).json({
+        error: "Account not authorized to hit this route",
+      });
+      return;
+    }
+
+    try {
+      postResponse = await common.dbClient.genericPost(req.body, type);
+    } catch (error) {
+      res.status(403).json({
+        error: error,
+      });
+      return;
+    }
+    res.status(200).json({ response: postResponse });
+  },
+
+  // addDocumentTypeField: async (req, res, next) => {},
+
+  // deleteDocumentTypeField: async (req, res, next) => {},
+
+  // LEGACY
   resetDatabase: async (req, res, next) => {
     await common.dbClient.resetDatabase();
     res.status(200).json({ message: "success" });
@@ -68,5 +200,5 @@ module.exports = {
       }
     }
     return res.status(201).json({ rolePermissionTable: rolePermissionTable });
-  }
+  },
 };

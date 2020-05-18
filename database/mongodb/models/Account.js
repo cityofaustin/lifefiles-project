@@ -33,6 +33,7 @@ var AccountSchema = new mongoose.Schema(
     didPrivateKeyGuid: String,
     hash: String,
     salt: String,
+    accountType: { type: mongoose.Schema.Types.ObjectId, ref: "AccountType" },
     documents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Document" }],
     shareRequests: [
       { type: mongoose.Schema.Types.ObjectId, ref: "ShareRequest" },
@@ -44,21 +45,21 @@ var AccountSchema = new mongoose.Schema(
 
 AccountSchema.plugin(uniqueValidator, { message: "is already taken." });
 
-AccountSchema.methods.validPassword = function (password) {
+AccountSchema.methods.validPassword = function(password) {
   var hash = crypto
     .pbkdf2Sync(password, this.salt, 10000, 512, "sha512")
     .toString("hex");
   return this.hash === hash;
 };
 
-AccountSchema.methods.setPassword = function (password) {
+AccountSchema.methods.setPassword = function(password) {
   this.salt = crypto.randomBytes(16).toString("hex");
   this.hash = crypto
     .pbkdf2Sync(password, this.salt, 10000, 512, "sha512")
     .toString("hex");
 };
 
-AccountSchema.methods.generateJWT = function () {
+AccountSchema.methods.generateJWT = function() {
   var today = new Date();
   var exp = new Date(today);
   exp.setDate(today.getDate() + 60);
@@ -74,7 +75,7 @@ AccountSchema.methods.generateJWT = function () {
   );
 };
 
-AccountSchema.methods.toAuthJSON = function () {
+AccountSchema.methods.toAuthJSON = function() {
   return {
     username: this.username,
     firstName: this.firstName,
@@ -91,7 +92,7 @@ AccountSchema.methods.toAuthJSON = function () {
   };
 };
 
-AccountSchema.methods.toPublicInfo = function () {
+AccountSchema.methods.toPublicInfo = function() {
   return {
     username: this.username,
     firstName: this.firstName,

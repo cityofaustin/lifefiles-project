@@ -1,9 +1,12 @@
 const mongoose = require("mongoose");
-const EthCrypto = require("eth-crypto");
 const secureKeyStorage = require("../../common/secureKeyStorage");
+
+const DBUtil = require("./DBUtil");
 
 const Account = require("./models/Account");
 const Document = require("./models/Document");
+const AccountType = require("./models/AccountType");
+const ViewFeature = require("./models/ViewFeature");
 const DocumentType = require("./models/DocumentType");
 const Key = require("./models/Key");
 const Role = require("./models/Role");
@@ -12,6 +15,10 @@ const ShareRequest = require("./models/ShareRequest");
 const RolePermissionTable = require("./models/RolePermissionTable");
 const VerifiableCredential = require("./models/VerifiableCredential");
 const VerifiablePresentation = require("./models/VerifiablePresentation");
+
+const classes = new Map();
+classes.set("AccountType", AccountType);
+classes.set("ViewFeature", ViewFeature);
 
 let mongoDbOptions = {
   useUnifiedTopology: true,
@@ -38,230 +45,7 @@ class MongoDbClient {
   }
   // DB initial setup
   async populateDefaultValues() {
-    const accounts = await this.getAllAccounts();
-    const documentTypes = await this.getAllDocumentTypes();
-
-    const adminAccount = accounts.find(({ username }) => username === "admin");
-    if (
-      process.env.ADMIN_PASSWORD !== undefined &&
-      adminAccount === undefined
-    ) {
-      console.log("\nAdmin account is empty. Populating admin account...");
-
-      // Admin
-      let adminAccount = {
-        account: {
-          username: "admin",
-          firstname: "admin",
-          lastname: "admin",
-          password: process.env.ADMIN_PASSWORD,
-          role: "admin",
-          email: "admin@admin.com",
-          phonenumber: "555-555-5555",
-          organization: "-",
-        },
-      };
-      let adminDid = {
-        did: {
-          address: "0xD19834a92604Fe21A8E5631F755aEC7d63Cb4b1c",
-          publicEncryptionKey: EthCrypto.publicKeyByPrivateKey(
-            "0x" +
-              "0daf9bae0e6f9069e012973daf82c404d373b5da8a6cbaa590133faf8be2d017"
-          ),
-          privateKey:
-            "0daf9bae0e6f9069e012973daf82c404d373b5da8a6cbaa590133faf8be2d017",
-          privateKeyGuid: "1d9ac500-ba5d-4c80-ae9a-45a3098e19ea",
-        },
-      };
-
-      await secureKeyStorage.store(
-        adminDid.did.privateKeyGuid,
-        adminDid.did.privateKey
-      );
-
-      this.createAccount(
-        adminAccount.account,
-        adminDid.did,
-        "06fy-0000",
-        "goku.png"
-      );
-    }
-    if (accounts.length === 0) {
-      console.log("\nAccounts are empty. Populating default values...");
-
-      // Sally
-      let ownerAccount = {
-        account: {
-          username: "SallyOwner",
-          firstname: "Sally",
-          lastname: "Owner",
-          password: "owner",
-          role: "owner",
-          email: "owner@owner.com",
-          phonenumber: "555-555-5555",
-          organization: "-",
-        },
-      };
-      let ownerDid = {
-        did: {
-          address: "0x6efedeaec20e79071251fffa655F1bdDCa65c027",
-          publicEncryptionKey: EthCrypto.publicKeyByPrivateKey(
-            "0x" +
-              "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415"
-          ),
-          privateKey:
-            "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415",
-          privateKeyGuid: "5663aaf5-2b94-4854-a862-07a7fe75e400",
-        },
-      };
-
-      await secureKeyStorage.store(
-        ownerDid.did.privateKeyGuid,
-        ownerDid.did.privateKey
-      );
-
-      this.createAccount(
-        ownerAccount.account,
-        ownerDid.did,
-        "06fz-0000",
-        "sally.png"
-      );
-
-      // Billy
-      let caseWorkerAccount = {
-        account: {
-          username: "BillyCaseWorker",
-          firstname: "Billy",
-          lastname: "Caseworker",
-          password: "caseworker",
-          role: "notary",
-          email: "caseworker@caseworker.com",
-          phonenumber: "555-555-5555",
-          organization: "Banana Org",
-        },
-      };
-      let caseWorkerDid = {
-        did: {
-          address: "0x2a6F1D5083fb19b9f2C653B598abCb5705eD0439",
-          publicEncryptionKey: EthCrypto.publicKeyByPrivateKey(
-            "0x" +
-              "8ef83de6f0ccf32798f8afcd436936870af619511f2385e8aace87729e771a8b"
-          ),
-          privateKey:
-            "8ef83de6f0ccf32798f8afcd436936870af619511f2385e8aace87729e771a8b",
-          privateKeyGuid: "53d9269b-a90b-423e-be17-e2a6517790b1",
-        },
-      };
-
-      await secureKeyStorage.store(
-        caseWorkerDid.did.privateKeyGuid,
-        caseWorkerDid.did.privateKey
-      );
-
-      this.createAccount(
-        caseWorkerAccount.account,
-        caseWorkerDid.did,
-        "06fy-0000",
-        "billy.png"
-      );
-
-      // Karen
-      let caseWorkerAccountTwo = {
-        account: {
-          username: "KarenCaseWorker",
-          firstname: "Karen",
-          lastname: "Caseworker",
-          password: "caseworker",
-          role: "notary",
-          email: "karencaseworker@caseworker.com",
-          phonenumber: "555-555-5555",
-          organization: "Apple Org",
-        },
-      };
-      let caseWorkerDidTwo = {
-        did: {
-          address: "0x0F4FBead5219388CD71FAa2bbd63C26Aad0ae2c5",
-          publicEncryptionKey: EthCrypto.publicKeyByPrivateKey(
-            "0x" +
-              "403c9b0e55db5ff1434d07711baa34d76eecc2723cdb599a42f5f2cbf6fd3262"
-          ),
-          privateKey:
-            "403c9b0e55db5ff1434d07711baa34d76eecc2723cdb599a42f5f2cbf6fd3262",
-          privateKeyGuid: "6ee64b8e-0623-4cad-8162-26e49e74b2dc",
-        },
-      };
-
-      await secureKeyStorage.store(
-        caseWorkerDidTwo.did.privateKeyGuid,
-        caseWorkerDidTwo.did.privateKey
-      );
-
-      this.createAccount(
-        caseWorkerAccountTwo.account,
-        caseWorkerDidTwo.did,
-        "06fy-0000",
-        "karen.png"
-      );
-
-      // Josh
-      let caseWorkerAccountThree = {
-        account: {
-          username: "JoshCaseWorker",
-          firstname: "Josh",
-          lastname: "Caseworker",
-          password: "caseworker",
-          role: "notary",
-          email: "joshcaseworker@caseworker.com",
-          phonenumber: "555-555-5555",
-          organization: "Pear Org",
-        },
-      };
-      let caseWorkerDidThree = {
-        did: {
-          address: "0x56bf6887202d8aa6Df4Bc312e866E955FE0FC9aD",
-          publicEncryptionKey: EthCrypto.publicKeyByPrivateKey(
-            "0x" +
-              "a2bf1a07ccb785b7baf041dc0135ae9bfbf049bd36068777e4796185fe1ff5c0"
-          ),
-          privateKey:
-            "a2bf1a07ccb785b7baf041dc0135ae9bfbf049bd36068777e4796185fe1ff5c0",
-          privateKeyGuid: "22161991-55f9-45fc-b6c5-de8e339701f1",
-        },
-      };
-
-      await secureKeyStorage.store(
-        caseWorkerDidThree.did.privateKeyGuid,
-        caseWorkerDidThree.did.privateKey
-      );
-
-      this.createAccount(
-        caseWorkerAccountThree.account,
-        caseWorkerDidThree.did,
-        "06fy-0000",
-        "josh.png"
-      );
-    }
-
-    if (documentTypes.length === 0) {
-      console.log("\nDocumentTypes are empty. Populating default values...");
-      let records = [
-        "Driver's License",
-        "Birth Certificate",
-        "MAP Card",
-        "Medical Records",
-        "Social Security Card",
-        "Passport",
-        "Marriage Certificate",
-      ];
-      for (let record of records) {
-        let fields = [
-          { fieldName: "name", required: true },
-          { fieldName: "dateofbirth", required: false },
-        ];
-
-        this.createDocumentType({ name: record, fields: fields });
-      }
-    }
+    DBUtil.populateDefaultValues(this, secureKeyStorage);
   }
 
   // Cache
@@ -272,7 +56,7 @@ class MongoDbClient {
   getCachedRolePermissionsTable() {
     return this.cachedRolePermissionTable;
   }
-  // Keys
+  // Encrytpion Keys
   async store(guid, key) {
     const keyEntity = new Key();
     keyEntity.uuid = guid;
@@ -287,16 +71,55 @@ class MongoDbClient {
 
     return key;
   }
+
+  // Helpers
+  async genericGet(type) {
+    const theClass = classes.get(type);
+    const allObjects = await theClass.find({});
+    return allObjects;
+  }
+
+  async genericPost(postBody, type) {
+    const theClass = classes.get(type);
+    const newClassInstance = new theClass();
+
+    for (var key of Object.keys(postBody)) {
+      newClassInstance[key] = postBody[key];
+    }
+
+    await newClassInstance.save();
+    return newClassInstance;
+  }
+
+  // Admin
+  async getAdminData() {
+    let adminData = {};
+    adminData.documentTypes = await DocumentType.find({});
+    adminData.accountTypes = await AccountType.find({}).populate({
+      path: "viewFeatures",
+    });
+
+    adminData.viewFeatures = await ViewFeature.find({});
+    return adminData;
+  }
+
   // Accounts
   async getAccountById(id) {
     const account = await Account.findById(id);
     return account;
   }
 
+  async getAccountAdminLevelById(id) {
+    const account = await Account.findById(id);
+    const accountType = await AccountType.findById(account.accountType);
+    return accountType.adminLevel;
+  }
+
   async getAllAccountInfoById(id) {
     const account = await Account.findById(id).populate([
       "documents",
       "shareRequests",
+      "accountType",
     ]);
     return account;
   }
@@ -304,6 +127,58 @@ class MongoDbClient {
   async getAllAccounts() {
     const accounts = await Account.find({});
     return accounts;
+  }
+
+  // View Featuers and Account Types
+  async addViewFeature(featureName) {
+    const viewFeature = new ViewFeature();
+    viewFeature.featureName = featureName;
+    await viewFeature.save();
+    return viewFeature;
+  }
+
+  async getAllAccountTypes() {
+    const accountType = await AccountType.find({});
+    return accountType;
+  }
+
+  async getAccountTypeByRole(accountTypeName) {
+    const accountType = await AccountType.findOne({
+      accountTypeName: accountTypeName,
+    });
+    return accountType;
+  }
+
+  async createAccountType(accountTypeName, adminLevel) {
+    const accountType = new AccountType();
+    accountType.accountTypeName = accountTypeName;
+    accountType.adminLevel = adminLevel;
+    await accountType.save();
+    return accountType;
+  }
+
+  async addViewFeatureToAccountType(accountTypeName, featureName) {
+    const viewFeature = await ViewFeature.findOne({ featureName: featureName });
+    const accountType = await AccountType.findOne({
+      accountTypeName: accountTypeName,
+    });
+    accountType.viewFeatures.push(viewFeature);
+    await accountType.save();
+    return accountType;
+  }
+
+  async getViewFeatureStringByManyIds(ids) {
+    let viewFeatures = await ViewFeature.find()
+      .where("_id")
+      .in(ids)
+      .exec();
+
+    let viewFeaturesStringArr = [];
+    for (let viewFeature of viewFeatures) {
+      viewFeaturesStringArr.push(viewFeature.featureName);
+    }
+
+    return viewFeaturesStringArr;
   }
 
   async createAccount(
@@ -328,6 +203,12 @@ class MongoDbClient {
     newAccount.profileImageUrl = profileImageUrl;
     newAccount.setPassword(accountReq.password);
 
+    const accountType = await AccountType.findOne({
+      accountTypeName: accountReq.role,
+    });
+
+    newAccount.accountType = accountType;
+
     const savedAccount = await newAccount.save();
     return savedAccount;
   }
@@ -337,11 +218,6 @@ class MongoDbClient {
     account.profileImageUrl = profileImageUrl;
     await account.save();
     return account;
-  }
-
-  async getAdminData() {
-    // TODO: Implement admin tables
-    return "All The Admin Info";
   }
 
   async getShareRequests(accountId) {
@@ -435,11 +311,26 @@ class MongoDbClient {
   async createDocumentType(documentType) {
     const newDocumentType = new DocumentType();
     newDocumentType.name = documentType.name;
-    for (let field of documentType.fields) {
-      newDocumentType.fields.push(field);
+    newDocumentType.isTwoSided = documentType.isTwoSided;
+    newDocumentType.hasExpirationDate = documentType.hasExpirationDate;
+    newDocumentType.isProtectedDoc = documentType.isProtectedDoc;
+    newDocumentType.isRecordableDoc = documentType.isRecordableDoc;
+
+    if (documentType.fields !== undefined) {
+      for (let field of documentType.fields) {
+        newDocumentType.fields.push(field);
+      }
     }
     const documentTypeSaved = await newDocumentType.save();
     return documentTypeSaved;
+  }
+
+  async deleteDocumentType(docTypeId) {
+    const docuemntType = await DocumentType.findOneAndRemove({
+      _id: docTypeId,
+    });
+
+    return docuemntType;
   }
 
   // Documents
