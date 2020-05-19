@@ -25,12 +25,19 @@ module.exports = {
   },
 
   addDocumentType: async (req, res, next) => {
-    await common.dbClient.createDocumentType(req.body);
+    const savedDocType = await common.dbClient.createDocumentType(req.body);
+
+    res.status(200).json({
+      savedDocType
+    });
   },
 
   deleteDocumentType: async (req, res, next) => {
     const docTypeId = req.params.docTypeId;
     await common.dbClient.deleteDocumentType(docTypeId);
+    res.status(200).json({
+      deleted: docTypeId
+    });
   },
 
   newAccount: async (req, res, next) => {
