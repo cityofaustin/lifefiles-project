@@ -324,6 +324,18 @@ class MongoDbClient {
     const documentTypeSaved = await newDocumentType.save();
     return documentTypeSaved;
   }
+  
+  async updateDocumentType(id, documentType) {
+    const docType = await DocumentType.findById(id);
+    docType.name = documentType.name;
+    docType.isTwoSided = documentType.isTwoSided;
+    docType.hasExpirationDate = documentType.hasExpirationDate;
+    docType.isProtectedDoc = documentType.isProtectedDoc;
+    docType.isRecordableDoc = documentType.isRecordableDoc;
+
+    const documentTypeSaved = await docType.save();
+    return documentTypeSaved;
+  }
 
   async deleteDocumentType(docTypeId) {
     const docuemntType = await DocumentType.findOneAndRemove({

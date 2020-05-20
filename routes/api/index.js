@@ -21,7 +21,8 @@ router
 
 router
   .route("/admin-document-types/:docTypeId")
-  .delete(auth.required, AdminController.deleteDocumentType);
+  .delete(auth.required, AdminController.deleteDocumentType)
+  .put(auth.required, AdminController.updateDocumentType);
 
 // Admin - Account Types
 router

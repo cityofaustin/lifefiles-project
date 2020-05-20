@@ -32,6 +32,19 @@ module.exports = {
     });
   },
 
+  updateDocumentType: async ( req, res) => {
+    const docTypeId = req.params.docTypeId;
+    const docType = {
+      name: req.body.name,
+      isTwoSided: req.body.isTwoSided,
+      hasExpirationDate: req.body.hasExpirationDate,
+      isProtectedDoc: req.body.isProtectedDoc,
+      isRecordableDoc: req.body.isRecordableDoc
+    }
+    const documentTypeSaved = await common.dbClient.updateDocumentType(docTypeId, docType);
+    return res.status(200).json({ documentTypeSaved });
+  },
+
   deleteDocumentType: async (req, res, next) => {
     const docTypeId = req.params.docTypeId;
     await common.dbClient.deleteDocumentType(docTypeId);
