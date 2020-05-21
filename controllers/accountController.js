@@ -28,11 +28,14 @@ module.exports = {
     let viewFeatures = await common.dbClient.getViewFeatureStringByManyIds(
       accountType.viewFeatures
     );
-
+    let coreFeatures = await common.dbClient.getCoreFeatureStringByManyIds(
+      accountType.coreFeatures
+    );
     res.status(200).json({
       account: returnAccount,
       documentSharedAccounts: documentSharedAccounts,
       viewFeatures: viewFeatures,
+      coreFeatures: coreFeatures
     });
   },
 

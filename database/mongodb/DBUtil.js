@@ -11,39 +11,69 @@ class DBUtil {
       console.log("\nAccountTypes are empty. Populating default values...");
 
       const viewFeatures = [
-        "gridView",
-        "listView",
-        "preview",
-        "zoomIn",
-        "download",
-        "phone",
-        "email",
-        "profileImage",
-        "didAddress",
-        "organization",
-        "role",
-        "firstName",
-        "lastName",
-        "username",
-        "documentUpdateDate",
-        "documentUploadBy",
-        "documentOtherContactsSharedWith",
-        "documentValidUntil",
+        { featureName: "gridView", featureDisplay: "Grid view" },
+        { featureName: "listView", featureDisplay: "List view" },
+        { featureName: "preview", featureDisplay: "Document preview" },
+        { featureName: "zoomIn", featureDisplay: "Zoom-in" },
+        { featureName: "download", featureDisplay: "Download" },
+        { featureName: "phone", featureDisplay: "User phone" },
+        { featureName: "email", featureDisplay: "User email" },
+        { featureName: "profileImage", featureDisplay: "User image" },
+        // NOTE: We never show the did, even for the person it's for, at least for now, so doesn't make sense to have it here.
+        // { featureName: "didAddress", featureDisplay: "User DID" }, 
+        { featureName: "organization", featureDisplay: "User organization" },
+        { featureName: "role", featureDisplay: "User role" },
+        { featureName: "firstName", featureDisplay: "User first name" },
+        { featureName: "lastName", featureDisplay: "User last name" },
+        { featureName: "username", featureDisplay: "Username" },
+        { featureName: "documentUpdateDate", featureDisplay: "Document updated date" },
+        { featureName: "documentUploadBy", featureDisplay: "Document uploaded by" },
+        { featureName: "documentOtherContactsSharedWith", featureDisplay: "Document share list" },
+        { featureName: "documentValidUntil", featureDisplay: "Document valid until" },
+      ];
+
+      const coreFeatures = [
+        { featureName: "uploadDocuments", featureDisplay: "Can upload documents", featureRole: "owner" },
+        { featureName: "replaceDocuments", featureDisplay: "Can replace documents", featureRole: "owner" },
+        { featureName: "deleteDocuments", featureDisplay: "Can delete documents", featureRole: "owner" },
+        { featureName: "updateExpirationDate", featureDisplay: "Can update expiration date", featureRole: "owner" },
+        { featureName: "updateAccountInfo", featureDisplay: "Can update account info", featureRole: "owner" },
+        { featureName: "approveShareRequests", featureDisplay: "Can approve share requests", featureRole: "owner" },
+        { featureName: "pushSharedDocuments", featureDisplay: "Can push shared documents", featureRole: "owner" },
+        { featureName: "revokeSharedDocuments", featureDisplay: "Can revoke shared documents", featureRole: "owner" },
+        { featureName: "setShareTimeLimit", featureDisplay: "Can set time limit for share", featureRole: "owner" },
+        { featureName: "shareUserInfo", featureDisplay: "Can share user info", featureRole: "owner" },
+        { featureName: "shareViewHelpers", featureDisplay: "Can view helpers to share", featureRole: "owner" },
+        { featureName: "uploadDocBehalfOwner", featureDisplay: "Can upload docs on behalf of owner", featureRole: "helper" },
+        { featureName: "replaceDocBehalfOwner", featureDisplay: "Can replace owners docs", featureRole: "helper" },
+        { featureName: "deleteDocBehalfOwner", featureDisplay: "Can delete owners docs", featureRole: "helper" },
+        { featureName: "updateExpirationDate", featureDisplay: "Can update expiration date", featureRole: "helper" },
+        { featureName: "updateOwnerInfo", featureDisplay: "Can update owner user info", featureRole: "helper" },
+        { featureName: "requestSharedDoc", featureDisplay: "Can request a shared document", featureRole: "helper" },
+        { featureName: "shareDocWithOther", featureDisplay: "Can share doc with others", featureRole: "helper" },
+        { featureName: "revokeShareRequest", featureDisplay: "Can revoke share request", featureRole: "helper" },
+        { featureName: "setShareTimeLimit", featureDisplay: "Can set time limit for share", featureRole: "helper" },
+        // NOTE: this seems redundant to the top?
+        // { featureName: "", featureDisplay: "Can view owner user info", featureRole: "helper" },
+        { featureName: "shareViewOwners", featureDisplay: "Can view owners to request share", featureRole: "helper" },
+        { featureName: "shareViewFileExist", featureDisplay: "Can view existing file to request share", featureRole: "helper" },
+        { featureName: "notarizeDocuments", featureDisplay: "Can Notarize Documents", featureRole: "helper" },
+        { featureName: "transferClientToHelper", featureDisplay: "Can transfer clients to other helpers", featureRole: "helper" },
       ];
 
       const accountTypes = [
-        "admin",
-        "cityAdministrator",
-        "itSpecialist",
-        "clinicalCaseManager",
-        "advocate",
-        "caseManager",
-        "caseManagerNotary",
-        "intern",
-        "notary",
-        "volunteerNotary",
-        "owner",
-        "limitedOwner",
+        { accountTypeName: "Admin", role: "admin" },
+        { accountTypeName: "City Administrator", role: "admin" },
+        { accountTypeName: "IT Specialist", role: "admin" },
+        { accountTypeName: "Clinical Case Manager", role: "helper" },
+        { accountTypeName: "Advocate", role: "helper" },
+        { accountTypeName: "Case Manager", role: "helper" },
+        { accountTypeName: "Case Manager Notary", role: "helper" },
+        { accountTypeName: "Intern", role: "helper" },
+        { accountTypeName: "Notary", role: "helper" },
+        { accountTypeName: "Volunteer Notary", role: "helper" },
+        { accountTypeName: "Owner", role: "owner" },
+        { accountTypeName: "Limited Owner", role: "owner" },
       ];
 
       // Add all view features to db
@@ -51,66 +81,91 @@ class DBUtil {
         await mongoDbInstance.addViewFeature(feature);
       }
 
+      // Add all the core feature to db
+      for (let feature of coreFeatures) {
+        await mongoDbInstance.addCoreFeature(feature);
+      }
+
       // Add all account types to db
       for (let accountType of accountTypes) {
-        if (accountType === "admin" || accountType === "cityAdministrator") {
+        if (["Admin", "City Administrator"].includes(accountType.accountTypeName)) {
           await mongoDbInstance.createAccountType(accountType, 0);
-        } else if (accountType === "itSpecialist") {
+        } else if (accountType.accountTypeName === "IT Specialist") {
           await mongoDbInstance.createAccountType(accountType, 1);
         } else {
           await mongoDbInstance.createAccountType(accountType, 2);
         }
       }
 
+      // Add all core features for owner and helpers
+      accountTypes
+      .filter(accountType => accountType.role === 'owner')
+      .forEach(ownerAccountType => {
+        coreFeatures
+        .filter(coreFeature => coreFeature.featureRole === 'owner')
+        .forEach(async ownerCoreFeature => {
+          await mongoDbInstance.addCoreFeatureToAccountType(ownerAccountType.accountTypeName, ownerCoreFeature.featureName);
+        })
+      });
+      accountTypes
+      .filter(accountType => accountType.role === 'helper')
+      .forEach(ownerAccountType => {
+        coreFeatures
+        .filter(coreFeature => coreFeature.featureRole === 'helper')
+        .forEach(async ownerCoreFeature => {
+          await mongoDbInstance.addCoreFeatureToAccountType(ownerAccountType.accountTypeName, ownerCoreFeature.featureName);
+        })
+      });      
+
       // Add all features for owner and notary and caseworker
       for (let feature of viewFeatures) {
-        await mongoDbInstance.addViewFeatureToAccountType("admin", feature);
+        await mongoDbInstance.addViewFeatureToAccountType("Admin", feature.featureName);
         await mongoDbInstance.addViewFeatureToAccountType(
-          "cityAdministrator",
-          feature
+          "City Administrator",
+          feature.featureName
         );
         await mongoDbInstance.addViewFeatureToAccountType(
-          "itSpecialist",
-          feature
+          "IT Specialist",
+          feature.featureName
         );
         await mongoDbInstance.addViewFeatureToAccountType(
-          "clinicalCaseManager",
-          feature
+          "Clinical Case Manager",
+          feature.featureName
         );
-        await mongoDbInstance.addViewFeatureToAccountType("owner", feature);
-        await mongoDbInstance.addViewFeatureToAccountType("notary", feature);
+        await mongoDbInstance.addViewFeatureToAccountType("Owner", feature.featureName);
+        await mongoDbInstance.addViewFeatureToAccountType("Notary", feature.featureName);
       }
 
       // Case Manager
       await mongoDbInstance.addViewFeatureToAccountType(
-        "caseManager",
+        "Case Manager",
         "gridView"
       );
       await mongoDbInstance.addViewFeatureToAccountType(
-        "caseManager",
+        "Case Manager",
         "listView"
       );
       await mongoDbInstance.addViewFeatureToAccountType(
-        "caseManager",
+        "Case Manager",
         "zoomIn"
       );
       await mongoDbInstance.addViewFeatureToAccountType(
-        "caseManager",
+        "Case Manager",
         "download"
       );
       await mongoDbInstance.addViewFeatureToAccountType(
-        "caseManager",
+        "Case Manager",
         "preview"
       );
-      await mongoDbInstance.addViewFeatureToAccountType("caseManager", "phone");
+      await mongoDbInstance.addViewFeatureToAccountType("Case Manager", "phone");
 
       // Volunteer Notary
       await mongoDbInstance.addViewFeatureToAccountType(
-        "volunteerNotary",
+        "Volunteer Notary",
         "firstName"
       );
       await mongoDbInstance.addViewFeatureToAccountType(
-        "volunteerNotary",
+        "Volunteer Notary",
         "lastName"
       );
     }
