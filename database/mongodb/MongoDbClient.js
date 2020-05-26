@@ -7,6 +7,7 @@ const Account = require("./models/Account");
 const Document = require("./models/Document");
 const AccountType = require("./models/AccountType");
 const ViewFeature = require("./models/ViewFeature");
+const CoreFeature = require("./models/CoreFeature");
 const DocumentType = require("./models/DocumentType");
 const Key = require("./models/Key");
 const Role = require("./models/Role");
@@ -19,6 +20,7 @@ const VerifiablePresentation = require("./models/VerifiablePresentation");
 const classes = new Map();
 classes.set("AccountType", AccountType);
 classes.set("ViewFeature", ViewFeature);
+classes.set("CoreFeature", CoreFeature);
 
 let mongoDbOptions = {
   useUnifiedTopology: true,
@@ -95,11 +97,13 @@ class MongoDbClient {
   async getAdminData() {
     let adminData = {};
     adminData.documentTypes = await DocumentType.find({});
-    adminData.accountTypes = await AccountType.find({}).populate({
-      path: "viewFeatures",
-    });
+    adminData.accountTypes = await AccountType
+    .find({})
+    .populate({path: "viewFeatures"})
+    .populate({path: "coreFeatures"});
 
     adminData.viewFeatures = await ViewFeature.find({});
+    adminData.coreFeatures = await CoreFeature.find({});
     return adminData;
   }
 
@@ -129,10 +133,21 @@ class MongoDbClient {
     return accounts;
   }
 
+  // Core Features
+  async addCoreFeature(feature) {
+    const coreFeature = new CoreFeature();
+    coreFeature.featureName = feature.featureName;
+    coreFeature.featureDisplay = feature.featureDisplay;
+    coreFeature.featureRole = feature.featureRole;
+    await coreFeature.save();
+    return coreFeature;
+  }
+
   // View Featuers and Account Types
-  async addViewFeature(featureName) {
+  async addViewFeature(feature) {
     const viewFeature = new ViewFeature();
-    viewFeature.featureName = featureName;
+    viewFeature.featureName = feature.featureName;
+    viewFeature.featureDisplay = feature.featureDisplay;
     await viewFeature.save();
     return viewFeature;
   }
@@ -149,10 +164,19 @@ class MongoDbClient {
     return accountType;
   }
 
-  async createAccountType(accountTypeName, adminLevel) {
+  async createAccountType(accountTypeInput, adminLevel) {
     const accountType = new AccountType();
-    accountType.accountTypeName = accountTypeName;
+    accountType.accountTypeName = accountTypeInput.accountTypeName;
+    accountType.role = accountTypeInput.role;
     accountType.adminLevel = adminLevel;
+    await accountType.save();
+    return accountType;
+  }
+
+  async addCoreFeatureToAccountType(accountTypeName, featureName) {
+    const coreFeature = await CoreFeature.findOne({ featureName: featureName });
+    const accountType = await AccountType.findOne({ accountTypeName: accountTypeName });
+    accountType.coreFeatures.push(coreFeature);
     await accountType.save();
     return accountType;
   }
@@ -165,6 +189,20 @@ class MongoDbClient {
     accountType.viewFeatures.push(viewFeature);
     await accountType.save();
     return accountType;
+  }
+
+  async getCoreFeatureStringByManyIds(ids) {
+    let coreFeatures = await CoreFeature.find()
+      .where("_id")
+      .in(ids)
+      .exec();
+
+    let coreFeaturesStringArr = [];
+    for (let coreFeature of coreFeatures) {
+      coreFeaturesStringArr.push(coreFeature.featureName);
+    }
+
+    return coreFeaturesStringArr;
   }
 
   async getViewFeatureStringByManyIds(ids) {
@@ -203,8 +241,9 @@ class MongoDbClient {
     newAccount.profileImageUrl = profileImageUrl;
     newAccount.setPassword(accountReq.password);
 
+    accountReq.role = (accountReq.role === 'notary') ? 'helper' : accountReq.role;
     const accountType = await AccountType.findOne({
-      accountTypeName: accountReq.role,
+      role: accountReq.role,
     });
 
     newAccount.accountType = accountType;
@@ -322,6 +361,18 @@ class MongoDbClient {
       }
     }
     const documentTypeSaved = await newDocumentType.save();
+    return documentTypeSaved;
+  }
+  
+  async updateDocumentType(id, documentType) {
+    const docType = await DocumentType.findById(id);
+    docType.name = documentType.name;
+    docType.isTwoSided = documentType.isTwoSided;
+    docType.hasExpirationDate = documentType.hasExpirationDate;
+    docType.isProtectedDoc = documentType.isProtectedDoc;
+    docType.isRecordableDoc = documentType.isRecordableDoc;
+
+    const documentTypeSaved = await docType.save();
     return documentTypeSaved;
   }
 
