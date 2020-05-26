@@ -384,6 +384,26 @@ class MongoDbClient {
     return docuemntType;
   }
 
+  async updateAccountType(id, accountType) {
+    const accType = await AccountType.findById(id);
+    accType.accountTypeName = accountType.accountTypeName;
+    accType.role = accountType.role;
+    accType.adminLevel = accountType.adminLevel;
+    accType.viewFeatures = accountType.viewFeatures;
+    accType.coreFeatures = accountType.coreFeatures;
+
+    const accountTypeSaved = await accType.save();
+    return accountTypeSaved;
+  }
+
+  async deleteAccountType(accountTypeId) {
+    const accountType = await AccountType.findOneAndRemove({
+      _id: accountTypeId,
+    });
+
+    return accountType;
+  }
+
   // Documents
   async createDocument(
     uploadedByAccount,

@@ -53,6 +53,27 @@ module.exports = {
     });
   },
 
+  updateAccountType: async (req, res) => {
+    const accountTypeId = req.params.accountTypeId;
+    const accountType = {
+      accountTypeName: req.body.accountTypeName,
+      role: req.body.role,
+      adminLevel: req.body.adminLevel,
+      viewFeatures: req.body.viewFeatures,
+      coreFeatures: req.body.coreFeatures,
+    }
+    const accountTypeSaved = await common.dbClient.updateAccountType(accountTypeId, accountType);
+    return res.status(200).json({ accountTypeSaved });
+  },
+
+  deleteAccountType: async (req, res) => {
+    const accountTypeId = req.params.accountTypeId;
+    await common.dbClient.deleteAccountType(accountTypeId);
+    res.status(200).json({
+      deleted: accountTypeId
+    });
+  },
+
   newAccount: async (req, res, next) => {
     const adminAccountId = req.payload.id;
     const adminLevel = await common.dbClient.getAccountAdminLevelById(
