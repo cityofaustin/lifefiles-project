@@ -46,14 +46,7 @@ if (process.env.ENVIRONMENT === "HEROKU") {
 module.exports = {
   store: async (guid, key) => {
     if (process.env.ENVIRONMENT === "HEROKU") {
-      let cipher = Crypto.createCipher(
-        "aes-256-cbc",
-        process.env.FILE_SAFE_KEY
-      );
-      let encryptedKey = cipher.update(key, "utf8", "hex");
-      encryptedKey += cipher.final("hex");
-
-      await common.dbClient.store(guid, encryptedKey);
+      this.storeToDb(guid, key);
     } else if (process.env.ENVIRONMENT === "DEVELOPMENT") {
       let data = safe.decrypt();
       data[guid] = key;
@@ -64,17 +57,7 @@ module.exports = {
   },
   retrieve: async (guid) => {
     if (process.env.ENVIRONMENT === "HEROKU") {
-      const keyObj = await common.dbClient.retrieve(guid);
-
-      let decipher = Crypto.createDecipher(
-        "aes-256-cbc",
-        process.env.FILE_SAFE_KEY
-      );
-
-      let decryptedKey = decipher.update(keyObj.encryptedKey, "hex", "utf8");
-      decryptedKey += decipher.final("utf8");
-
-      return decryptedKey;
+      return this.retrieveFromDb(guid);
     } else if (
       process.env.ENVIRONMENT === "DEVELOPMENT" ||
       process.env.ENVIRONMENT === "HEROKU"
@@ -85,5 +68,27 @@ module.exports = {
       const value = await vault.read("secret/" + guid);
       return value.data.value;
     }
+  },
+
+  storeToDb: async (guid, key) => {
+    let cipher = Crypto.createCipher("aes-256-cbc", process.env.FILE_SAFE_KEY);
+    let encryptedKey = cipher.update(key, "utf8", "hex");
+    encryptedKey += cipher.final("hex");
+
+    await common.dbClient.store(guid, encryptedKey);
+  },
+
+  retrieveFromDb: async (guid) => {
+    const keyObj = await common.dbClient.retrieve(guid);
+
+    let decipher = Crypto.createDecipher(
+      "aes-256-cbc",
+      process.env.FILE_SAFE_KEY
+    );
+
+    let decryptedKey = decipher.update(keyObj.encryptedKey, "hex", "utf8");
+    decryptedKey += decipher.final("utf8");
+
+    return decryptedKey;
   },
 };

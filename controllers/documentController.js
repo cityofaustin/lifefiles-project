@@ -1,6 +1,5 @@
 const common = require("../common/common");
 const documentStorageHelper = require("../common/documentStorageHelper");
-const documentNotarization = require("../common/documentNotarization");
 const permanent = require("../common/permanentClient");
 const secureKeyStorage = require("../common/secureKeyStorage");
 
@@ -303,129 +302,52 @@ module.exports = {
     res.status(200).json({ txtRecord: txtRecord });
   },
 
-  createNotarizedDocument: async (req, res, next) => {
-    const notaryAccount = await common.dbClient.getAccountById(req.payload.id);
-    const ownerAccount = await common.dbClient.getAccountById(
-      req.body.ownerAccountId
+  generateNewDid: async (req, res, next) => {
+    const did = await common.blockchainClient.createNewDID();
+    await secureKeyStorage.storeToDb(did.address, did.privateKey);
+    res.status(200).json({ didAddress: did.address });
+  },
+
+  updateDocumentVcJwt: async (req, res, next) => {
+    const account = await common.dbClient.getAccountById(req.payload.id);
+    const vc = req.body.vc;
+    const document = await common.dbClient.getDocumentByDocumentType(
+      req.params.accountForId,
+      req.params.documentType
     );
 
-    const documentType = req.body.type;
-    const did = await common.blockchainClient.createNewDID();
+    const updatedDocument = await common.dbClient.updateDocumentVC(
+      document._id,
+      vc
+    );
 
-    const documentDID = "did:ethr:" + did.address;
-    const issueTime = Math.floor(Date.now() / 1000);
-    const issuanceDate = Date.now();
-    const expirationDate = new Date(req.body.expirationDate);
+    res.status(200).json({ updatedDocument: updatedDocument.toPublicInfo() });
+  },
+
+  anchorVpToBlockchain: async (req, res, next) => {
+    const vpUnpacked = await common.blockchainClient.verifyVP(req.body.vpJwt);
+    const vcJwt = vpUnpacked.payload.vp.verifiableCredential[0];
+    const vcUnpacked = await common.blockchainClient.verifyVC(vcJwt);
+    const documentDidAddress = vcUnpacked.payload.vc.id.split(":")[2];
+
+    const expirationDate = new Date(vcUnpacked.payload.vc.expirationDate);
     const validityTimeSeconds = Math.round(
       (expirationDate - new Date()) / 1000
     );
 
-    let notaryName = notaryAccount.firstName + notaryAccount.lastName;
-    notaryName = notaryName.replace(/\s/g, "");
-    const notaryId = "" + req.body.notaryId;
-
-    let fileInfo = await documentNotarization.createNotarizedDocument(
-      req.files.img[0],
-      req.files.img[1],
-      req.files.img[2],
-      documentDID
+    const documentDidPrivateKey = await secureKeyStorage.retrieveFromDb(
+      documentDidAddress
     );
 
-    let s3FileRequst = {
-      name: "notarizedDocument.pdf",
-      tempFilePath: fileInfo.filename,
-    };
-
-    let key = await documentStorageHelper.upload(s3FileRequst, "document");
-
-    const document = await common.dbClient.createDocument(
-      notaryAccount,
-      ownerAccount,
-      req.files.img[0].name +
-        "-" +
-        req.files.img[1].name +
-        "-" +
-        req.files.img[2].name,
-      key,
-      key,
-      "Notarized " + documentType,
-      "",
-      fileInfo.md5,
-      expirationDate,
-      ""
+    common.blockchainClient.storeDataOnEthereumBlockchain(
+      documentDidAddress,
+      documentDidPrivateKey,
+      validityTimeSeconds,
+      req.body.vpJwt
     );
-
-    let notaryPrivateKey = await secureKeyStorage.retrieve(
-      notaryAccount.didPrivateKeyGuid
-    );
-
-    let notarizedVCJwt = await common.blockchainClient.createNotarizedVC(
-      notaryAccount.didAddress,
-      notaryPrivateKey,
-      ownerAccount.didAddress,
-      documentDID,
-      documentType,
-      fileInfo.md5,
-      issueTime,
-      issuanceDate,
-      expirationDate,
-      notaryName,
-      notaryId
-    );
-
-    common.blockchainClient.storeJwtOnEthereumBlockchain(
-      notarizedVCJwt,
-      did,
-      validityTimeSeconds
-    );
-
-    const verifiedVC = await common.blockchainClient.verifyVC(notarizedVCJwt);
-
-    await common.dbClient.createVerifiableCredential(
-      notarizedVCJwt,
-      JSON.stringify(verifiedVC),
-      ownerAccount,
-      document,
-      did.privateKey
-    );
-
-    // Check if owner is in mypass.eth txt record
-    let ownertxtRecord = await common.blockchainClient.getTxtRecord(
-      "did:ethr:" + ownerAccount.didAddress
-    );
-
-    if (ownertxtRecord === "" || ownertxtRecord === undefined) {
-      console.log(
-        ownerAccount.didAddress +
-          " Not found in txt record. Adding to txt record..."
-      );
-      common.blockchainClient.setTxtRecord(
-        "did:ethr:" + ownerAccount.didAddress,
-        ownerAccount.firstName + " " + ownerAccount.lastName
-      );
-    }
-
-    // Check if notary is in mypass.eth txt record
-    let notarytxtRecord = await common.blockchainClient.getTxtRecord(
-      "did:ethr:" + notaryAccount.didAddress
-    );
-
-    if (notarytxtRecord === "" || notarytxtRecord === undefined) {
-      console.log(
-        notaryAccount.didAddress +
-          " Not found in txt record. Adding to txt record..."
-      );
-      common.blockchainClient.setTxtRecord(
-        "did:ethr:" + notaryAccount.didAddress,
-        notaryAccount.firstName + " " + notaryAccount.lastName
-      );
-    }
 
     res.status(200).json({
-      vc: notarizedVCJwt,
-      verifiedVC: verifiedVC,
-      document: document.toPublicInfo(),
-      didStatus: "https://etherscan.io/address/" + did.address,
+      didStatus: "https://etherscan.io/address/" + did.documentDidAddress,
     });
   },
 };

@@ -407,6 +407,13 @@ class MongoDbClient {
     return document;
   }
 
+  async updateDocumentVC(documentId, vc) {
+    let document = await Document.findById(documentId);
+    document.vcJwt = vc;
+    await document.save();
+    return document;
+  }
+
   async getDocuments(accountId) {
     const account = await Account.findById(accountId);
 
@@ -428,6 +435,22 @@ class MongoDbClient {
 
   async getDocumentById(documentId) {
     let document = await Document.findById(documentId);
+    return document;
+  }
+
+  async getDocumentByDocumentType(accountId, documentType) {
+    const account = await Account.findById(accountId);
+    const documents = await this.getDocuments(accountId);
+
+    let documentId;
+
+    for (let document of documents) {
+      if (documentType === document.type) {
+        documentId = document._id;
+        break;
+      }
+    }
+    const document = await this.getDocumentById(documentId);
     return document;
   }
 

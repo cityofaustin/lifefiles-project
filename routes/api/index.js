@@ -100,19 +100,18 @@ router
   .route("/get-encryption-key")
   .get(auth.required, AccountController.getEncryptionKey);
 
+// Blockchain
+router
+  .route("/anchor-vp-to-blockchain/")
+  .post(auth.required, DocumentController.anchorVpToBlockchain);
+
+router
+  .route("/generate-new-did/")
+  .get(auth.required, DocumentController.generateNewDid);
+
 // Documents
 router.route("/document-types/").get(DocumentController.getDocumentTypes);
 router.route("/txt-record/:recordId").get(DocumentController.getTxtRecord);
-
-router.route("/create-notarized-document/").post(
-  [
-    auth.required,
-    celebrate({
-      body: Schema.createNotarizedDocumentSchema,
-    }),
-  ],
-  DocumentController.createNotarizedDocument
-);
 
 router
   .route("/documents/")
@@ -131,6 +130,10 @@ router
 router
   .route("/documents/:documentId")
   .put(auth.required, DocumentController.updateDocument);
+
+router
+  .route("/account/:accountForId/documents/:documentType")
+  .post(auth.required, DocumentController.updateDocumentVcJwt);
 
 router
   .route("/upload-document-on-behalf-of-user/")
