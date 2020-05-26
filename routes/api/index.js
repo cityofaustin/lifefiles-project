@@ -34,6 +34,10 @@ router
     AdminController.genericPost(req, res, next, "AccountType")
   );
 
+router.route("/admin-account-types/:accountTypeId")
+  .delete(auth.required, AdminController.deleteAccountType)
+  .put(auth.required, AdminController.updateAccountType);
+
 // Admin - View Features
 router
   .route("/admin-view-features")
