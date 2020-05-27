@@ -485,6 +485,13 @@ class MongoDbClient {
     return document;
   }
 
+  async updateDocumentVP(documentId, vpJwt) {
+    let document = await Document.findById(documentId);
+    document.vpJwt = vpJwt;
+    await document.save();
+    return document;
+  }
+
   async getDocuments(accountId) {
     const account = await Account.findById(accountId);
 
