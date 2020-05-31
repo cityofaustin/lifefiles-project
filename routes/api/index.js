@@ -6,45 +6,51 @@ const DocumentController = require("../../controllers/documentController");
 const AdminController = require("../../controllers/adminController");
 
 const auth = require("../middleware/auth");
-const { isAllowedUploadDocument } = require("../middleware/permission");
+const {
+  isAllowed,
+  isAllowedPostShareRequest,
+  onlyAdminAllowed,
+  isAllowedReplaceDocument,
+} = require("../middleware/permission");
 const Schema = require("../middleware/schema");
 
 // Admin
 router
   .route("/my-admin-account")
-  .get(auth.required, AdminController.myAdminAccount);
+  .get([auth.required, onlyAdminAllowed], AdminController.myAdminAccount);
 
 // Admin - Document Types
 router
   .route("/admin-document-types")
-  .post(auth.required, AdminController.addDocumentType);
+  .post([auth.required, onlyAdminAllowed], AdminController.addDocumentType);
 
 router
   .route("/admin-document-types/:docTypeId")
-  .delete(auth.required, AdminController.deleteDocumentType)
-  .put(auth.required, AdminController.updateDocumentType);
+  .delete([auth.required, onlyAdminAllowed], AdminController.deleteDocumentType)
+  .put([auth.required, onlyAdminAllowed], AdminController.updateDocumentType);
 
 // Admin - Account Types
 router
   .route("/admin-account-types")
-  .get(auth.required, (req, res, next) =>
+  .get([auth.required, onlyAdminAllowed], (req, res, next) =>
     AdminController.genericGet(req, res, next, "AccountType")
   )
-  .post(auth.required, (req, res, next) =>
+  .post([auth.required, onlyAdminAllowed], (req, res, next) =>
     AdminController.genericPost(req, res, next, "AccountType")
   );
 
-router.route("/admin-account-types/:accountTypeId")
-  .delete(auth.required, AdminController.deleteAccountType)
-  .put(auth.required, AdminController.updateAccountType);
+router
+  .route("/admin-account-types/:accountTypeId")
+  .delete([auth.required, onlyAdminAllowed], AdminController.deleteAccountType)
+  .put([auth.required, onlyAdminAllowed], AdminController.updateAccountType);
 
 // Admin - View Features
 router
   .route("/admin-view-features")
-  .get(auth.required, (req, res, next) =>
+  .get([auth.required, onlyAdminAllowed], (req, res, next) =>
     AdminController.genericGet(req, res, next, "ViewFeature")
   )
-  .post(auth.required, (req, res, next) =>
+  .post([auth.required, onlyAdminAllowed], (req, res, next) =>
     AdminController.genericPost(req, res, next, "ViewFeature")
   );
 
@@ -53,10 +59,10 @@ router
 //   .post(auth.required, AdminController.addDocumentTypeField)
 //   .delete(auth.required, AdminController.deleteDocumentTypeField);
 
-// Admin - Create New Accounts
-router.route("/admin-create-new-account").post(
+// Admin - Accounts
+router.route("/admin-accounts/").post(
   [
-    auth.required,
+    [auth.required, onlyAdminAllowed],
     celebrate({
       body: Schema.userRegisterSchema,
     }),
@@ -64,13 +70,23 @@ router.route("/admin-create-new-account").post(
   AdminController.newAccount
 );
 
+router
+  .route("/admin-accounts/:accountId")
+  .delete([auth.required, onlyAdminAllowed], AdminController.deleteAccount);
+
 // Accounts
 router.route("/my-account").get(auth.required, AccountController.myAccount);
 
 router
   .route("/accounts")
   .get(auth.required, AccountController.getAccounts)
-  .put(auth.required, AccountController.updateAccount);
+  .put(
+    [
+      auth.required,
+      (req, res, next) => isAllowed(req, res, next, "updateAccountInfo"),
+    ],
+    AccountController.updateAccount
+  );
 
 router.route("/accounts/login").post(
   celebrate({
@@ -81,21 +97,53 @@ router.route("/accounts/login").post(
 
 router
   .route("/account/:accountId/document-types/")
-  .get(auth.required, AccountController.getAvailableDocumentTypes);
+  .get(
+    [
+      auth.required,
+      (req, res, next) =>
+        isAllowed(req, res, next, "shareViewFileExist", ["owner"]),
+    ],
+    AccountController.getAvailableDocumentTypes
+  );
 
 router
   .route("/account/:accountId/share-requests/")
-  .get(auth.required, AccountController.getShareRequests);
+  .get(
+    [
+      auth.required,
+      (req, res, next) =>
+        isAllowed(req, res, next, "shareViewOwners", ["owner"]),
+    ],
+    AccountController.getShareRequests
+  );
 
 router
   .route("/share-requests")
   .get(auth.required, AccountController.getShareRequests)
-  .post([auth.required], AccountController.newShareRequest);
+  .post(
+    auth.required,
+    (req, res, next) => isAllowedPostShareRequest(req, res, next),
+    AccountController.newShareRequest
+  );
 
 router
   .route("/share-requests/:shareRequestId")
-  .put(auth.required, AccountController.approveOrDenyShareRequest)
-  .delete(auth.required, AccountController.deleteShareRequest);
+  .put(
+    [
+      auth.required,
+      (req, res, next) =>
+        isAllowed(req, res, next, "approveShareRequests", ["helper"]),
+    ],
+    AccountController.approveOrDenyShareRequest
+  )
+  .delete(
+    [
+      auth.required,
+      (req, res, next) =>
+        isAllowed(req, res, next, "revokeSharedDocuments", ["helper"]),
+    ],
+    AccountController.deleteShareRequest
+  );
 
 router
   .route("/profile-image/:imageurl/:jwt")
@@ -108,7 +156,14 @@ router
 // Blockchain
 router
   .route("/anchor-vp-to-blockchain/")
-  .post(auth.required, DocumentController.anchorVpToBlockchain);
+  .post(
+    [
+      auth.required,
+      (req, res, next) =>
+        isAllowed(req, res, next, "acceptNotarizedDocument", ["helper"]),
+    ],
+    DocumentController.anchorVpToBlockchain
+  );
 
 router
   .route("/generate-new-did/")
@@ -127,66 +182,54 @@ router
       celebrate({
         body: Schema.uploadDocumentSchema,
       }),
-      isAllowedUploadDocument,
+      (req, res, next) => isAllowed(req, res, next, "uploadDocuments"),
     ],
     DocumentController.uploadDocument
   );
 
 router
   .route("/documents/:documentId")
-  .put(auth.required, DocumentController.updateDocument);
+  .put(
+    [
+      auth.required,
+      (req, res, next) => isAllowedReplaceDocument(req, res, next),
+    ],
+    DocumentController.updateDocument
+  );
 
 router
   .route("/account/:accountForId/documents/:documentType")
-  .post(auth.required, DocumentController.updateDocumentVcJwt);
+  .post(
+    [
+      auth.required,
+      (req, res, next) =>
+        isAllowed(req, res, next, "notarizeDocuments", ["owner"]),
+    ],
+    DocumentController.updateDocumentVcJwt
+  );
 
 router
   .route("/upload-document-on-behalf-of-user/")
   .post(
-    [auth.required, isAllowedUploadDocument],
+    [
+      auth.required,
+      (req, res, next) =>
+        isAllowed(req, res, next, "uploadDocBehalfOwner", ["owner"]),
+    ],
     DocumentController.uploadDocumentOnBehalfOfUser
   );
 
 router
   .route("/documents/:filename/:jwt")
   .get(auth.image, DocumentController.getDocument)
-  .delete(DocumentController.deleteDocument);
-
-// Admin - TODO: Add Admin Auth Only
-router
-  .route("/admin/role-permission-table")
-  .get(AdminController.getRolePermissionTable)
-  .post(AdminController.newRolePermissionTable);
-
-router
-  .route("/admin/generate-default-role-permissions-table")
-  .get(AdminController.generateDefaultRolePermissionsTable);
-
-// Admin - Roles
-router
-  .route("/roles")
-  .get(auth.required, AdminController.getRoles)
-  .post(
-    [auth.required, celebrate({ body: Schema.roleSchema })],
-    AdminController.newRole
+  .delete(
+    [
+      auth.required,
+      (req, res, next) =>
+        isAllowed(req, res, next, "deleteDocuments", ["helper"]),
+    ],
+    DocumentController.deleteDocument
   );
-
-// Admin - Permissions
-router
-  .route("/permissions")
-  .get(auth.required, AdminController.getPermissions)
-  .post(
-    [auth.required, celebrate({ body: Schema.permissionSchema })],
-    AdminController.newPermission
-  );
-
-/* TODO:
-      REMOVE THIS DANGEROUS CALL WHEN WE GO TO PRODUCTION
-  */
-// router.route("/reset-database/").post(AdminController.resetDatabase);
-/* TODO:
-      REMOVE THIS DANGEROUS CALL WHEN WE GO TO PRODUCTION
-  */
 
 router.use(function(err, req, res, next) {
   if (err.name === "ValidationError") {

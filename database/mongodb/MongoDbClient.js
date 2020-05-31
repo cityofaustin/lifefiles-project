@@ -96,11 +96,21 @@ class MongoDbClient {
   // Admin
   async getAdminData() {
     let adminData = {};
+
+    const rawAccounts = await Account.find({}).populate("accountType");
+
+    let accounts = [];
+    for (let rawAccount of rawAccounts) {
+      let returnAccount = rawAccount.toPublicInfo();
+      returnAccount["accountType"] = rawAccount.accountType.accountTypeName;
+      accounts.push(returnAccount);
+    }
+
+    adminData.accounts = accounts;
     adminData.documentTypes = await DocumentType.find({});
-    adminData.accountTypes = await AccountType
-    .find({})
-    .populate({path: "viewFeatures"})
-    .populate({path: "coreFeatures"});
+    adminData.accountTypes = await AccountType.find({})
+      .populate({ path: "viewFeatures" })
+      .populate({ path: "coreFeatures" });
 
     adminData.viewFeatures = await ViewFeature.find({});
     adminData.coreFeatures = await CoreFeature.find({});
@@ -152,12 +162,20 @@ class MongoDbClient {
     return viewFeature;
   }
 
+  async getAccountTypesById(id) {
+    const accountType = await AccountType.findById(id).populate([
+      "coreFeatures",
+      "viewFeatures",
+    ]);
+    return accountType;
+  }
+
   async getAllAccountTypes() {
     const accountType = await AccountType.find({});
     return accountType;
   }
 
-  async getAccountTypeByRole(accountTypeName) {
+  async getAccountTypeByName(accountTypeName) {
     const accountType = await AccountType.findOne({
       accountTypeName: accountTypeName,
     });
@@ -175,7 +193,9 @@ class MongoDbClient {
 
   async addCoreFeatureToAccountType(accountTypeName, featureName) {
     const coreFeature = await CoreFeature.findOne({ featureName: featureName });
-    const accountType = await AccountType.findOne({ accountTypeName: accountTypeName });
+    const accountType = await AccountType.findOne({
+      accountTypeName: accountTypeName,
+    });
     accountType.coreFeatures.push(coreFeature);
     await accountType.save();
     return accountType;
@@ -230,7 +250,6 @@ class MongoDbClient {
     newAccount.firstName = accountReq.firstname;
     newAccount.lastName = accountReq.lastname;
     newAccount.email = accountReq.email;
-    newAccount.role = accountReq.role;
     newAccount.phoneNumber = accountReq.phonenumber;
     newAccount.organization = accountReq.organization;
     newAccount.permanentOrgArchiveNumber = permanentOrgArchiveNumber;
@@ -241,12 +260,9 @@ class MongoDbClient {
     newAccount.profileImageUrl = profileImageUrl;
     newAccount.setPassword(accountReq.password);
 
-    accountReq.role = (accountReq.role === 'notary') ? 'helper' : accountReq.role;
-    const accountType = await AccountType.findOne({
-      role: accountReq.role,
-    });
-
+    const accountType = await this.getAccountTypeByName(accountReq.accounttype);
     newAccount.accountType = accountType;
+    newAccount.role = accountType.role;
 
     const savedAccount = await newAccount.save();
     return savedAccount;
@@ -363,7 +379,7 @@ class MongoDbClient {
     const documentTypeSaved = await newDocumentType.save();
     return documentTypeSaved;
   }
-  
+
   async updateDocumentType(id, documentType) {
     const docType = await DocumentType.findById(id);
     docType.name = documentType.name;
@@ -402,6 +418,14 @@ class MongoDbClient {
     });
 
     return accountType;
+  }
+
+  async deleteAccount(accountId) {
+    const account = await Account.findOneAndRemove({
+      _id: accountId,
+    });
+
+    return account;
   }
 
   // Documents

@@ -131,10 +131,6 @@ class UportClient {
 
     let payAmount = CONTRACT_DEFAULT_GAS;
 
-    // if (gasEstimate * 2 < payAmount) {
-    //   payAmount = Math.round(gasEstimate * 2);
-    // }
-
     web3.eth.accounts.wallet.add(didAccount);
     web3.eth.transactionPollingTimeout = 3600;
 

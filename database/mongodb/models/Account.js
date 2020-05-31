@@ -105,6 +105,7 @@ AccountSchema.methods.toPublicInfo = function() {
     didAddress: this.didAddress,
     didPublicEncryptionKey: this.didPublicEncryptionKey,
     profileImageUrl: this.profileImageUrl,
+    accountType: this.accountType,
   };
 };
 

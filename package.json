@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./app.js",
     "dev": "nodemon ./app.js",
-    "test": "jest"
+    "test": "mocha ./tests/integration.test.js"
   },
   "license": "ISC",
   "dependencies": {
@@ -45,5 +45,13 @@
     "permanent-api-js": "^1.0.2",
     "stream-buffers": "^3.0.2",
     "web3": "^1.2.6"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-each": "0.0.1",
+    "chai-like": "^1.1.1",
+    "chai-things": "^0.2.0",
+    "mocha": "^7.2.0",
+    "supertest": "^4.0.2"
   }
 }

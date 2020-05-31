@@ -20,45 +20,159 @@ class DBUtil {
         { featureName: "email", featureDisplay: "User email" },
         { featureName: "profileImage", featureDisplay: "User image" },
         // NOTE: We never show the did, even for the person it's for, at least for now, so doesn't make sense to have it here.
-        // { featureName: "didAddress", featureDisplay: "User DID" }, 
+        // { featureName: "didAddress", featureDisplay: "User DID" },
         { featureName: "organization", featureDisplay: "User organization" },
         { featureName: "role", featureDisplay: "User role" },
         { featureName: "firstName", featureDisplay: "User first name" },
         { featureName: "lastName", featureDisplay: "User last name" },
         { featureName: "username", featureDisplay: "Username" },
-        { featureName: "documentUpdateDate", featureDisplay: "Document updated date" },
-        { featureName: "documentUploadBy", featureDisplay: "Document uploaded by" },
-        { featureName: "documentOtherContactsSharedWith", featureDisplay: "Document share list" },
-        { featureName: "documentValidUntil", featureDisplay: "Document valid until" },
+        {
+          featureName: "documentUpdateDate",
+          featureDisplay: "Document updated date",
+        },
+        {
+          featureName: "documentUploadBy",
+          featureDisplay: "Document uploaded by",
+        },
+        {
+          featureName: "documentOtherContactsSharedWith",
+          featureDisplay: "Document share list",
+        },
+        {
+          featureName: "documentValidUntil",
+          featureDisplay: "Document valid until",
+        },
       ];
 
       const coreFeatures = [
-        { featureName: "uploadDocuments", featureDisplay: "Can upload documents", featureRole: "owner" },
-        { featureName: "replaceDocuments", featureDisplay: "Can replace documents", featureRole: "owner" },
-        { featureName: "deleteDocuments", featureDisplay: "Can delete documents", featureRole: "owner" },
-        { featureName: "updateExpirationDate", featureDisplay: "Can update expiration date", featureRole: "owner" },
-        { featureName: "updateAccountInfo", featureDisplay: "Can update account info", featureRole: "owner" },
-        { featureName: "approveShareRequests", featureDisplay: "Can approve share requests", featureRole: "owner" },
-        { featureName: "pushSharedDocuments", featureDisplay: "Can push shared documents", featureRole: "owner" },
-        { featureName: "revokeSharedDocuments", featureDisplay: "Can revoke shared documents", featureRole: "owner" },
-        { featureName: "setShareTimeLimit", featureDisplay: "Can set time limit for share", featureRole: "owner" },
-        { featureName: "shareUserInfo", featureDisplay: "Can share user info", featureRole: "owner" },
-        { featureName: "shareViewHelpers", featureDisplay: "Can view helpers to share", featureRole: "owner" },
-        { featureName: "uploadDocBehalfOwner", featureDisplay: "Can upload docs on behalf of owner", featureRole: "helper" },
-        { featureName: "replaceDocBehalfOwner", featureDisplay: "Can replace owners docs", featureRole: "helper" },
-        { featureName: "deleteDocBehalfOwner", featureDisplay: "Can delete owners docs", featureRole: "helper" },
-        { featureName: "updateExpirationDate", featureDisplay: "Can update expiration date", featureRole: "helper" },
-        { featureName: "updateOwnerInfo", featureDisplay: "Can update owner user info", featureRole: "helper" },
-        { featureName: "requestSharedDoc", featureDisplay: "Can request a shared document", featureRole: "helper" },
-        { featureName: "shareDocWithOther", featureDisplay: "Can share doc with others", featureRole: "helper" },
-        { featureName: "revokeShareRequest", featureDisplay: "Can revoke share request", featureRole: "helper" },
-        { featureName: "setShareTimeLimit", featureDisplay: "Can set time limit for share", featureRole: "helper" },
+        {
+          featureName: "uploadDocuments",
+          featureDisplay: "Can upload documents",
+          featureRole: "owner",
+        },
+        {
+          featureName: "replaceDocuments",
+          featureDisplay: "Can replace documents",
+          featureRole: "owner",
+        },
+        {
+          featureName: "deleteDocuments",
+          featureDisplay: "Can delete documents",
+          featureRole: "owner",
+        },
+        {
+          featureName: "updateExpirationDate",
+          featureDisplay: "Can update expiration date",
+          featureRole: "owner",
+        },
+        {
+          featureName: "updateAccountInfo",
+          featureDisplay: "Can update account info",
+          featureRole: "owner",
+        },
+        {
+          featureName: "approveShareRequests",
+          featureDisplay: "Can approve share requests",
+          featureRole: "owner",
+        },
+        {
+          featureName: "pushSharedDocuments",
+          featureDisplay: "Can push shared documents",
+          featureRole: "owner",
+        },
+        {
+          featureName: "revokeSharedDocuments",
+          featureDisplay: "Can revoke shared documents",
+          featureRole: "owner",
+        },
+        {
+          featureName: "setShareTimeLimit",
+          featureDisplay: "Can set time limit for share",
+          featureRole: "owner",
+        },
+        {
+          featureName: "shareUserInfo",
+          featureDisplay: "Can share user info",
+          featureRole: "owner",
+        },
+        {
+          featureName: "shareViewHelpers",
+          featureDisplay: "Can view helpers to share",
+          featureRole: "owner",
+        },
+        {
+          featureName: "acceptNotarizedDocument",
+          featureDisplay:
+            "Can accept notarized document and trigger a blockchain transaction",
+          featureRole: "owner",
+        },
+        {
+          featureName: "uploadDocBehalfOwner",
+          featureDisplay: "Can upload docs on behalf of owner",
+          featureRole: "helper",
+        },
+        {
+          featureName: "replaceDocBehalfOwner",
+          featureDisplay: "Can replace owners docs",
+          featureRole: "helper",
+        },
+        {
+          featureName: "deleteDocBehalfOwner",
+          featureDisplay: "Can delete owners docs",
+          featureRole: "helper",
+        },
+        {
+          featureName: "updateExpirationDate",
+          featureDisplay: "Can update expiration date",
+          featureRole: "helper",
+        },
+        {
+          featureName: "updateOwnerInfo",
+          featureDisplay: "Can update owner user info",
+          featureRole: "helper",
+        },
+        {
+          featureName: "requestSharedDoc",
+          featureDisplay: "Can request a shared document",
+          featureRole: "helper",
+        },
+        {
+          featureName: "shareDocWithOther",
+          featureDisplay: "Can share doc with others",
+          featureRole: "helper",
+        },
+        {
+          featureName: "revokeShareRequest",
+          featureDisplay: "Can revoke share request",
+          featureRole: "helper",
+        },
+        {
+          featureName: "setShareTimeLimit",
+          featureDisplay: "Can set time limit for share",
+          featureRole: "helper",
+        },
         // NOTE: this seems redundant to the top?
         // { featureName: "", featureDisplay: "Can view owner user info", featureRole: "helper" },
-        { featureName: "shareViewOwners", featureDisplay: "Can view owners to request share", featureRole: "helper" },
-        { featureName: "shareViewFileExist", featureDisplay: "Can view existing file to request share", featureRole: "helper" },
-        { featureName: "notarizeDocuments", featureDisplay: "Can Notarize Documents", featureRole: "helper" },
-        { featureName: "transferClientToHelper", featureDisplay: "Can transfer clients to other helpers", featureRole: "helper" },
+        {
+          featureName: "shareViewOwners",
+          featureDisplay: "Can view owners to request share",
+          featureRole: "helper",
+        },
+        {
+          featureName: "shareViewFileExist",
+          featureDisplay: "Can view existing file to request share",
+          featureRole: "helper",
+        },
+        {
+          featureName: "notarizeDocuments",
+          featureDisplay: "Can Notarize Documents",
+          featureRole: "helper",
+        },
+        {
+          featureName: "transferClientToHelper",
+          featureDisplay: "Can transfer clients to other helpers",
+          featureRole: "helper",
+        },
       ];
 
       const accountTypes = [
@@ -88,7 +202,9 @@ class DBUtil {
 
       // Add all account types to db
       for (let accountType of accountTypes) {
-        if (["Admin", "City Administrator"].includes(accountType.accountTypeName)) {
+        if (
+          ["Admin", "City Administrator"].includes(accountType.accountTypeName)
+        ) {
           await mongoDbInstance.createAccountType(accountType, 0);
         } else if (accountType.accountTypeName === "IT Specialist") {
           await mongoDbInstance.createAccountType(accountType, 1);
@@ -99,27 +215,40 @@ class DBUtil {
 
       // Add all core features for owner and helpers
       accountTypes
-      .filter(accountType => accountType.role === 'owner')
-      .forEach(ownerAccountType => {
-        coreFeatures
-        .filter(coreFeature => coreFeature.featureRole === 'owner')
-        .forEach(async ownerCoreFeature => {
-          await mongoDbInstance.addCoreFeatureToAccountType(ownerAccountType.accountTypeName, ownerCoreFeature.featureName);
-        })
-      });
+        .filter((accountType) => accountType.role === "owner")
+        .forEach((ownerAccountType) => {
+          coreFeatures
+            .filter((coreFeature) => coreFeature.featureRole === "owner")
+            .forEach(async (ownerCoreFeature) => {
+              if (ownerAccountType.accountTypeName !== "Limited Owner") {
+                await mongoDbInstance.addCoreFeatureToAccountType(
+                  ownerAccountType.accountTypeName,
+                  ownerCoreFeature.featureName
+                );
+              }
+            });
+        });
       accountTypes
-      .filter(accountType => accountType.role === 'helper')
-      .forEach(ownerAccountType => {
-        coreFeatures
-        .filter(coreFeature => coreFeature.featureRole === 'helper')
-        .forEach(async ownerCoreFeature => {
-          await mongoDbInstance.addCoreFeatureToAccountType(ownerAccountType.accountTypeName, ownerCoreFeature.featureName);
-        })
-      });      
+        .filter((accountType) => accountType.role === "helper")
+        .forEach((ownerAccountType) => {
+          coreFeatures
+            .filter((coreFeature) => coreFeature.featureRole === "helper")
+            .forEach(async (ownerCoreFeature) => {
+              if (ownerAccountType.accountTypeName !== "Intern") {
+                await mongoDbInstance.addCoreFeatureToAccountType(
+                  ownerAccountType.accountTypeName,
+                  ownerCoreFeature.featureName
+                );
+              }
+            });
+        });
 
       // Add all features for owner and notary and caseworker
       for (let feature of viewFeatures) {
-        await mongoDbInstance.addViewFeatureToAccountType("Admin", feature.featureName);
+        await mongoDbInstance.addViewFeatureToAccountType(
+          "Admin",
+          feature.featureName
+        );
         await mongoDbInstance.addViewFeatureToAccountType(
           "City Administrator",
           feature.featureName
@@ -132,8 +261,14 @@ class DBUtil {
           "Clinical Case Manager",
           feature.featureName
         );
-        await mongoDbInstance.addViewFeatureToAccountType("Owner", feature.featureName);
-        await mongoDbInstance.addViewFeatureToAccountType("Notary", feature.featureName);
+        await mongoDbInstance.addViewFeatureToAccountType(
+          "Owner",
+          feature.featureName
+        );
+        await mongoDbInstance.addViewFeatureToAccountType(
+          "Notary",
+          feature.featureName
+        );
       }
 
       // Case Manager
@@ -157,7 +292,10 @@ class DBUtil {
         "Case Manager",
         "preview"
       );
-      await mongoDbInstance.addViewFeatureToAccountType("Case Manager", "phone");
+      await mongoDbInstance.addViewFeatureToAccountType(
+        "Case Manager",
+        "phone"
+      );
 
       // Volunteer Notary
       await mongoDbInstance.addViewFeatureToAccountType(
@@ -231,7 +369,7 @@ class DBUtil {
           firstname: "admin",
           lastname: "admin",
           password: process.env.ADMIN_PASSWORD,
-          role: "admin",
+          accounttype: "Admin",
           email: "admin@admin.com",
           phonenumber: "555-555-5555",
           organization: "-",
@@ -272,7 +410,7 @@ class DBUtil {
           firstname: "Sally",
           lastname: "Owner",
           password: "owner",
-          role: "owner",
+          accounttype: "Owner",
           email: "owner@owner.com",
           phonenumber: "555-555-5555",
           organization: "-",
@@ -310,7 +448,7 @@ class DBUtil {
           firstname: "Billy",
           lastname: "Caseworker",
           password: "caseworker",
-          role: "notary",
+          accounttype: "Case Manager Notary",
           email: "caseworker@caseworker.com",
           phonenumber: "555-555-5555",
           organization: "Banana Org",
@@ -348,7 +486,7 @@ class DBUtil {
           firstname: "Karen",
           lastname: "Caseworker",
           password: "caseworker",
-          role: "notary",
+          accounttype: "Case Manager Notary",
           email: "karencaseworker@caseworker.com",
           phonenumber: "555-555-5555",
           organization: "Apple Org",
@@ -386,7 +524,7 @@ class DBUtil {
           firstname: "Josh",
           lastname: "Caseworker",
           password: "caseworker",
-          role: "notary",
+          accounttype: "Case Manager Notary",
           email: "joshcaseworker@caseworker.com",
           phonenumber: "555-555-5555",
           organization: "Pear Org",

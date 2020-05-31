@@ -28,20 +28,23 @@ module.exports = {
     const savedDocType = await common.dbClient.createDocumentType(req.body);
 
     res.status(200).json({
-      savedDocType
+      savedDocType,
     });
   },
 
-  updateDocumentType: async ( req, res) => {
+  updateDocumentType: async (req, res) => {
     const docTypeId = req.params.docTypeId;
     const docType = {
       name: req.body.name,
       isTwoSided: req.body.isTwoSided,
       hasExpirationDate: req.body.hasExpirationDate,
       isProtectedDoc: req.body.isProtectedDoc,
-      isRecordableDoc: req.body.isRecordableDoc
-    }
-    const documentTypeSaved = await common.dbClient.updateDocumentType(docTypeId, docType);
+      isRecordableDoc: req.body.isRecordableDoc,
+    };
+    const documentTypeSaved = await common.dbClient.updateDocumentType(
+      docTypeId,
+      docType
+    );
     return res.status(200).json({ documentTypeSaved });
   },
 
@@ -49,7 +52,7 @@ module.exports = {
     const docTypeId = req.params.docTypeId;
     await common.dbClient.deleteDocumentType(docTypeId);
     res.status(200).json({
-      deleted: docTypeId
+      deleted: docTypeId,
     });
   },
 
@@ -61,8 +64,11 @@ module.exports = {
       adminLevel: req.body.adminLevel,
       viewFeatures: req.body.viewFeatures,
       coreFeatures: req.body.coreFeatures,
-    }
-    const accountTypeSaved = await common.dbClient.updateAccountType(accountTypeId, accountType);
+    };
+    const accountTypeSaved = await common.dbClient.updateAccountType(
+      accountTypeId,
+      accountType
+    );
     return res.status(200).json({ accountTypeSaved });
   },
 
@@ -70,7 +76,7 @@ module.exports = {
     const accountTypeId = req.params.accountTypeId;
     await common.dbClient.deleteAccountType(accountTypeId);
     res.status(200).json({
-      deleted: accountTypeId
+      deleted: accountTypeId,
     });
   },
 
@@ -79,8 +85,9 @@ module.exports = {
     const adminLevel = await common.dbClient.getAccountAdminLevelById(
       adminAccountId
     );
-    const newAccountType = await common.dbClient.getAccountTypeByRole(
-      req.body.account.role
+
+    const newAccountType = await common.dbClient.getAccountTypeByName(
+      req.body.account.accounttype
     );
 
     if (newAccountType === undefined || newAccountType === null) {
@@ -120,14 +127,25 @@ module.exports = {
       );
     }
 
-    const account = await common.dbClient.createAccount(
-      req.body.account,
-      did,
-      permanentArchiveNumber,
-      profileImageUrl
-    );
+    let account;
+    try {
+      account = await common.dbClient.createAccount(
+        req.body.account,
+        did,
+        permanentArchiveNumber,
+        profileImageUrl
+      );
+    } catch (error) {
+      return res.status(500).json({ msg: error });
+    }
 
     return res.status(201).json({ account: account.toAuthJSON() });
+  },
+
+  deleteAccount: async (req, res, next) => {
+    await common.dbClient.deleteAccount(req.params.accountId);
+
+    return res.status(200).json({ message: "success" });
   },
 
   genericGet: async (req, res, next, type) => {
