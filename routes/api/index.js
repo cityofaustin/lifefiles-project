@@ -208,6 +208,8 @@ router
     DocumentController.updateDocumentVcJwt
   );
 
+router.route("/account/:accountForId/documents/:documentType/vp").put(auth.required, DocumentController.updateDocumentVpJwt);
+
 router
   .route("/upload-document-on-behalf-of-user/")
   .post(

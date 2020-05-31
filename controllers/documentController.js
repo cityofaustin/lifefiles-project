@@ -324,6 +324,21 @@ module.exports = {
     res.status(200).json({ updatedDocument: updatedDocument.toPublicInfo() });
   },
 
+  updateDocumentVpJwt: async (req, res) => {
+    const vpJwt = req.body.vpJwt;
+    const document = await common.dbClient.getDocumentByDocumentType(
+      req.params.accountForId,
+      req.params.documentType
+    );
+
+    const updatedDocument = await common.dbClient.updateDocumentVP(
+      document._id,
+      vpJwt
+    );
+
+    res.status(200).json({ updatedDocument: updatedDocument.toPublicInfo() });
+  },
+
   anchorVpToBlockchain: async (req, res, next) => {
     const vpUnpacked = await common.blockchainClient.verifyVP(req.body.vpJwt);
     const vcJwt = vpUnpacked.payload.vp.verifiableCredential[0];
@@ -347,7 +362,7 @@ module.exports = {
     );
 
     res.status(200).json({
-      didStatus: "https://etherscan.io/address/" + did.documentDidAddress,
+      didStatus: "https://etherscan.io/address/" + documentDidAddress,
     });
   },
 };
