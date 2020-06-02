@@ -502,10 +502,24 @@ class MongoDbClient {
     return document;
   }
 
-  async updateDocumentVC(documentId, vc) {
+  async updateDocumentVC(documentId, vc, filename, key, permanentOrgFileArchiveNumber, md5, helperId, helperKey) {
     let document = await Document.findById(documentId);
     document.vcJwt = vc;
+    
+    document.name = filename;
+    document.url = key;
+    document.permanentOrgFileArchiveNumber = permanentOrgFileArchiveNumber;
+    document.hash = md5;
     await document.save();
+
+    let shareRequest = await ShareRequest.findOne({
+      shareWithAccountId: helperId,
+      documentType: document.type
+    });
+
+    shareRequest.documentUrl = helperKey;
+    await shareRequest.save();
+
     return document;
   }
 

@@ -302,23 +302,59 @@ module.exports = {
     res.status(200).json({ txtRecord: txtRecord });
   },
 
-  generateNewDid: async (req, res, next) => {
+  generateNewDid: async (req, res) => {
     const did = await common.blockchainClient.createNewDID();
     await secureKeyStorage.storeToDb(did.address, did.privateKey);
     res.status(200).json({ didAddress: did.address });
   },
 
-  updateDocumentVcJwt: async (req, res, next) => {
+  updateDocumentVcJwt: async (req, res) => {
     const account = await common.dbClient.getAccountById(req.payload.id);
     const vc = req.body.vc;
+    let filename;
+    let key;
+    let permanentOrgFileArchiveNumber;
+    let md5;
+    const {accountForId, documentType} = {...req.params};
+
     const document = await common.dbClient.getDocumentByDocumentType(
-      req.params.accountForId,
-      req.params.documentType
+      accountForId,
+      documentType
     );
+
+    if (
+      req.files !== undefined &&
+      req.files !== null &&
+      req.files.img.length === 2
+    ) {
+      const newCaseWorkerFile = req.files.img[0];
+      const newOwnerFile = req.files.img[1];
+      
+      filename = newOwnerFile.name;
+      md5 = newOwnerFile.md5;
+      key = await documentStorageHelper.upload(newOwnerFile, "document");
+
+      permanentOrgFileArchiveNumber = await permanent.addToPermanentArchive(
+        newOwnerFile,
+        key,
+        account.permanentOrgArchiveNumber
+      );
+
+      keyForAccount = await documentStorageHelper.upload(
+        newCaseWorkerFile,
+        "document"
+      );
+    }
 
     const updatedDocument = await common.dbClient.updateDocumentVC(
       document._id,
-      vc
+      vc,
+      filename,
+      key,
+      permanentOrgFileArchiveNumber,
+      md5,
+      account.id,
+      keyForAccount
     );
 
     res.status(200).json({ updatedDocument: updatedDocument.toPublicInfo() });
@@ -354,12 +390,12 @@ module.exports = {
       documentDidAddress
     );
 
-    common.blockchainClient.storeDataOnEthereumBlockchain(
-      documentDidAddress,
-      documentDidPrivateKey,
-      validityTimeSeconds,
-      req.body.vpJwt
-    );
+    // common.blockchainClient.storeDataOnEthereumBlockchain(
+    //   documentDidAddress,
+    //   documentDidPrivateKey,
+    //   validityTimeSeconds,
+    //   req.body.vpJwt
+    // );
 
     res.status(200).json({
       didStatus: "https://etherscan.io/address/" + documentDidAddress,
