@@ -1,7 +1,7 @@
 const common = require("../common/common");
 const documentStorageHelper = require("../common/documentStorageHelper");
 const secureKeyStorage = require("../common/secureKeyStorage");
-const passport = require("passport");
+// const passport = require("passport");
 const fs = require("fs");
 
 module.exports = {
@@ -80,18 +80,19 @@ module.exports = {
       return res.status(422).json({ errors: { password: "can't be blank" } });
     }
 
-    passport.authenticate("local", { session: false }, (err, account, info) => {
-      if (err) {
-        return next(err);
-      }
+    // passport.authenticate("local", { session: false }, (err, account, info) => {
+    //   if (err) {
+    //     return next(err);
+    //   }
 
-      if (account) {
-        account.token = account.generateJWT();
-        return res.json({ account: account.toAuthJSON() });
-      } else {
-        return res.status(422).json(info);
-      }
-    })(req, res, next);
+      return res.json({ account: 'todo' });
+      // if (account) {
+      //   account.token = account.generateJWT();
+        
+      // } else {
+      //   return res.status(422).json(info);
+      // }
+    // })(req, res, next);
   },
 
   getShareRequests: async (req, res, next) => {

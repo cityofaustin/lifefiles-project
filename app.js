@@ -26,8 +26,15 @@ const router = require("./routes");
 const common = require("./common/common");
 const { errors } = require("celebrate");
 const fileUpload = require("express-fileupload");
-require("./routes/middleware/passport");
+const OAuthServer = require('express-oauth-server');
+// require("./routes/middleware/passport");
+
 const app = express();
+app.oauth = new OAuthServer({
+  debug: true,
+  model: require('./database/mongodb/models/Oath'),
+  grants: ['implicit'],
+});
 
 // Set Up Clients.
 const dbClient = new MongoDbClient();
@@ -46,6 +53,7 @@ common.dbClient = dbClient;
 
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.json());
+app.use(app.oauth.authorize());
 app.use(fileUpload({ useTempFiles: true }));
 
 // Using NGIX cors config if production
