@@ -26,15 +26,16 @@ const router = require("./routes");
 const common = require("./common/common");
 const { errors } = require("celebrate");
 const fileUpload = require("express-fileupload");
-const OAuthServer = require('express-oauth-server');
 // require("./routes/middleware/passport");
+const oauthServer = require("./oath");
+const DebugControl = require('./utilities/debug')
 
 const app = express();
-app.oauth = new OAuthServer({
-  debug: true,
-  model: require('./database/mongodb/models/Oath'),
-  grants: ['implicit'],
-});
+// app.oauth = new OAuthServer({
+//   debug: true,
+//   model: require('./database/mongodb/models/Oath'),
+//   grants: ['implicit'],
+// });
 
 // Set Up Clients.
 const dbClient = new MongoDbClient();
@@ -53,7 +54,10 @@ common.dbClient = dbClient;
 
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.json());
-app.use(app.oauth.authorize());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+// app.use(app.oauth.authorize());
 app.use(fileUpload({ useTempFiles: true }));
 
 // Using NGIX cors config if production
@@ -65,7 +69,15 @@ if (
 }
 
 app.use(errors());
-app.use(router);
+// app.use(router);
+app.use('/oauth', require('./routes/auth.js')) // routes to access the auth stuff
+app.use('/secure', (req,res,next) => {
+  DebugControl.log.flow('Authentication')
+  return next()
+}, 
+oauthServer.authenticate(), 
+require('./routes/secure.js')) // routes to access the protected stuff
+
 
 // error handler
 app.use(function(err, req, res, next) {
