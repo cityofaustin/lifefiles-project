@@ -1,5 +1,8 @@
+const common = require("../../../common/common"); 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const jwt = require("jsonwebtoken");
+
 
 mongoose.model(
   "OAuthToken",
@@ -10,7 +13,7 @@ mongoose.model(
     clientId: { type: String },
     refreshToken: { type: String },
     refreshTokenExpiresAt: { type: Date },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "OAuthUser" },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "Account" },
     userId: { type: String },
   })
 );
@@ -23,7 +26,7 @@ mongoose.model(
     redirectUri: { type: Object },
     client: { type: mongoose.Schema.Types.ObjectId, ref: "OAuthClient" },
     clientId: { type: String },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "OAuthUser" },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "Account" },
     userId: { type: String },
   })
 );
@@ -93,6 +96,7 @@ module.exports.getUser = async (username, password) => {
 module.exports.saveToken = async (token, client, user) => {
   // accessToken currently looks like 72f85b607c17f0b1e88b5e64ec260d1e022f3d59
   // TODO: make a JWT instead for access and refresh.
+
   const accessToken = new OAuthTokensModel({
     accessToken: token.accessToken,
     accessTokenExpiresAt: token.accessTokenExpiresAt,
@@ -106,6 +110,26 @@ module.exports.saveToken = async (token, client, user) => {
 
   // Can't just chain `lean()` to `save()` as we did with `findOne()` elsewhere. Instead we use `Promise` to resolve the data.
   let saveResult = await accessToken.save();
+  
+  const accessJWT = jwt.sign(
+    {
+        sub: user._id, // subject, whom the token refers to
+        // event_id: '',
+        token_use: 'access',
+        scope: user.role,
+        auth_time: parseInt(new Date().getTime() / 1000), // time when authetication occurred
+        iss: 'http://localhost:5000', // issuer, who created and signed this token
+        exp: parseInt(token.accessTokenExpiresAt.getTime() / 1000), // expiration time, seconds since unix epoch
+        // iat issued at, don't need it's automatically created for us
+        jti: saveResult._id, // jwt id unique identifier for this token
+        client_id: clearInterval.clientId,
+        username: user.username,
+    },
+    process.env.AUTH_SECRET
+  );
+  saveResult.accessToken = accessJWT;
+  saveResult = await accessToken.save();
+
   // `saveResult` is mongoose wrapper object, not doc itself. Calling `toJSON()` returns the doc.
   saveResult =
     saveResult && typeof saveResult == "object"
@@ -129,13 +153,13 @@ module.exports.saveAuthorizationCode = async (code, client, user) => {
     redirectUri: code.redirectUri,
     // scope: code.scope, // you can use this to specify permissions
     clientId: client.clientId,
-    userId: user.user,
+    userId: user._id,
   });
   const clientSaved = await this.getClient(
     client.clientId,
     client.clientSecret
   );
-  const userSaved = await this.getUser("test", "test");
+  const userSaved = await common.dbClient.getAccountById(user._id);
   authCode.client = clientSaved;
   authCode.user = userSaved;
 

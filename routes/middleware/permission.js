@@ -3,7 +3,7 @@ let common = require("../../common/common");
 module.exports = {
   // TODO: cache this for faster load times
   isAllowed: async (req, res, next, featureName, restrictedRoles = []) => {
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAccountById(req.payload.sub);
     const accountType = await common.dbClient.getAccountTypesById(
       account.accountType
     );
@@ -28,7 +28,7 @@ module.exports = {
   },
 
   onlyAdminAllowed: async (req, res, next) => {
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAccountById(req.payload.sub);
 
     if (account.role !== "admin") {
       res.status(403).json({
@@ -41,7 +41,7 @@ module.exports = {
   },
 
   isAllowedPostShareRequest: async (req, res, next) => {
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAccountById(req.payload.sub);
     const accountType = await common.dbClient.getAccountTypesById(
       account.accountType
     );
@@ -68,7 +68,7 @@ module.exports = {
   },
 
   isAllowedReplaceDocument: async (req, res, next) => {
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAccountById(req.payload.sub);
     const accountType = await common.dbClient.getAccountTypesById(
       account.accountType
     );

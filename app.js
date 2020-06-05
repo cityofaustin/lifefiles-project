@@ -69,7 +69,7 @@ if (
 }
 
 app.use(errors());
-// app.use(router);
+app.use(router);
 app.use('/oauth', require('./routes/auth.js')) // routes to access the auth stuff
 app.use('/secure', (req,res,next) => {
   DebugControl.log.flow('Authentication')
@@ -77,7 +77,6 @@ app.use('/secure', (req,res,next) => {
 }, 
 oauthServer.authenticate(), 
 require('./routes/secure.js')) // routes to access the protected stuff
-
 
 // error handler
 app.use(function(err, req, res, next) {

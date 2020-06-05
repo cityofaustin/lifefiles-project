@@ -146,7 +146,7 @@ router
   );
 
 router
-  .route("/profile-image/:imageurl/:jwt")
+  .route("/profile-image/:imageurl")
   .get(auth.image, AccountController.getProfileImage);
 
 router
@@ -222,7 +222,7 @@ router
   );
 
 router
-  .route("/documents/:filename/:jwt")
+  .route("/documents/:filename")
   .get(auth.image, DocumentController.getDocument)
   .delete(
     [

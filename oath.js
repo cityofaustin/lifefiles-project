@@ -5,4 +5,5 @@ module.exports = new OAuthServer({
   debug: true,
   model,
   grants: ["authorization_code"],
+  allowBearerTokensInQueryString: true
 });

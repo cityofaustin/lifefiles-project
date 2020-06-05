@@ -6,13 +6,13 @@ const fs = require("fs");
 
 module.exports = {
   getEncryptionKey: async (req, res, next) => {
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAccountById(req.payload.sub);
     let key = await secureKeyStorage.retrieve(account.didPrivateKeyGuid);
     res.status(200).json({ encryptionKey: key });
   },
 
   myAccount: async (req, res, next) => {
-    const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
+    const account = await common.dbClient.getAllAccountInfoById(req.payload.sub);
     let returnAccount = account.toAuthJSON();
     let documentSharedAccounts = [];
 
@@ -51,7 +51,7 @@ module.exports = {
   },
 
   updateAccount: async (req, res, next) => {
-    const accountId = req.payload.id;
+    const accountId = req.payload.sub;
     const account = await common.dbClient.getAccountById(accountId);
 
     let profileImageUrl = account.profileImageUrl;
@@ -87,7 +87,7 @@ module.exports = {
 
       return res.json({ account: 'todo' });
       // if (account) {
-      //   account.token = account.generateJWT();
+        // account.token = account.generateJWT();
         
       // } else {
       //   return res.status(422).json(info);
@@ -96,7 +96,7 @@ module.exports = {
   },
 
   getShareRequests: async (req, res, next) => {
-    let accountId = req.payload.id;
+    let accountId = req.payload.sub;
     if (req.params && req.params.accountId) {
       accountId = req.params.accountId;
     }
@@ -117,7 +117,7 @@ module.exports = {
   },
 
   getProfileImage: async (req, res, next) => {
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAccountById(req.payload.sub);
     let payload;
 
     if (account.profileImageUrl === "anon-user.png") {
@@ -133,7 +133,7 @@ module.exports = {
   },
 
   newShareRequest: async (req, res, next) => {
-    const accountId = req.payload.id;
+    const accountId = req.payload.sub;
     const file =
       req.files && req.files.img && req.files.img[0]
         ? req.files.img[0]
@@ -196,7 +196,7 @@ module.exports = {
   },
 
   approveOrDenyShareRequest: async (req, res, next) => {
-    const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
+    const account = await common.dbClient.getAllAccountInfoById(req.payload.sub);
     const shareRequestId = req.params.shareRequestId;
     const approved = req.body.approved;
 
@@ -249,7 +249,7 @@ module.exports = {
 
   deleteShareRequest: async (req, res, next) => {
     const shareRequestId = req.params.shareRequestId;
-    const shareRequestAccountOwnerId = req.payload.id;
+    const shareRequestAccountOwnerId = req.payload.sub;
     await common.dbClient.deleteShareRequest(
       shareRequestAccountOwnerId,
       shareRequestId

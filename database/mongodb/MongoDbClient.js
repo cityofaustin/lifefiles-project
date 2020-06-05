@@ -16,6 +16,7 @@ const ShareRequest = require("./models/ShareRequest");
 const RolePermissionTable = require("./models/RolePermissionTable");
 const VerifiableCredential = require("./models/VerifiableCredential");
 const VerifiablePresentation = require("./models/VerifiablePresentation");
+var crypto = require("crypto");
 
 const classes = new Map();
 classes.set("AccountType", AccountType);
@@ -237,6 +238,22 @@ class MongoDbClient {
     }
 
     return viewFeaturesStringArr;
+  }
+
+  async getAccountByCredentials(email, password) {
+    let accountMatched = await Account.findOne({
+      email
+    });
+    var hash = crypto
+    .pbkdf2Sync(password, accountMatched.salt, 10000, 512, "sha512")
+    .toString("hex");
+    const validPassword = accountMatched.hash === hash;
+    // const validPassword = accountMatched.validPassword(password); // didn't work
+    if(accountMatched && validPassword) {
+      return accountMatched;
+    } else {
+      return undefined;
+    }
   }
 
   async createAccount(

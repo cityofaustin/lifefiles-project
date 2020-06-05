@@ -6,7 +6,7 @@ const EthCrypto = require("eth-crypto");
 
 module.exports = {
   myAdminAccount: async (req, res, next) => {
-    const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
+    const account = await common.dbClient.getAllAccountInfoById(req.payload.sub);
 
     if (account.role !== "admin") {
       res.status(403).json({
@@ -16,7 +16,7 @@ module.exports = {
     }
 
     let returnAccount = account.toAuthJSON();
-    adminInfo = await common.dbClient.getAdminData(req.payload.id);
+    adminInfo = await common.dbClient.getAdminData(req.payload.sub);
     returnAccount.adminInfo = adminInfo;
 
     res.status(200).json({
@@ -81,7 +81,7 @@ module.exports = {
   },
 
   newAccount: async (req, res, next) => {
-    const adminAccountId = req.payload.id;
+    const adminAccountId = req.payload.sub;
     const adminLevel = await common.dbClient.getAccountAdminLevelById(
       adminAccountId
     );
@@ -150,7 +150,7 @@ module.exports = {
 
   genericGet: async (req, res, next, type) => {
     const adminLevel = await common.dbClient.getAccountAdminLevelById(
-      req.payload.id
+      req.payload.sub
     );
 
     if (adminLevel !== 0) {
@@ -166,7 +166,7 @@ module.exports = {
 
   genericPost: async (req, res, next, type) => {
     const adminLevel = await common.dbClient.getAccountAdminLevelById(
-      req.payload.id
+      req.payload.sub
     );
 
     if (adminLevel !== 0) {

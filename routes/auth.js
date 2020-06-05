@@ -1,9 +1,10 @@
-const path = require('path') // has path and __dirname
-const express = require('express')
-const oauthServer = require('../oath')
-const DebugControl = require('../utilities/debug')
+// const path = require('path') // has path and __dirname
+const common = require("../common/common");
+const express = require('express');
+const oauthServer = require('../oath');
+const DebugControl = require('../utilities/debug');
 
-const router = express.Router() // Instantiate a new router
+const router = express.Router(); // Instantiate a new router
 
 // const filePath = path.join(__dirname, '../public/oauthAuthenticate.html')
 
@@ -11,12 +12,13 @@ router.get('/', (req,res) => {  // send back a simple form for the oauth
     return res.json({ account: 'todo' });
 })
 
-router.post('/authorize', (req,res,next) => {
-  DebugControl.log.flow('Initial User Authentication')
-  const {username, password} = req.body
-  if(username === 'owner@owner.com' && password === 'owner') {
-    req.body.user = {user: 1}
-    return next()
+router.post('/authorize', async (req,res,next) => {
+  DebugControl.log.flow('Initial User Authentication');
+  const {username, password} = req.body;
+  const accountMatched = await common.dbClient.getAccountByCredentials(username, password);
+  if (accountMatched) {
+    req.body.user = accountMatched;
+    return next();
   }
   const params = [ // Send params back down
     'client_id', // client
@@ -31,21 +33,21 @@ router.post('/authorize', (req,res,next) => {
     .map(a => `${a}=${req.body[a]}`)
     .join('&');
     // This should redirect back to the login page, not here since we aren't logging in over here.
-  return res.redirect(`/oauth?success=false&${params}`)
+  return res.redirect(`/oauth?success=false&${params}`);
 }, (req,res, next) => { // sends us to our redirect with an authorization code in our url
-  DebugControl.log.flow('Authorization')
-  return next()
+  DebugControl.log.flow('Authorization');
+  return next();
 }, oauthServer.authorize({
   authenticateHandler: {
     handle: req => {
-      DebugControl.log.functionName('Authenticate Handler')
-      DebugControl.log.parameters(Object.keys(req.body).map(k => ({name: k, value: req.body[k]})))
-      return req.body.user
+      DebugControl.log.functionName('Authenticate Handler');
+      DebugControl.log.parameters(Object.keys(req.body).map(k => ({name: k, value: req.body[k]})));
+      return req.body.user;
     }
   },
   allowEmptyState: true,
   authorizationCodeLifetime: 600 // 10min, default 5 minutes
-}))
+}));
 
 router.post('/token', (req,res,next) => {
   DebugControl.log.flow('Token')
@@ -56,6 +58,6 @@ router.post('/token', (req,res,next) => {
     accessTokenLifetime: 3600, // 1hr, default 1 hour
     refreshTokenLifetime: 1209600 // 2wk, default 2 weeks
   },
-}))  // Sends back token
+}));  // Sends back token
 
 module.exports = router

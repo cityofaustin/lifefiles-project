@@ -6,7 +6,7 @@ const secureKeyStorage = require("../common/secureKeyStorage");
 module.exports = {
   updateDocument: async (req, res, next) => {
     const documentId = req.params.documentId;
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAccountById(req.payload.sub);
     const document = await common.dbClient.getDocumentById(documentId);
 
     if (!document.belongsTo._id.equals(account._id)) {
@@ -87,7 +87,7 @@ module.exports = {
       return;
     }
 
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAccountById(req.payload.sub);
 
     const file =
       req.files.img[0] === undefined ? req.files.img : req.files.img[0];
@@ -155,7 +155,7 @@ module.exports = {
       });
     }
 
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAccountById(req.payload.sub);
     const uploadForAccount = await common.dbClient.getAccountById(
       req.body.uploadForAccountId
     );
@@ -225,14 +225,14 @@ module.exports = {
   },
 
   getDocuments: async (req, res, next) => {
-    const accountId = req.payload.id;
+    const accountId = req.payload.sub;
     const documents = await common.dbClient.getDocuments(accountId);
 
     res.status(200).json({ documents: documents });
   },
 
   getDocument: async (req, res, next) => {
-    const accountId = req.payload.id;
+    const accountId = req.payload.sub;
     const filename = req.params.filename;
     let approved = false;
     let shareRequest;
@@ -309,7 +309,7 @@ module.exports = {
   },
 
   updateDocumentVcJwt: async (req, res) => {
-    const account = await common.dbClient.getAccountById(req.payload.id);
+    const account = await common.dbClient.getAccountById(req.payload.sub);
     const vc = req.body.vc;
     let filename;
     let key;

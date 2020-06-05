@@ -13,9 +13,9 @@ function getTokenFromHeader(req) {
   return null;
 }
 
-function getTokenFromParams(req) {
-  if (req.params && req.params.jwt !== undefined) {
-    return req.params.jwt;
+function getTokenFromQueryString(req) {
+  if (req.query && req.query.access_token !== undefined) {
+    return req.query.access_token;
   } else {
     return null;
   }
@@ -30,7 +30,7 @@ var auth = {
   image: jwt({
     secret: process.env.AUTH_SECRET,
     userProperty: "payload",
-    getToken: getTokenFromParams
+    getToken: getTokenFromQueryString
   }),
   optional: jwt({
     secret: process.env.AUTH_SECRET,
