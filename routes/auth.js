@@ -14,22 +14,23 @@ router.get('/', (req,res) => {  // send back a simple form for the oauth
 router.post('/authorize', (req,res,next) => {
   DebugControl.log.flow('Initial User Authentication')
   const {username, password} = req.body
-  if(username === 'username' && password === 'password') {
+  if(username === 'owner@owner.com' && password === 'owner') {
     req.body.user = {user: 1}
     return next()
   }
   const params = [ // Send params back down
     'client_id', // client
     'redirect_uri', // client.redirect
-     // tried 'code', I think this does authorization_code grant.
+     // tried 'code'
      // token is not supported for some reason https://github.com/oauthjs/node-oauth2-server/blob/master/lib/handlers/authorize-handler.js#L32
     'response_type',
-    'grant_type', // implicit ?
+    'grant_type', // authorization_code
     'state', // could be used to prevent CSRF https://www.npmjs.com/package/csurf
     'scope', // is a comma separated permissions string like 'public,birthday,email'
   ]
     .map(a => `${a}=${req.body[a]}`)
-    .join('&')
+    .join('&');
+    // This should redirect back to the login page, not here since we aren't logging in over here.
   return res.redirect(`/oauth?success=false&${params}`)
 }, (req,res, next) => { // sends us to our redirect with an authorization code in our url
   DebugControl.log.flow('Authorization')

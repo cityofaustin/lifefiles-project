@@ -4,7 +4,6 @@ const DebugControl = require("../utilities/debug");
 
 router.get("/", (req, res) => {
   // Successfully reached if can hit this :)
-  debugger;
   DebugControl.log.variable({
     name: "res.locals.oauth.token",
     value: res.locals.oauth.token,
