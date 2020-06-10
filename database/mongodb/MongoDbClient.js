@@ -118,6 +118,12 @@ class MongoDbClient {
   }
 
   // Accounts
+
+  async getAccountByOAuthId(id) {
+    const account = await Account.findOne({ oauthId: id });
+    return account;
+  }
+
   async getAccountById(id) {
     const account = await Account.findById(id);
     return account;
@@ -212,10 +218,7 @@ class MongoDbClient {
   }
 
   async getCoreFeatureStringByManyIds(ids) {
-    let coreFeatures = await CoreFeature.find()
-      .where("_id")
-      .in(ids)
-      .exec();
+    let coreFeatures = await CoreFeature.find().where("_id").in(ids).exec();
 
     let coreFeaturesStringArr = [];
     for (let coreFeature of coreFeatures) {
@@ -226,10 +229,7 @@ class MongoDbClient {
   }
 
   async getViewFeatureStringByManyIds(ids) {
-    let viewFeatures = await ViewFeature.find()
-      .where("_id")
-      .in(ids)
-      .exec();
+    let viewFeatures = await ViewFeature.find().where("_id").in(ids).exec();
 
     let viewFeaturesStringArr = [];
     for (let viewFeature of viewFeatures) {
@@ -259,6 +259,10 @@ class MongoDbClient {
     newAccount.didPrivateKeyGuid = did.privateKeyGuid;
     newAccount.profileImageUrl = profileImageUrl;
     newAccount.setPassword(accountReq.password);
+
+    if (newAccount.email === "owner@owner.com") {
+      newAccount.oauthId = 123;
+    }
 
     const accountType = await this.getAccountTypeByName(accountReq.accounttype);
     newAccount.accountType = accountType;
@@ -502,10 +506,19 @@ class MongoDbClient {
     return document;
   }
 
-  async updateDocumentVC(documentId, vc, filename, key, permanentOrgFileArchiveNumber, md5, helperId, helperKey) {
+  async updateDocumentVC(
+    documentId,
+    vc,
+    filename,
+    key,
+    permanentOrgFileArchiveNumber,
+    md5,
+    helperId,
+    helperKey
+  ) {
     let document = await Document.findById(documentId);
     document.vcJwt = vc;
-    
+
     document.name = filename;
     document.url = key;
     document.permanentOrgFileArchiveNumber = permanentOrgFileArchiveNumber;
@@ -514,7 +527,7 @@ class MongoDbClient {
 
     let shareRequest = await ShareRequest.findOne({
       shareWithAccountId: helperId,
-      documentType: document.type
+      documentType: document.type,
     });
 
     shareRequest.documentUrl = helperKey;

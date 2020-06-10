@@ -260,7 +260,7 @@ module.exports = {
       approved = true;
     }
 
-    if (approved === true || document.belongsTo == accountId) {
+    if (approved === true || document.belongsTo.equals(accountId)) {
       const payload = await documentStorageHelper.getDocumentBytes(
         filename,
         "document"
@@ -315,7 +315,7 @@ module.exports = {
     let key;
     let permanentOrgFileArchiveNumber;
     let md5;
-    const {accountForId, documentType} = {...req.params};
+    const { accountForId, documentType } = { ...req.params };
 
     const document = await common.dbClient.getDocumentByDocumentType(
       accountForId,
@@ -329,7 +329,7 @@ module.exports = {
     ) {
       const newCaseWorkerFile = req.files.img[0];
       const newOwnerFile = req.files.img[1];
-      
+
       filename = newOwnerFile.name;
       md5 = newOwnerFile.md5;
       key = await documentStorageHelper.upload(newOwnerFile, "document");

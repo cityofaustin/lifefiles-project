@@ -35,7 +35,7 @@ module.exports = {
       account: returnAccount,
       documentSharedAccounts: documentSharedAccounts,
       viewFeatures: viewFeatures,
-      coreFeatures: coreFeatures
+      coreFeatures: coreFeatures,
     });
   },
 
