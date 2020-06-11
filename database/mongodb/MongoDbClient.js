@@ -261,7 +261,11 @@ class MongoDbClient {
     newAccount.setPassword(accountReq.password);
 
     if (newAccount.email === "owner@owner.com") {
-      newAccount.oauthId = 123;
+      newAccount.oauthId = "sally-oauth-123";
+    }
+
+    if (newAccount.email === "caseworker@caseworker.com") {
+      newAccount.oauthId = "billy-oauth-123";
     }
 
     const accountType = await this.getAccountTypeByName(accountReq.accounttype);
