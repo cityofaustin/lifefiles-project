@@ -258,7 +258,9 @@ class MongoDbClient {
     newAccount.didPublicEncryptionKey = did.publicEncryptionKey;
     newAccount.didPrivateKeyGuid = did.privateKeyGuid;
     newAccount.profileImageUrl = profileImageUrl;
-    newAccount.setPassword(accountReq.password);
+    // newAccount.setPassword(accountReq.password);
+
+    newAccount.oauthId = accountReq.oauthId;
 
     if (newAccount.email === "owner@owner.com") {
       newAccount.oauthId = "sally-oauth-123";
@@ -269,6 +271,7 @@ class MongoDbClient {
     }
 
     const accountType = await this.getAccountTypeByName(accountReq.accounttype);
+
     newAccount.accountType = accountType;
     newAccount.role = accountType.role;
 

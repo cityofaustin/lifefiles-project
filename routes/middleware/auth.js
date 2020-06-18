@@ -32,11 +32,19 @@ var auth = {
     let decoded = jsonwebtoken.verify(oauthJwt, process.env.AUTH_SECRET);
     const account = await common.dbClient.getAccountByOAuthId(decoded.oauthId);
 
-    payload = {
-      id: account._id,
-      username: account.username,
-      role: account.role,
-    };
+    let payload = {};
+    if (account === undefined || account === null) {
+      payload = {
+        oauthId: decoded.oauthId,
+        username: decoded.username,
+      };
+    } else {
+      payload = {
+        id: account._id,
+        username: account.username,
+        role: account.role,
+      };
+    }
     req.payload = payload;
 
     next();

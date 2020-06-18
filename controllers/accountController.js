@@ -3,6 +3,9 @@ const documentStorageHelper = require("../common/documentStorageHelper");
 const secureKeyStorage = require("../common/secureKeyStorage");
 const passport = require("passport");
 const fs = require("fs");
+const permanent = require("../common/permanentClient");
+const uuidv4 = require("uuid").v4;
+const EthCrypto = require("eth-crypto");
 
 module.exports = {
   getEncryptionKey: async (req, res, next) => {
@@ -12,7 +15,56 @@ module.exports = {
   },
 
   myAccount: async (req, res, next) => {
-    const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
+    let payloadId = req.payload.id;
+
+    // We have a new account
+    if (req.payload.oauthId !== undefined) {
+      let ownerAccount = {
+        account: {
+          username: req.payload.username,
+          oauthId: req.payload.oauthId,
+          firstname: "-",
+          lastname: "-",
+          accounttype: "Owner",
+          email: "none@none.com",
+          phonenumber: "-",
+          organization: "-",
+        },
+      };
+
+      const permanentArchiveNumber = await permanent.createArchive(
+        req.payload.username
+      );
+
+      const uuid = uuidv4();
+
+      let did = await common.blockchainClient.createNewDID();
+      did.publicEncryptionKey = EthCrypto.publicKeyByPrivateKey(
+        "0x" + did.privateKey
+      );
+      did.privateKeyGuid = uuid;
+
+      await secureKeyStorage.store(uuid, did.privateKey);
+
+      let account;
+      try {
+        account = await common.dbClient.createAccount(
+          ownerAccount.account,
+          did,
+          permanentArchiveNumber,
+          "anon-user.png"
+        );
+
+        payloadId = account._id;
+      } catch (error) {
+        console.log("Account Save Error");
+        console.log(error);
+        return res.status(500).json({ msg: error });
+      }
+    }
+
+    const account = await common.dbClient.getAllAccountInfoById(payloadId);
+
     let returnAccount = account.toAuthJSON();
     let documentSharedAccounts = [];
 
