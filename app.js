@@ -45,8 +45,18 @@ if (process.env.ETH_FUNDING_PRIVATE_KEY !== undefined) {
 common.dbClient = dbClient;
 
 app.use(express.static(__dirname + "/public"));
-app.use(bodyParser.json());
-app.use(fileUpload({ useTempFiles: true }));
+
+app.use(bodyParser.json({
+  limit: '50mb'
+}));
+app.use(fileUpload({
+  limits: {
+      fileSize: 5000000000 //50mb
+  },
+  abortOnLimit: true,
+  useTempFiles: true
+}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 // Using NGIX cors config if production
 if (
