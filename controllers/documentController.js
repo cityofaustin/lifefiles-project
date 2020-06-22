@@ -232,7 +232,8 @@ module.exports = {
   },
 
   getDocument: async (req, res, next) => {
-    const accountId = req.payload.id;
+    let accountId = req.payload.id;
+    accountId = accountId._id ? accountId.toString() : accountId;
     const filename = req.params.filename;
     let approved = false;
     let shareRequest;
@@ -260,7 +261,7 @@ module.exports = {
       approved = true;
     }
 
-    if (approved === true || document.belongsTo.equals(accountId)) {
+    if (approved === true || (document && document.belongsTo.equals(accountId))) {
       const payload = await documentStorageHelper.getDocumentBytes(
         filename,
         "document"

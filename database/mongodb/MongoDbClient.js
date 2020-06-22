@@ -270,6 +270,10 @@ class MongoDbClient {
       newAccount.oauthId = "billy-oauth-123";
     }
 
+    if (newAccount.email === 'admin@admin.com') {
+      newAccount.oauthId = "admin-oauth-123";
+    }
+
     const accountType = await this.getAccountTypeByName(accountReq.accounttype);
 
     newAccount.accountType = accountType;
