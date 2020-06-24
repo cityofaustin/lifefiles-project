@@ -261,7 +261,10 @@ module.exports = {
       approved = true;
     }
 
-    if (approved === true || (document && document.belongsTo.equals(accountId))) {
+    if (
+      approved === true ||
+      (document && document.belongsTo.equals(accountId))
+    ) {
       const payload = await documentStorageHelper.getDocumentBytes(
         filename,
         "document"

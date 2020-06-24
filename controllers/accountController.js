@@ -26,7 +26,7 @@ module.exports = {
           firstname: "-",
           lastname: "-",
           accounttype: "Owner",
-          email: "none@none.com",
+          email: `${req.payload.username}@${req.payload.username}.com`,
           phonenumber: "-",
           organization: "-",
         },
