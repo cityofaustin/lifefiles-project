@@ -88,6 +88,7 @@ router
     AccountController.updateAccount
   );
 
+// These are for helpers only, owners loing with oauth
 router.route("/accounts/login").post(
   celebrate({
     body: Schema.userLoginSchema,

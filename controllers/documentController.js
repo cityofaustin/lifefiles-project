@@ -10,6 +10,7 @@ module.exports = {
     const document = await common.dbClient.getDocumentById(documentId);
 
     if (!document.belongsTo._id.equals(account._id)) {
+      console.log("Account not authorized update this document");
       res.status(403).json({
         error: "Account not authorized update this document",
       });
@@ -277,6 +278,7 @@ module.exports = {
         payload.pipe(res);
       }
     } else {
+      console.log("Account not authorized to view this document");
       res.status(403).json({
         error: "Account not authorized to view this document",
       });

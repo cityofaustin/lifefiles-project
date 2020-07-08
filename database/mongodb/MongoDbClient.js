@@ -120,8 +120,8 @@ class MongoDbClient {
   // Accounts
 
   async getAccountByOAuthId(id) {
-    const account = await Account.findOne({ oauthId: id });
-    return account;
+    const accounts = await Account.find({ oauthId: id });
+    return accounts[0];
   }
 
   async getAccountById(id) {
@@ -258,7 +258,10 @@ class MongoDbClient {
     newAccount.didPublicEncryptionKey = did.publicEncryptionKey;
     newAccount.didPrivateKeyGuid = did.privateKeyGuid;
     newAccount.profileImageUrl = profileImageUrl;
-    // newAccount.setPassword(accountReq.password);
+
+    if (accountReq.password) {
+      newAccount.setPassword(accountReq.password);
+    }
 
     newAccount.oauthId = accountReq.oauthId;
 
@@ -270,7 +273,7 @@ class MongoDbClient {
       newAccount.oauthId = "billy-oauth-123";
     }
 
-    if (newAccount.email === 'admin@admin.com') {
+    if (newAccount.email === "admin@admin.com") {
       newAccount.oauthId = "admin-oauth-123";
     }
 

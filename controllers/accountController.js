@@ -171,7 +171,7 @@ module.exports = {
     const account = await common.dbClient.getAccountById(req.payload.id);
     let payload;
 
-    if (account.profileImageUrl === "anon-user.png") {
+    if (req.params.imageurl === "anon-user.png") {
       payload = fs.createReadStream("./assets/anon-user.png");
     } else {
       payload = await documentStorageHelper.getDocumentBytes(
@@ -184,7 +184,7 @@ module.exports = {
   },
 
   newShareRequest: async (req, res, next) => {
-    const accountId = req.payload.id;
+    let accountId = req.payload.id;
     const file =
       req.files && req.files.img && req.files.img[0]
         ? req.files.img[0]
@@ -194,13 +194,16 @@ module.exports = {
         ? req.files.img[1]
         : undefined;
 
-    const fromAccountId = req.body.fromAccountId;
+    let fromAccountId = req.body.fromAccountId;
     const toAccountId = req.body.toAccountId;
     const documentTypeName = req.body.documentType;
 
     let authorized = false;
 
-    if (accountId === fromAccountId || accountId === toAccountId) {
+    accountId = "" + accountId;
+    fromAccountId = "" + fromAccountId;
+
+    if (accountId == fromAccountId || accountId == toAccountId) {
       authorized = true;
     }
 
@@ -212,10 +215,10 @@ module.exports = {
     }
 
     let approved = false;
-
     let key = undefined;
     let thumbnailKey = undefined;
-    if (accountId === fromAccountId) {
+
+    if (accountId == fromAccountId) {
       approved = true;
       if (file) {
         key = await documentStorageHelper.upload(file, "document");

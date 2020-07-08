@@ -29,10 +29,34 @@ var auth = {
   required: async (req, res, next) => {
     let oauthJwt = getTokenFromHeader(req);
 
-    let decoded = jsonwebtoken.verify(oauthJwt, process.env.AUTH_SECRET);
+    let decoded;
+    try {
+      decoded = jsonwebtoken.verify(oauthJwt, process.env.AUTH_SECRET);
+    } catch (err) {
+      console.log("Invalid token!");
+      console.log(err);
+      res.status(403).json({
+        error: "Account not authorized. Invalid auth token",
+      });
+    }
+
+    // This is not from oauth server and is local auth
+    if (decoded.oauthId === undefined) {
+      const payload = {
+        id: "" + decoded.id,
+        username: decoded.username,
+        role: decoded.role,
+      };
+      req.payload = payload;
+      next();
+      return;
+    }
+
     const account = await common.dbClient.getAccountByOAuthId(decoded.oauthId);
 
     let payload = {};
+
+    // We have a new account
     if (account === undefined || account === null) {
       payload = {
         oauthId: decoded.oauthId,
@@ -40,11 +64,12 @@ var auth = {
       };
     } else {
       payload = {
-        id: account._id,
+        id: "" + account._id,
         username: account.username,
         role: account.role,
       };
     }
+
     req.payload = payload;
 
     next();
@@ -52,12 +77,34 @@ var auth = {
 
   image: async (req, res, next) => {
     let oauthJwt = getTokenFromParams(req);
-    let decoded = jsonwebtoken.verify(oauthJwt, process.env.AUTH_SECRET);
+
+    let decoded;
+    try {
+      decoded = jsonwebtoken.verify(oauthJwt, process.env.AUTH_SECRET);
+    } catch (err) {
+      console.log("Invalid token in image auth!");
+      console.log(err);
+      res.status(403).json({
+        error: "Account not authorized to view this document",
+      });
+    }
+
+    if (decoded.oauthId === undefined) {
+      const payload = {
+        id: "" + decoded.id,
+        username: decoded.username,
+        role: decoded.role,
+      };
+
+      req.payload = payload;
+      next();
+      return;
+    }
 
     const account = await common.dbClient.getAccountByOAuthId(decoded.oauthId);
 
     payload = {
-      id: account._id,
+      id: "" + account._id,
       username: account.username,
       role: account.role,
     };
