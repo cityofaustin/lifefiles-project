@@ -1,15 +1,10 @@
-cd /~
-mkdir CIRCLE-CI-MYPASS-BACKEND || echo Directory Exists, Continuing...
+cd ~/PROD/MYPASS-BACKEND/mypass
 
-
-cd CIRCLE-CI-MYPASS-BACKEND
-git clone https://github.com/cityofaustin/mypass.git || echo Already Cloned, Continuing...
-
-cd mypass
 git pull
 
-docker-compose down
-docker-compose build
-docker-compose up -d
+npm install
+
+pm2 stop mypass
+pm2 start app.js --name mypass
 
 echo ~~FINISHED~~
