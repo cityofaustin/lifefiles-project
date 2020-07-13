@@ -21,7 +21,7 @@ module.exports = {
       data[guid] = key;
       safe.encrypt(data);
     } else {
-      this.storeToDb(guid, key);
+      module.exports.storeToDb(guid, key);
     }
   },
   retrieve: async (guid) => {
@@ -29,7 +29,7 @@ module.exports = {
       let data = safe.decrypt();
       return data[guid];
     } else {
-      return this.retrieveFromDb(guid);
+      module.exports.retrieveFromDb(guid);
     }
   },
 
