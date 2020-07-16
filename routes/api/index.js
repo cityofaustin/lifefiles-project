@@ -72,7 +72,8 @@ router.route("/admin-accounts/").post(
 
 router
   .route("/admin-accounts/:accountId")
-  .delete([auth.required, onlyAdminAllowed], AdminController.deleteAccount);
+  .delete([auth.required, onlyAdminAllowed], AdminController.deleteAccount)
+  .put([auth.required, onlyAdminAllowed], AdminController.updateAccount);
 
 // Accounts
 router.route("/my-account").get(auth.required, AccountController.myAccount);
@@ -94,6 +95,13 @@ router.route("/accounts/login").post(
     body: Schema.userLoginSchema,
   }),
   AccountController.login
+);
+
+router.route("/accounts/admin-login").post(
+  celebrate({
+    body: Schema.userLoginSchema,
+  }),
+  AdminController.adminLogin
 );
 
 router

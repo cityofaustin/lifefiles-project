@@ -28,7 +28,6 @@ function getTokenFromParams(req) {
 var auth = {
   required: async (req, res, next) => {
     let oauthJwt = getTokenFromHeader(req);
-
     let decoded;
     try {
       decoded = jsonwebtoken.verify(oauthJwt, process.env.AUTH_SECRET);

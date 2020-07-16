@@ -3,12 +3,13 @@ const permanent = require("../common/permanentClient");
 const uuidv4 = require("uuid").v4;
 const secureKeyStorage = require("../common/secureKeyStorage");
 const EthCrypto = require("eth-crypto");
+const passport = require("passport");
 
 module.exports = {
   myAdminAccount: async (req, res, next) => {
     const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
 
-    if (account.role !== "admin") {
+    if (account.role !== "admin" && account.canAddOtherAccounts !== true) {
       res.status(403).json({
         error: "Account not authorized",
       });
@@ -22,6 +23,35 @@ module.exports = {
     res.status(200).json({
       account: returnAccount,
     });
+  },
+
+  adminLogin: async (req, res, next) => {
+    if (!req.body.account.email) {
+      return res.status(422).json({ errors: { email: "can't be blank" } });
+    }
+
+    if (!req.body.account.password) {
+      return res.status(422).json({ errors: { password: "can't be blank" } });
+    }
+
+    passport.authenticate("local", { session: false }, (err, account, info) => {
+      if (err) {
+        return next(err);
+      }
+
+      if (account) {
+        if (account.role === "admin" || account.canAddOtherAccounts === true) {
+          account.token = account.generateJWT();
+          return res.json({ account: account.toAuthJSON() });
+        } else {
+          return res.status(403).json({
+            error: "Account not authorized for admin page.",
+          });
+        }
+      } else {
+        return res.status(422).json(info);
+      }
+    })(req, res, next);
   },
 
   addDocumentType: async (req, res, next) => {
@@ -82,9 +112,12 @@ module.exports = {
 
   newAccount: async (req, res, next) => {
     const adminAccountId = req.payload.id;
-    const adminLevel = await common.dbClient.getAccountAdminLevelById(
-      adminAccountId
-    );
+
+    const adminAccount = await common.dbClient.getAccountById(adminAccountId);
+
+    // const adminLevel = await common.dbClient.getAccountAdminLevelById(
+    //   adminAccountId
+    // );
 
     const newAccountType = await common.dbClient.getAccountTypeByName(
       req.body.account.accounttype
@@ -98,7 +131,17 @@ module.exports = {
     }
 
     // Admin/itSpecialist can only create less powerful accounts
-    if (adminLevel >= newAccountType.adminLevel) {
+    // if (adminLevel >= newAccountType.adminLevel) {
+    //   res.status(403).json({
+    //     error: "Account not authorized to create accounts with this role level",
+    //   });
+    //   return;
+    // }
+
+    if (
+      adminAccount.role !== "admin" &&
+      adminAccount.canAddOtherAccounts !== true
+    ) {
       res.status(403).json({
         error: "Account not authorized to create accounts with this role level",
       });
@@ -127,6 +170,11 @@ module.exports = {
       );
     }
 
+    // Helper accounts cannot make new accounts that can make new accounts
+    if (adminAccount.canAddOtherAccounts == true) {
+      req.body.account.canAddOtherAccounts = false;
+    }
+
     let account;
     try {
       account = await common.dbClient.createAccount(
@@ -142,6 +190,15 @@ module.exports = {
     return res.status(201).json({ account: account.toAuthJSON() });
   },
 
+  updateAccount: async (req, res) => {
+    const accountId = req.params.accountId;
+    const updatedAccount = await common.dbClient.adminUpdateAccount(
+      accountId,
+      req.body.account
+    );
+    return res.status(200).json({ updatedAccount });
+  },
+
   deleteAccount: async (req, res, next) => {
     await common.dbClient.deleteAccount(req.params.accountId);
 
@@ -149,11 +206,13 @@ module.exports = {
   },
 
   genericGet: async (req, res, next, type) => {
-    const adminLevel = await common.dbClient.getAccountAdminLevelById(
-      req.payload.id
-    );
+    const adminAccountId = req.payload.id;
+    const adminAccount = await common.dbClient.getAccountById(adminAccountId);
 
-    if (adminLevel !== 0) {
+    if (
+      adminAccount.role !== "admin" &&
+      adminAccount.canAddOtherAccounts !== true
+    ) {
       res.status(403).json({
         error: "Account not authorized to hit this route",
       });
@@ -165,11 +224,13 @@ module.exports = {
   },
 
   genericPost: async (req, res, next, type) => {
-    const adminLevel = await common.dbClient.getAccountAdminLevelById(
-      req.payload.id
-    );
+    const adminAccountId = req.payload.id;
+    const adminAccount = await common.dbClient.getAccountById(adminAccountId);
 
-    if (adminLevel !== 0) {
+    if (
+      adminAccount.role !== "admin" &&
+      adminAccount.canAddOtherAccounts !== true
+    ) {
       res.status(403).json({
         error: "Account not authorized to hit this route",
       });
@@ -192,10 +253,10 @@ module.exports = {
   // deleteDocumentTypeField: async (req, res, next) => {},
 
   // LEGACY
-  resetDatabase: async (req, res, next) => {
-    await common.dbClient.resetDatabase();
-    res.status(200).json({ message: "success" });
-  },
+  // resetDatabase: async (req, res, next) => {
+  //   await common.dbClient.resetDatabase();
+  //   res.status(200).json({ message: "success" });
+  // },
 
   getPermissions: async (req, res, next) => {
     const permissions = await common.dbClient.getAllPermissions();

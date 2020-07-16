@@ -30,10 +30,10 @@ module.exports = {
   onlyAdminAllowed: async (req, res, next) => {
     const account = await common.dbClient.getAccountById(req.payload.id);
 
-    if (account.role !== "admin") {
+    if (account.role !== "admin" && account.canAddOtherAccounts !== true) {
       res.status(403).json({
         error:
-          "Not authorized. This role does not have permissions for this action.",
+          "Not authorized. This role does not have permissions for this action. Only admins are allowed for this route.",
       });
     } else {
       next();

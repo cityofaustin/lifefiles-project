@@ -32,6 +32,7 @@ var AccountSchema = new mongoose.Schema(
     didAddress: String,
     didPublicEncryptionKey: String,
     didPrivateKeyGuid: String,
+    canAddOtherAccounts: Boolean,
     hash: String,
     salt: String,
     accountType: { type: mongoose.Schema.Types.ObjectId, ref: "AccountType" },
@@ -90,6 +91,7 @@ AccountSchema.methods.toAuthJSON = function () {
     shareRequests: this.shareRequests,
     documents: this.documents,
     profileImageUrl: this.profileImageUrl,
+    canAddOtherAccounts: this.canAddOtherAccounts,
   };
 };
 
@@ -107,6 +109,7 @@ AccountSchema.methods.toPublicInfo = function () {
     didPublicEncryptionKey: this.didPublicEncryptionKey,
     profileImageUrl: this.profileImageUrl,
     accountType: this.accountType,
+    canAddOtherAccounts: this.canAddOtherAccounts,
   };
 };
 

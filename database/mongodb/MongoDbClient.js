@@ -259,6 +259,12 @@ class MongoDbClient {
     newAccount.didPrivateKeyGuid = did.privateKeyGuid;
     newAccount.profileImageUrl = profileImageUrl;
 
+    if (accountReq.canAddOtherAccounts === undefined) {
+      newAccount.canAddOtherAccounts = false;
+    } else {
+      newAccount.canAddOtherAccounts = accountReq.canAddOtherAccounts;
+    }
+
     if (accountReq.password) {
       newAccount.setPassword(accountReq.password);
     }
@@ -284,6 +290,25 @@ class MongoDbClient {
 
     const savedAccount = await newAccount.save();
     return savedAccount;
+  }
+
+  async adminUpdateAccount(accountId, accountReq) {
+    const account = await Account.findById(accountId);
+    account.username = accountReq.username;
+    account.email = accountReq.email;
+    account.firstName = accountReq.firstname;
+    account.lastName = accountReq.lastname;
+    account.canAddOtherAccounts = accountReq.canAddOtherAccounts;
+
+    if (accountReq.password) {
+      account.setPassword(accountReq.password);
+    }
+
+    const accountType = await this.getAccountTypeByName(accountReq.accounttype);
+
+    account.accountType = accountType;
+    await account.save();
+    return account;
   }
 
   async updateAccount(accountId, profileImageUrl) {
