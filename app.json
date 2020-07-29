@@ -1,9 +1,7 @@
 {
   "name": "MyPass",
   "description": "MyPass Quickstart",
-  "repository": "https://github.com/cityofaustin/mypass",
-  "addons": ["mongolab"],
-
+  "repository": "https://github.com/cityofaustin/mypass/tree/heroku",
   "env": {
     "FILE_SAFE_KEY": {
       "description": "Secret used to encrypt documents",
