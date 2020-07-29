@@ -3,7 +3,7 @@
 ==============
 
 ![Image of Heroku One Click Deploy](https://www.herokucdn.com/deploy/button.svg)
-[Deploy to Heroku](https://www.heroku.com/deploy/?template=https://github.com/cityofaustin/mypass/heroku)
+[Deploy to Heroku](https://www.heroku.com/deploy/?template=https://github.com/cityofaustin/mypass/tree/heroku)
 
 The MyPass application is secure document storage solution designed to help people experiencing homelessness to store and share their important documents, such as IDs and medical forms. The hope of this product is to make signing up for services and housing easier for people experiencing homelessness, by reducing the delays caused by lost or damaged documents.
 
