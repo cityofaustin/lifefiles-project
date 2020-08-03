@@ -6,6 +6,10 @@ const EthCrypto = require("eth-crypto");
 const passport = require("passport");
 
 module.exports = {
+  oauthUrl: async (req, res, next) => {
+    res.status(200).json({ url: process.env.OAUTH_URL });
+  },
+
   myAdminAccount: async (req, res, next) => {
     const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
 

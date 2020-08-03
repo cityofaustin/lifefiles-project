@@ -14,6 +14,8 @@ const {
 } = require("../middleware/permission");
 const Schema = require("../middleware/schema");
 
+router.route("/oauth-url").get(AdminController.oauthUrl);
+
 // Admin
 router
   .route("/my-admin-account")
