@@ -6,12 +6,64 @@ const fs = require("fs");
 const permanent = require("../common/permanentClient");
 const uuidv4 = require("uuid").v4;
 const EthCrypto = require("eth-crypto");
+const smsUtil = require("../common/smsUtil");
 
 module.exports = {
   getEncryptionKey: async (req, res, next) => {
     const account = await common.dbClient.getAccountById(req.payload.id);
     let key = await secureKeyStorage.retrieve(account.didPrivateKeyGuid);
     res.status(200).json({ encryptionKey: key });
+  },
+
+  sendOneTimeAccessCode: async (req, res, next) => {
+    let username = req.params.username;
+    let oneTimeCode = req.params.oneTimeCode;
+    let loginUuid = req.params.loginUuid;
+
+    let account = await common.dbClient.getAccountByUsername(username);
+
+    let contactEmail;
+    let contactPhoneNumber;
+
+    if (
+      account.username.toLowerCase() == "owner".toLowerCase() ||
+      account.username.toLowerCase() == "caseworker".toLowerCase()
+    ) {
+      contactEmail = process.env.CONTACT_EMAIL;
+      contactPhoneNumber = process.env.CONTACT_PHONE;
+    } else {
+      contactEmail = account.email;
+      contactPhoneNumber = account.phoneNumber;
+    }
+
+    const send = require("gmail-send")({
+      user: "mypass.austinatx@gmail.com",
+      pass: process.env.MYPASS_GMAIL_PASSWORD,
+      to: contactEmail,
+      subject: `Mypass user ${username} is requesting a login code`,
+    });
+
+    send(
+      {
+        text: `The one time code for user: ${username} is ${oneTimeCode}. Alternatively you can click this link to generate a code and send it to the users email:  ${process.env.OAUTH_URL}/provide-social-login-code/${loginUuid}`,
+      },
+      (error, result, fullResult) => {
+        if (error) console.error(error);
+        console.log(result);
+      }
+    );
+
+    try {
+      smsUtil.sendSms(
+        `The one time code for user: ${username} is ${oneTimeCode}.`,
+        "+1" + contactPhoneNumber
+      );
+    } catch (err) {
+      console.log("error!");
+      console.log(err);
+    }
+
+    res.status(200).json({ message: "success" });
   },
 
   myAccount: async (req, res, next) => {

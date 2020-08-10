@@ -406,7 +406,7 @@ class DBUtil {
       // Sally
       let ownerAccount = {
         account: {
-          username: "SallyOwner",
+          username: "owner",
           firstname: "Sally",
           lastname: "Owner",
           password: "owner",
@@ -444,7 +444,7 @@ class DBUtil {
       // Billy
       let caseWorkerAccount = {
         account: {
-          username: "BillyCaseWorker",
+          username: "caseworker",
           firstname: "Billy",
           lastname: "Caseworker",
           password: "caseworker",

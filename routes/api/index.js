@@ -14,6 +14,7 @@ const {
 } = require("../middleware/permission");
 const Schema = require("../middleware/schema");
 
+// This route returns the url for the oauth sever (used in heroku setup)
 router.route("/oauth-url").get(AdminController.oauthUrl);
 
 // Admin
@@ -105,6 +106,11 @@ router.route("/accounts/admin-login").post(
   }),
   AdminController.adminLogin
 );
+
+// This route is from oauth server to send code to user
+router
+  .route("/account/:username/:oneTimeCode/:loginUuid")
+  .post(AccountController.sendOneTimeAccessCode);
 
 router
   .route("/account/:accountId/document-types/")

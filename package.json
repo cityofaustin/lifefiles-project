@@ -26,6 +26,7 @@
     "express-fileupload": "^1.1.6",
     "express-jwt": "^5.3.1",
     "express-session": "^1.17.0",
+    "gmail-send": "^1.8.10",
     "gridfs-stream": "^1.1.1",
     "html-pdf": "^2.2.0",
     "ip": "^1.1.5",

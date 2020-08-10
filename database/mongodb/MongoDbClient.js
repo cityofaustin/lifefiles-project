@@ -124,6 +124,11 @@ class MongoDbClient {
     return accounts[0];
   }
 
+  async getAccountByUsername(username) {
+    const accounts = await Account.find({ username: username });
+    return accounts[0];
+  }
+
   async getAccountById(id) {
     const account = await Account.findById(id);
     return account;
