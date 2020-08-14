@@ -10,7 +10,11 @@ var AccountSchema = new mongoose.Schema(
       lowercase: true,
       unique: true,
       required: [true, "can't be blank"],
-      match: [/^[a-zA-Z0-9]+$/, "is invalid"],
+      // username currently is required, unique, and a key,
+      // by allowing emails to be usernames if they chose to use email
+      // instead of username we can fix that this way
+      // otherwise username should not be required
+      // match: [/^[a-zA-Z0-9]+$/, "is invalid"],
       index: true,
     },
     email: {

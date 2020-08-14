@@ -60,6 +60,7 @@ var auth = {
       payload = {
         oauthId: decoded.oauthId,
         username: decoded.username,
+        phoneNumber: decoded.phoneNumber
       };
     } else {
       payload = {

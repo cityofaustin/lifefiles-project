@@ -255,7 +255,9 @@ class MongoDbClient {
     newAccount.firstName = accountReq.firstname;
     newAccount.lastName = accountReq.lastname;
     newAccount.email = accountReq.email;
-    newAccount.phoneNumber = accountReq.phonenumber;
+    newAccount.phoneNumber = accountReq.phoneNumber
+      ? accountReq.phoneNumber
+      : accountReq.phonenumber; // there are some spots where it's all lowercase
     newAccount.organization = accountReq.organization;
     newAccount.permanentOrgArchiveNumber = permanentOrgArchiveNumber;
 
@@ -292,7 +294,6 @@ class MongoDbClient {
 
     newAccount.accountType = accountType;
     newAccount.role = accountType.role;
-
     const savedAccount = await newAccount.save();
     return savedAccount;
   }
