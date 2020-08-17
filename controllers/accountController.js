@@ -16,15 +16,16 @@ module.exports = {
   },
 
   sendOneTimeAccessCode: async (req, res, next) => {
-    let username = req.params.username;
-    let oneTimeCode = req.params.oneTimeCode;
-    let loginUuid = req.params.loginUuid;
-
+    let { username, oneTimeCode, loginUuid } = { ...req.params };
+    let { sendEmail, sendSms, secret } = { ...req.body };
+    // sort of serving as the api key so that not just anyone
+    // but only the auth server can send sms message and emails.
+    if (secret !== process.env.AUTH_SECRET) {
+      res.status(403).json({ message: "failure" });
+    }
     let account = await common.dbClient.getAccountByUsername(username);
-
     let contactEmail;
     let contactPhoneNumber;
-
     if (
       account.username.toLowerCase() == "owner".toLowerCase() ||
       account.username.toLowerCase() == "caseworker".toLowerCase()
@@ -36,31 +37,41 @@ module.exports = {
       contactPhoneNumber = account.phoneNumber;
     }
 
-    const send = require("gmail-send")({
-      user: "mypass.austinatx@gmail.com",
-      pass: process.env.MYPASS_GMAIL_PASSWORD,
-      to: contactEmail,
-      subject: `Mypass user ${username} is requesting a login code`,
-    });
+    if (sendEmail) {
+      try {
+        const send = require("gmail-send")({
+          user: "adam.carnagey.dev@gmail.com",
+          pass: process.env.MYPASS_GMAIL_PASSWORD,
+          to: contactEmail,
+          subject: `Mypass user ${username} is requesting a login code`,
+        });
 
-    send(
-      {
-        text: `The one time code for user: ${username} is ${oneTimeCode}. Alternatively you can click this link to generate a code and send it to the users email:  ${process.env.OAUTH_URL}/provide-social-login-code/${loginUuid}`,
-      },
-      (error, result, fullResult) => {
-        if (error) console.error(error);
-        console.log(result);
+        send(
+          {
+            text: `The one time code for user: ${username} is ${oneTimeCode}. Alternatively you can click this link to generate a code and send it to the users email:  ${process.env.OAUTH_URL}/provide-social-login-code/${loginUuid}`,
+          },
+          (error, result, fullResult) => {
+            if (error) console.error(error);
+            console.log(result);
+          }
+        );
+      } catch (err) {
+        console.log("error!");
+        console.log(err);
+        res.status(500).json({ message: "failure" });
       }
-    );
-
-    try {
-      smsUtil.sendSms(
-        `The one time code for user: ${username} is ${oneTimeCode}.`,
-        "+1" + contactPhoneNumber
-      );
-    } catch (err) {
-      console.log("error!");
-      console.log(err);
+    }
+    if (sendSms) {
+      try {
+        smsUtil.sendSms(
+          `The one time code for user: ${username} is ${oneTimeCode}.`,
+          "+1" + contactPhoneNumber
+        );
+      } catch (err) {
+        console.log("error!");
+        console.log(err);
+        res.status(500).json({ message: "failure" });
+      }
     }
 
     res.status(200).json({ message: "success" });
@@ -106,7 +117,6 @@ module.exports = {
 
   myAccount: async (req, res, next) => {
     let payloadId = req.payload.id;
-
     // We have a new account
     if (req.payload.oauthId !== undefined) {
       let ownerAccount = {
@@ -116,8 +126,10 @@ module.exports = {
           firstname: "-",
           lastname: "-",
           accounttype: "Owner",
-          email: `${req.payload.username}@${req.payload.username}.com`,
-          phonenumber: "-",
+          email: /\S+@\S+\.\S+/.test(req.payload.username)
+            ? req.payload.username
+            : `${req.payload.username}@${req.payload.username}.com`,
+          phoneNumber: req.payload.phoneNumber,
           organization: "-",
         },
       };
