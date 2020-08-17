@@ -15,13 +15,14 @@ module.exports = {
       .keys({
         email: Joi.string().min(1).required(),
         password: Joi.string().min(1).required(),
-        accounttype: Joi.string().min(1).required(),
+        accounttype: Joi.string().min(1).optional(),
         username: Joi.string().min(1).required(),
         firstname: Joi.string().min(1).optional(),
         lastname: Joi.string().min(1).optional(),
         phonenumber: Joi.string().min(1).optional(),
         organization: Joi.string().min(1).optional(),
         canAddOtherAccounts: Joi.any().optional(),
+        publicEncryptionKey: Joi.any().optional(),
       })
       .required(),
   }),

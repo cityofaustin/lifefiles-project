@@ -73,6 +73,16 @@ router.route("/admin-accounts/").post(
   AdminController.newAccount
 );
 
+// Helper Registers Account
+router.route("/helper-accounts/").post(
+  [
+    celebrate({
+      body: Schema.userRegisterSchema,
+    }),
+  ],
+  AdminController.newHelperAccount
+);
+
 router
   .route("/admin-accounts/:accountId")
   .delete([auth.required, onlyAdminAllowed], AdminController.deleteAccount)
@@ -99,6 +109,8 @@ router.route("/accounts/login").post(
   }),
   AccountController.login
 );
+
+router.route("/accounts/secure-login").post(AccountController.secureLogin);
 
 router.route("/accounts/admin-login").post(
   celebrate({

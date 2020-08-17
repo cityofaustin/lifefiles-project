@@ -114,6 +114,61 @@ module.exports = {
     });
   },
 
+  // This can be called by anyone
+  newHelperAccount: async (req, res, next) => {
+    const uuid = uuidv4();
+    let did;
+
+    // These helper accounts cannot make new accounts that can make new accounts
+    req.body.account.canAddOtherAccounts = false;
+    req.body.account.accounttype = "Case Manager Notary";
+
+    const permanentArchiveNumber = await permanent.createArchive(
+      req.body.account.email
+    );
+
+    if (req.body.account.publicEncryptionKey) {
+      did = await common.blockchainClient.createNewDID();
+      did.privateKey = "byok";
+      did.publicEncryptionKey = req.body.account.publicEncryptionKey;
+      did.privateKeyGuid = uuid;
+      // Random password and this accout doesn't use it. They use the secure login method.
+      req.body.account.password = uuidv4();
+    } else {
+      did = await common.blockchainClient.createNewDID();
+      did.publicEncryptionKey = EthCrypto.publicKeyByPrivateKey(
+        "0x" + did.privateKey
+      );
+      did.privateKeyGuid = uuid;
+    }
+
+    await secureKeyStorage.store(uuid, did.privateKey);
+
+    let profileImageUrl = "anon-user.png";
+
+    if (req.files && req.files.img) {
+      profileImageUrl = await documentStorageHelper.upload(
+        req.files.img,
+        "profile-image"
+      );
+    }
+
+    let account;
+    try {
+      account = await common.dbClient.createAccount(
+        req.body.account,
+        did,
+        permanentArchiveNumber,
+        profileImageUrl
+      );
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ msg: error });
+    }
+
+    return res.status(201).json({ account: account.toAuthJSON() });
+  },
+
   newAccount: async (req, res, next) => {
     const adminAccountId = req.payload.id;
 

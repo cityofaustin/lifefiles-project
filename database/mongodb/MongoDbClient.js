@@ -140,6 +140,13 @@ class MongoDbClient {
     return accountType.adminLevel;
   }
 
+  async updateAccountSignMessage(accountId, signMessage) {
+    const account = await Account.findById(accountId);
+    account.signMessage = signMessage;
+    await account.save();
+    return account;
+  }
+
   async getAllAccountInfoById(id) {
     const account = await Account.findById(id).populate([
       "documents",

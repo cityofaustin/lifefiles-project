@@ -33,6 +33,7 @@ var AccountSchema = new mongoose.Schema(
     didPublicEncryptionKey: String,
     didPrivateKeyGuid: String,
     canAddOtherAccounts: Boolean,
+    signMessage: String,
     hash: String,
     salt: String,
     accountType: { type: mongoose.Schema.Types.ObjectId, ref: "AccountType" },

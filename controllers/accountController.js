@@ -66,6 +66,44 @@ module.exports = {
     res.status(200).json({ message: "success" });
   },
 
+  secureLogin: async (req, res, next) => {
+    let account = await common.dbClient.getAccountByUsername(
+      req.body.account.username.toLowerCase()
+    );
+
+    if (account === undefined) {
+      return res.status(422).json({ msg: "Account not found" });
+    }
+
+    // They have not included a signature so create a message for them to sign
+    if (req.body.account.signature === undefined) {
+      const messageToSignUuid = uuidv4();
+
+      await common.dbClient.updateAccountSignMessage(
+        account._id,
+        messageToSignUuid
+      );
+
+      res.status(200).json({ messageToSign: messageToSignUuid });
+    }
+
+    const signer = EthCrypto.recover(
+      req.body.account.signature,
+      EthCrypto.hash.keccak256(account.signMessage) // signed message hash
+    );
+
+    if (
+      req.body.account.username.toLowerCase() ===
+        account.username.toLowerCase() &&
+      signer.toLowerCase() === account.username.toLowerCase()
+    ) {
+      account.token = account.generateJWT();
+      return res.json({ account: account.toAuthJSON() });
+    } else {
+      return res.status(422).json({ msg: "Not authorized" });
+    }
+  },
+
   myAccount: async (req, res, next) => {
     let payloadId = req.payload.id;
 
