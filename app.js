@@ -29,6 +29,9 @@ const fileUpload = require("express-fileupload");
 require("./routes/middleware/passport");
 const app = express();
 
+const fs = require("fs");
+const https = require("https");
+
 // Set Up Clients.
 const dbClient = new MongoDbClient();
 
@@ -46,17 +49,21 @@ common.dbClient = dbClient;
 
 app.use(express.static(__dirname + "/public"));
 
-app.use(bodyParser.json({
-  limit: '50mb'
-}));
-app.use(fileUpload({
-  limits: {
-      fileSize: 5000000000 //50mb
-  },
-  abortOnLimit: true,
-  useTempFiles: true
-}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(
+  bodyParser.json({
+    limit: "50mb",
+  })
+);
+app.use(
+  fileUpload({
+    limits: {
+      fileSize: 5000000000, //50mb
+    },
+    abortOnLimit: true,
+    useTempFiles: true,
+  })
+);
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 // Using NGIX cors config if production
 if (
@@ -83,6 +90,32 @@ app.use(function (err, req, res, next) {
   });
 });
 
-const server = app.listen(process.env.PORT || 5000, function () {
-  console.log("Listening on port " + server.address().port);
-});
+const port = 5000;
+let key;
+let cert;
+try {
+  key = fs.readFileSync("/home/ubuntu/STAGING/CERTS/server-key.pem");
+  cert = fs.readFileSync("/home/ubuntu/STAGING/CERTS/server-cert.pem");
+} catch (err) {
+  console.log("key or cert not available. Continuing... ");
+}
+
+if (key !== undefined && cert !== undefined) {
+  https
+    .createServer(
+      {
+        key: fs.readFileSync("/home/ubuntu/STAGING/CERTS/server-key.pem"),
+        cert: fs.readFileSync("/home/ubuntu/STAGING/CERTS/server-cert.pem"),
+      },
+      app
+    )
+    .listen(port, function () {
+      console.log(
+        "Mypass listening on port 5000! Go to https://localhost:5000/"
+      );
+    });
+} else {
+  const server = app.listen(process.env.PORT || port, function () {
+    console.log("Mypass Listening on port " + server.address().port);
+  });
+}
