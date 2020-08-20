@@ -18,14 +18,17 @@ module.exports = {
   sendOneTimeAccessCode: async (req, res, next) => {
     let { username, oneTimeCode, loginUuid } = { ...req.params };
     let { sendEmail, sendSms, secret } = { ...req.body };
+
     // sort of serving as the api key so that not just anyone
     // but only the auth server can send sms message and emails.
     if (secret !== process.env.AUTH_SECRET) {
       res.status(403).json({ message: "failure" });
     }
+
     let account = await common.dbClient.getAccountByUsername(username);
     let contactEmail;
     let contactPhoneNumber;
+
     if (
       account.username.toLowerCase() == "owner".toLowerCase() ||
       account.username.toLowerCase() == "caseworker".toLowerCase()
@@ -61,6 +64,7 @@ module.exports = {
         res.status(500).json({ message: "failure" });
       }
     }
+
     if (sendSms) {
       try {
         smsUtil.sendSms(
@@ -117,6 +121,7 @@ module.exports = {
 
   myAccount: async (req, res, next) => {
     let payloadId = req.payload.id;
+
     // We have a new account
     if (req.payload.oauthId !== undefined) {
       let ownerAccount = {
@@ -138,23 +143,25 @@ module.exports = {
         req.payload.username
       );
 
-      const uuid = uuidv4();
-
-      let did = await common.blockchainClient.createNewDID();
-      did.publicEncryptionKey = EthCrypto.publicKeyByPrivateKey(
-        "0x" + did.privateKey
-      );
-      did.privateKeyGuid = uuid;
-
-      await secureKeyStorage.store(uuid, did.privateKey);
+      // Setting DID from new owner account oauth side
+      const did = {
+        address: req.payload.didAddress,
+        publicEncryptionKey: req.payload.didPublicEncryptionKey,
+      };
 
       let account;
+      let profileImage = "anon-user.png";
+
+      if (ownerAccount.account.username === "owner") {
+        profileImage = "sally.png";
+      }
+
       try {
         account = await common.dbClient.createAccount(
           ownerAccount.account,
           did,
           permanentArchiveNumber,
-          "anon-user.png"
+          profileImage
         );
 
         payloadId = account._id;
@@ -185,6 +192,7 @@ module.exports = {
     let coreFeatures = await common.dbClient.getCoreFeatureStringByManyIds(
       accountType.coreFeatures
     );
+
     res.status(200).json({
       account: returnAccount,
       documentSharedAccounts: documentSharedAccounts,

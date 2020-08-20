@@ -400,46 +400,47 @@ class DBUtil {
         "goku.png"
       );
     }
+
     if (accounts.length === 0) {
       console.log("\nAccounts are empty. Populating default values...");
 
-      // Sally
-      let ownerAccount = {
-        account: {
-          username: "owner",
-          firstname: "Sally",
-          lastname: "Owner",
-          password: "owner",
-          accounttype: "Owner",
-          email: "owner@owner.com",
-          phonenumber: "555-555-5555",
-          organization: "-",
-        },
-      };
-      let ownerDid = {
-        did: {
-          address: "0x6efedeaec20e79071251fffa655F1bdDCa65c027",
-          publicEncryptionKey: EthCrypto.publicKeyByPrivateKey(
-            "0x" +
-              "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415"
-          ),
-          privateKey:
-            "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415",
-          privateKeyGuid: "5663aaf5-2b94-4854-a862-07a7fe75e400",
-        },
-      };
+      // // Sally
+      // let ownerAccount = {
+      //   account: {
+      //     username: "owner",
+      //     firstname: "Sally",
+      //     lastname: "Owner",
+      //     password: "owner",
+      //     accounttype: "Owner",
+      //     email: "owner@owner.com",
+      //     phonenumber: "555-555-5555",
+      //     organization: "-",
+      //   },
+      // };
+      // let ownerDid = {
+      //   did: {
+      //     address: "0x6efedeaec20e79071251fffa655F1bdDCa65c027",
+      //     publicEncryptionKey: EthCrypto.publicKeyByPrivateKey(
+      //       "0x" +
+      //         "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415"
+      //     ),
+      //     privateKey:
+      //       "d28678b5d893ea7accd58901274dc5df8eb00bc76671dbf57ab65ee44c848415",
+      //     privateKeyGuid: "5663aaf5-2b94-4854-a862-07a7fe75e400",
+      //   },
+      // };
 
-      await secureKeyStorage.store(
-        ownerDid.did.privateKeyGuid,
-        ownerDid.did.privateKey
-      );
+      // await secureKeyStorage.store(
+      //   ownerDid.did.privateKeyGuid,
+      //   ownerDid.did.privateKey
+      // );
 
-      mongoDbInstance.createAccount(
-        ownerAccount.account,
-        ownerDid.did,
-        "06fz-0000",
-        "sally.png"
-      );
+      // mongoDbInstance.createAccount(
+      //   ownerAccount.account,
+      //   ownerDid.did,
+      //   "06fz-0000",
+      //   "sally.png"
+      // );
 
       // Billy
       let caseWorkerAccount = {

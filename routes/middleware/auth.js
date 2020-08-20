@@ -57,16 +57,22 @@ var auth = {
 
     // We have a new account
     if (account === undefined || account === null) {
+      console.log("We have a new account");
+
       payload = {
         oauthId: decoded.oauthId,
         username: decoded.username,
-        phoneNumber: decoded.phoneNumber
+        phoneNumber: decoded.phoneNumber,
+        didAddress: decoded.didAddress,
+        didPublicEncryptionKey: decoded.didPublicEncryptionKey,
       };
     } else {
       payload = {
         id: "" + account._id,
         username: account.username,
         role: account.role,
+        didAddress: decoded.didAddress,
+        didPublicEncryptionKey: decoded.didPublicEncryptionKey,
       };
     }
 
