@@ -39,6 +39,10 @@ if (process.env.ETH_FUNDING_PRIVATE_KEY !== undefined) {
   const UportClient = require("./services/blockchain/UportClient");
   const blockchainClient = new UportClient();
   common.blockchainClient = blockchainClient;
+
+  const RskBlockchainClient = require("./services/blockchain/RskBlockchainClient");
+  const rsk = new RskBlockchainClient();
+  common.rskClient = rsk;
 } else {
   const SimpleBlockchainClient = require("./services/blockchain/SimpleBlockchainClient");
   const blockchainClient = new SimpleBlockchainClient();

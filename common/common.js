@@ -1,4 +1,5 @@
 module.exports = {
   dbClient: undefined,
-  blockchainClient: undefined
+  blockchainClient: undefined,
+  rskClient: undefined,
 };

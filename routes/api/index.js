@@ -121,7 +121,7 @@ router.route("/accounts/admin-login").post(
 
 // This route is from oauth server to send code to user
 router
-  .route("/account/:username/:oneTimeCode/:loginUuid")
+  .route("/send-code/account/:username/:oneTimeCode/:loginUuid")
   .post(AccountController.sendOneTimeAccessCode);
 
 router

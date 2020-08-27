@@ -396,15 +396,34 @@ module.exports = {
       documentDidAddress
     );
 
-    // common.blockchainClient.storeDataOnEthereumBlockchain(
-    //   documentDidAddress,
-    //   documentDidPrivateKey,
-    //   validityTimeSeconds,
-    //   req.body.vpJwt
-    // );
+    let didUrl = "";
+
+    if (req.body.storage === "ethereum") {
+      common.blockchainClient.storeDataOnEthereumBlockchain(
+        documentDidAddress,
+        documentDidPrivateKey,
+        validityTimeSeconds,
+        req.body.vpJwt
+      );
+      didUrl = "https://etherscan.io/address/" + documentDidAddress;
+    } else if (req.body.storage === "rsk") {
+      common.rskClient.storeDataOnRskBlockchain(
+        documentDidAddress,
+        documentDidPrivateKey,
+        validityTimeSeconds,
+        req.body.vpJwt
+      );
+      didUrl = "https://explorer.testnet.rsk.co/address/" + documentDidAddress;
+    } else {
+      let s3Res = await documentStorageHelper.uploadPublicVPJwt(
+        req.body.vpJwt,
+        "did:ethr:" + documentDidAddress + ".json"
+      );
+      didUrl = `https://${process.env.AWS_NOTARIZED_VPJWT_BUCKET_NAME}.s3.us-east-2.amazonaws.com/did%3Aethr%3A${documentDidAddress}.json`;
+    }
 
     res.status(200).json({
-      didStatus: "https://etherscan.io/address/" + documentDidAddress,
+      didStatus: didUrl,
     });
   },
 };
