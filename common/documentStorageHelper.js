@@ -128,8 +128,10 @@ module.exports = {
     });
   },
 
-  uploadPublicVPJwt: async (vpJwt, did) => {
+  uploadPublicVPJwt: async (vpJwt, did, timeInSeconds) => {
     let bucketName = process.env.AWS_NOTARIZED_VPJWT_BUCKET_NAME;
+
+    let vpJwtObject = { vpJwt: vpJwt, timestamp: timeInSeconds };
 
     console.log({ did });
     let s3Res = await new Promise((resolve, reject) => {
@@ -138,7 +140,7 @@ module.exports = {
           ACL: "public-read",
           Bucket: bucketName,
           Key: did,
-          Body: Buffer.from(JSON.stringify(vpJwt), "utf8"),
+          Body: Buffer.from(JSON.stringify(vpJwtObject), "utf8"),
         },
         function (err, data) {
           // Handle any error and exit
