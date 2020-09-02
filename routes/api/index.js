@@ -77,7 +77,7 @@ router.route("/admin-accounts/").post(
 router.route("/helper-accounts/").post(
   [
     celebrate({
-      body: Schema.userRegisterSchema,
+      body: Schema.helperRegisterSchema,
     }),
   ],
   AdminController.newHelperAccount

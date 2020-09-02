@@ -54,6 +54,7 @@
     "chai-like": "^1.1.1",
     "chai-things": "^0.2.0",
     "mocha": "^7.2.0",
+    "nodemon": "^2.0.4",
     "supertest": "^4.0.2"
   }
 }

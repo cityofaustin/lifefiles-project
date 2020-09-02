@@ -4,6 +4,7 @@ const uuidv4 = require("uuid").v4;
 const secureKeyStorage = require("../common/secureKeyStorage");
 const EthCrypto = require("eth-crypto");
 const passport = require("passport");
+const documentStorageHelper = require("../common/documentStorageHelper");
 
 module.exports = {
   oauthUrl: async (req, res, next) => {
@@ -118,22 +119,31 @@ module.exports = {
   newHelperAccount: async (req, res, next) => {
     const uuid = uuidv4();
     let did;
-
+    const accountRequest = {
+      email: req.body.email,
+      password: req.body.password,
+      username: req.body.username,
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      publicEncryptionKey: req.body.publicEncryptionKey,
+      notaryId: req.body.notaryId,
+      notaryState: req.body.notaryState
+    };
     // These helper accounts cannot make new accounts that can make new accounts
-    req.body.account.canAddOtherAccounts = false;
-    req.body.account.accounttype = "Case Manager Notary";
+    accountRequest.canAddOtherAccounts = false;
+    accountRequest.accounttype = "Case Manager Notary";
 
     const permanentArchiveNumber = await permanent.createArchive(
-      req.body.account.email
+      accountRequest.email
     );
 
-    if (req.body.account.publicEncryptionKey) {
+    if (accountRequest.publicEncryptionKey) {
       did = await common.blockchainClient.createNewDID();
       did.privateKey = "byok";
-      did.publicEncryptionKey = req.body.account.publicEncryptionKey;
+      did.publicEncryptionKey = accountRequest.publicEncryptionKey;
       did.privateKeyGuid = uuid;
       // Random password and this accout doesn't use it. They use the secure login method.
-      req.body.account.password = uuidv4();
+      accountRequest.password = uuidv4();
     } else {
       did = await common.blockchainClient.createNewDID();
       did.publicEncryptionKey = EthCrypto.publicKeyByPrivateKey(
@@ -156,7 +166,7 @@ module.exports = {
     let account;
     try {
       account = await common.dbClient.createAccount(
-        req.body.account,
+        accountRequest,
         did,
         permanentArchiveNumber,
         profileImageUrl

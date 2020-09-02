@@ -60,7 +60,9 @@ app.use(
       fileSize: 5000000000, //50mb
     },
     abortOnLimit: true,
-    useTempFiles: true,
+    // this was incorrectly empty when attempting to load
+    // profile images so using in-memory buffer as a workaround.
+    useTempFiles: false,
   })
 );
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));

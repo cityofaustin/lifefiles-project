@@ -44,6 +44,11 @@ module.exports = {
 
     const buf = crypto.randomBytes(16);
     const key = buf.toString("hex") + path.extname(file.name);
+
+    // this was incorrectly empty when attempting to load
+    // profile images so using in-memory buffer as a workaround.
+    // let contents = fs.readFileSync(file.tempFilePath);
+    const contents = file.data;
     let s3Res = await new Promise((resolve, reject) => {
       s3.putObject(
         {
@@ -51,7 +56,7 @@ module.exports = {
           ServerSideEncryption: "AES256",
           Bucket: bucketName,
           Key: key,
-          Body: fs.readFileSync(file.tempFilePath)
+          Body: contents
         },
         function(err, data) {
           // Handle any error and exit

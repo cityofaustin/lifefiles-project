@@ -301,6 +301,11 @@ class MongoDbClient {
 
     newAccount.accountType = accountType;
     newAccount.role = accountType.role;
+    if(accountReq.notaryId && accountReq.notaryState) {
+      newAccount.notaryId = accountReq.notaryId;
+      newAccount.notaryState = accountReq.notaryState;
+    }
+
     const savedAccount = await newAccount.save();
     return savedAccount;
   }
