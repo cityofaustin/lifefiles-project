@@ -187,7 +187,7 @@ class UportClient {
       console.log(err);
     }
 
-    web3.eth.getBalance(identity, function(err, result) {
+    web3.eth.getBalance(identity, function (err, result) {
       if (err) {
         console.log(err);
       } else {
@@ -203,7 +203,7 @@ class UportClient {
               gasPrice: REFUND_GAS_PRICE,
               gas: FUND_ACCOUNT_GAS,
             })
-            .on("error", function(error, receipt) {
+            .on("error", function (error, receipt) {
               console.log(error);
               console.log(receipt);
             });

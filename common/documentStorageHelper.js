@@ -10,7 +10,7 @@ const AWS = require("aws-sdk");
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_KEY
+  secretAccessKey: process.env.AWS_SECRET_KEY,
 });
 
 var s3 = new AWS.S3();
@@ -29,7 +29,7 @@ module.exports = {
         "/" +
         jwt;
 
-      request.get(localUrl, function(err, res, body) {
+      request.get(localUrl, function (err, res, body) {
         const md5Hash = md5(body);
         resolve(md5Hash);
       });
@@ -58,7 +58,7 @@ module.exports = {
           Key: key,
           Body: contents
         },
-        function(err, data) {
+        function (err, data) {
           // Handle any error and exit
           if (err) {
             console.log("S3 Error");
@@ -83,9 +83,9 @@ module.exports = {
       s3.getObject(
         {
           Bucket: bucketName,
-          Key: filename
+          Key: filename,
         },
-        function(err, data) {
+        function (err, data) {
           // Handle any error and exit
           if (err) {
             console.log("S3 Error");
@@ -95,7 +95,7 @@ module.exports = {
 
           let myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
             frequency: streamBuffers.DEFAULT_FREQUENCY, // (1) in milliseconds.
-            chunkSize: streamBuffers.DEFAULT_CHUNK_SIZE // (1024) in bytes.
+            chunkSize: streamBuffers.DEFAULT_CHUNK_SIZE, // (1024) in bytes.
           });
 
           myReadableStreamBuffer.put(data.Body);
@@ -117,9 +117,9 @@ module.exports = {
       s3.deleteObject(
         {
           Bucket: bucketName,
-          Key: filename
+          Key: filename,
         },
-        function(err, data) {
+        function (err, data) {
           // Handle any error and exit
           if (err) {
             console.log("S3 Error");
@@ -131,5 +131,34 @@ module.exports = {
         }
       );
     });
-  }
+  },
+
+  uploadPublicVPJwt: async (vpJwt, did, timeInSeconds) => {
+    let bucketName = process.env.AWS_NOTARIZED_VPJWT_BUCKET_NAME;
+
+    let vpJwtObject = { vpJwt: vpJwt, timestamp: timeInSeconds };
+
+    console.log({ did });
+    let s3Res = await new Promise((resolve, reject) => {
+      s3.putObject(
+        {
+          ACL: "public-read",
+          Bucket: bucketName,
+          Key: did,
+          Body: Buffer.from(JSON.stringify(vpJwtObject), "utf8"),
+        },
+        function (err, data) {
+          // Handle any error and exit
+          if (err) {
+            console.log("S3 Error");
+            console.log(err);
+            return;
+          }
+          resolve(data);
+        }
+      );
+    });
+
+    return s3Res;
+  },
 };

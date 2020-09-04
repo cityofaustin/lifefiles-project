@@ -45,6 +45,7 @@
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "permanent-api-js": "^1.0.2",
+    "rskapi": "0.0.15",
     "stream-buffers": "^3.0.2",
     "web3": "^1.2.6"
   },

@@ -382,29 +382,48 @@ module.exports = {
   },
 
   anchorVpToBlockchain: async (req, res, next) => {
+    const now = new Date();
     const vpUnpacked = await common.blockchainClient.verifyVP(req.body.vpJwt);
     const vcJwt = vpUnpacked.payload.vp.verifiableCredential[0];
     const vcUnpacked = await common.blockchainClient.verifyVC(vcJwt);
     const documentDidAddress = vcUnpacked.payload.vc.id.split(":")[2];
 
     const expirationDate = new Date(vcUnpacked.payload.vc.expirationDate);
-    const validityTimeSeconds = Math.round(
-      (expirationDate - new Date()) / 1000
-    );
+    const validityTimeSeconds = Math.round((expirationDate - now) / 1000);
 
     const documentDidPrivateKey = await secureKeyStorage.retrieveFromDb(
       documentDidAddress
     );
 
-    // common.blockchainClient.storeDataOnEthereumBlockchain(
-    //   documentDidAddress,
-    //   documentDidPrivateKey,
-    //   validityTimeSeconds,
-    //   req.body.vpJwt
-    // );
+    let didUrl = "";
+
+    if (req.body.storage === "ethereum") {
+      common.blockchainClient.storeDataOnEthereumBlockchain(
+        documentDidAddress,
+        documentDidPrivateKey,
+        validityTimeSeconds,
+        req.body.vpJwt
+      );
+      didUrl = "https://etherscan.io/address/" + documentDidAddress;
+    } else if (req.body.storage === "rsk") {
+      common.rskClient.storeDataOnRskBlockchain(
+        documentDidAddress,
+        documentDidPrivateKey,
+        validityTimeSeconds,
+        req.body.vpJwt
+      );
+      didUrl = "https://explorer.testnet.rsk.co/address/" + documentDidAddress;
+    } else {
+      let s3Res = await documentStorageHelper.uploadPublicVPJwt(
+        req.body.vpJwt,
+        "did:ethr:" + documentDidAddress + ".json",
+        Math.round(now / 1000)
+      );
+      didUrl = `https://${process.env.AWS_NOTARIZED_VPJWT_BUCKET_NAME}.s3.us-east-2.amazonaws.com/did%3Aethr%3A${documentDidAddress}.json`;
+    }
 
     res.status(200).json({
-      didStatus: "https://etherscan.io/address/" + documentDidAddress,
+      didStatus: didUrl,
     });
   },
 };
