@@ -16,8 +16,15 @@ module.exports = {
   },
 
   sendOneTimeAccessCode: async (req, res, next) => {
-    let { username, oneTimeCode, loginUuid } = { ...req.params };
-    let { sendEmail, sendSms, secret } = { ...req.body };
+    let username = req.params.username;
+    let oneTimeCode = req.params.oneTimeCode;
+    let loginUuid = req.params.loginUuid;
+    let sendEmail = req.body.sendEmail;
+    let sendSms = req.body.sendSms;
+    let secret = req.body.secret;
+
+    // let { username, oneTimeCode, loginUuid } = { ...req.params };
+    // let { sendEmail, sendSms, secret } = { ...req.body };
 
     // sort of serving as the api key so that not just anyone
     // but only the auth server can send sms message and emails.
@@ -51,6 +58,7 @@ module.exports = {
 
         send(
           {
+            // eslint-disable-next-line
             text: `The one time code for user: ${username} is ${oneTimeCode}. Alternatively you can click this link to generate a code and send it to the users email:  ${process.env.OAUTH_URL}/provide-social-login-code/${loginUuid}`,
           },
           (error, result, fullResult) => {
@@ -278,7 +286,6 @@ module.exports = {
   },
 
   getProfileImage: async (req, res, next) => {
-    const account = await common.dbClient.getAccountById(req.payload.id);
     let payload;
 
     if (req.params.imageurl === "anon-user.png") {
@@ -325,8 +332,8 @@ module.exports = {
     }
 
     let approved = false;
-    let key = undefined;
-    let thumbnailKey = undefined;
+    let key;
+    let thumbnailKey;
 
     if (accountId == fromAccountId) {
       approved = true;

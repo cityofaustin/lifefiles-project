@@ -5,7 +5,7 @@ var VerifiablePresentationSchema = new mongoose.Schema({
   issuer: { type: mongoose.Schema.Types.ObjectId, ref: "Account" },
   document: { type: mongoose.Schema.Types.ObjectId, ref: "Document" },
   documentDid: String,
-  verifiedVP: String
+  verifiedVP: String,
 });
 
 const VerifiablePresentation = mongoose.model(

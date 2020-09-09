@@ -76,14 +76,14 @@ class MongoDbClient {
 
   // Helpers
   async genericGet(type) {
-    const theClass = classes.get(type);
-    const allObjects = await theClass.find({});
+    const TheClass = classes.get(type);
+    const allObjects = await TheClass.find({});
     return allObjects;
   }
 
   async genericPost(postBody, type) {
-    const theClass = classes.get(type);
-    const newClassInstance = new theClass();
+    const TheClass = classes.get(type);
+    const newClassInstance = new TheClass();
 
     for (var key of Object.keys(postBody)) {
       newClassInstance[key] = postBody[key];
@@ -620,7 +620,6 @@ class MongoDbClient {
   }
 
   async getDocumentByDocumentType(accountId, documentType) {
-    const account = await Account.findById(accountId);
     const documents = await this.getDocuments(accountId);
 
     let documentId;

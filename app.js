@@ -2,9 +2,6 @@
 require("dotenv").config();
 var Util = require("./common/Util");
 
-// TODO: Add helmet
-// const helmet = require("helmet");
-
 // Loading from admin page
 if (process.env.ENVIRONMENT === "HEROKU" && !Util.hasAllRequiredKeys()) {
   const express = require("express");
@@ -21,7 +18,9 @@ if (process.env.ENVIRONMENT === "HEROKU" && !Util.hasAllRequiredKeys()) {
 const MongoDbClient = require("./database/mongodb/MongoDbClient");
 const express = require("express");
 const bodyParser = require("body-parser");
+const rateLimit = require("express-rate-limit");
 const cors = require("cors");
+const helmet = require("helmet");
 const router = require("./routes");
 const common = require("./common/common");
 const { errors } = require("celebrate");
@@ -51,6 +50,14 @@ if (process.env.ETH_FUNDING_PRIVATE_KEY !== undefined) {
 
 common.dbClient = dbClient;
 
+const limiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 200, // limit each IP to 100 requests per windowMs
+});
+
+// apply to all requests
+app.use(limiter);
+
 app.use(express.static(__dirname + "/public"));
 
 app.use(
@@ -61,7 +68,7 @@ app.use(
 app.use(
   fileUpload({
     limits: {
-      fileSize: 5000000000, //50mb
+      fileSize: 5000000000, // 50mb
     },
     abortOnLimit: true,
     useTempFiles: true,
@@ -74,6 +81,7 @@ if (
   process.env.ENVIRONMENT === "DEVELOPMENT" ||
   process.env.ENVIRONMENT === "HEROKU"
 ) {
+  app.use(helmet());
   app.use(cors());
 }
 

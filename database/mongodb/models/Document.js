@@ -22,7 +22,7 @@ var DocumentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-DocumentSchema.methods.getPublicInfo = function (account) {
+DocumentSchema.methods.getPublicInfo = function(account) {
   if (account.email === undefined) {
     return account;
   } else {
@@ -30,7 +30,7 @@ DocumentSchema.methods.getPublicInfo = function (account) {
   }
 };
 
-DocumentSchema.methods.toPublicInfo = function () {
+DocumentSchema.methods.toPublicInfo = function() {
   return {
     id: this._id,
     name: this.name,

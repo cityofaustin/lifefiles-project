@@ -23,9 +23,9 @@ class RskBlockchainClient {
     validityTime,
     dataToStore
   ) {
-    const didAccount = web3.eth.accounts.privateKeyToAccount(
-      "0x" + didPrivateKey
-    );
+    // const didAccount = web3.eth.accounts.privateKeyToAccount(
+    //   "0x" + didPrivateKey
+    // );
     const identity = didAddress;
     const value = web3.utils.asciiToHex(dataToStore);
 
@@ -83,7 +83,7 @@ class RskBlockchainClient {
     }
 
     let balanceRes = await client.balance(identity);
-    let balance = parseInt(web3.utils.hexToNumberString(balanceRes));
+    let balance = parseInt(web3.utils.hexToNumberString(balanceRes), 10);
     console.log({ balance });
 
     let leftOver = balance - REFUND_GAS_PRICE * FUND_ACCOUNT_GAS;
@@ -95,7 +95,7 @@ class RskBlockchainClient {
           " -> " +
           fundingAccount.address
       );
-      const txhash = await client.transfer(
+      await client.transfer(
         {
           address: identity,
           privateKey: "0x" + didPrivateKey,

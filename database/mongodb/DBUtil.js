@@ -19,8 +19,6 @@ class DBUtil {
         { featureName: "phone", featureDisplay: "User phone" },
         { featureName: "email", featureDisplay: "User email" },
         { featureName: "profileImage", featureDisplay: "User image" },
-        // NOTE: We never show the did, even for the person it's for, at least for now, so doesn't make sense to have it here.
-        // { featureName: "didAddress", featureDisplay: "User DID" },
         { featureName: "organization", featureDisplay: "User organization" },
         { featureName: "role", featureDisplay: "User role" },
         { featureName: "firstName", featureDisplay: "User first name" },

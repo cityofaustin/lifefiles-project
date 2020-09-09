@@ -30,6 +30,9 @@ module.exports = {
         jwt;
 
       request.get(localUrl, function (err, res, body) {
+        if (err) {
+          console.log("Get MD5 Error: " + err);
+        }
         const md5Hash = md5(body);
         resolve(md5Hash);
       });
@@ -44,7 +47,7 @@ module.exports = {
 
     const buf = crypto.randomBytes(16);
     const key = buf.toString("hex") + path.extname(file.name);
-    let s3Res = await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       s3.putObject(
         {
           ACL: "private",

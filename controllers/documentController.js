@@ -121,8 +121,6 @@ module.exports = {
       req.body.encryptionPubKey
     );
 
-    // fullUrl: "http://" + ip.address() +":" + (process.env.PORT || 5000) + "/api/documents/" + document.url + "/" + account.generateJWT()
-
     res.status(200).json({
       file: document.url,
       thumbnailUrl: document.thumbnailUrl,
@@ -321,7 +319,10 @@ module.exports = {
     let key;
     let permanentOrgFileArchiveNumber;
     let md5;
-    const { accountForId, documentType } = { ...req.params };
+    let keyForAccount;
+    const accountForId = req.params.accountForId;
+    const documentType = req.params.documentType;
+    // const { accountForId, documentType } = { ...req.params };
 
     const document = await common.dbClient.getDocumentByDocumentType(
       accountForId,
@@ -414,11 +415,12 @@ module.exports = {
       );
       didUrl = "https://explorer.testnet.rsk.co/address/" + documentDidAddress;
     } else {
-      let s3Res = await documentStorageHelper.uploadPublicVPJwt(
+      await documentStorageHelper.uploadPublicVPJwt(
         req.body.vpJwt,
         "did:ethr:" + documentDidAddress + ".json",
         Math.round(now / 1000)
       );
+      // eslint-disable-next-line
       didUrl = `https://${process.env.AWS_NOTARIZED_VPJWT_BUCKET_NAME}.s3.us-east-2.amazonaws.com/did%3Aethr%3A${documentDidAddress}.json`;
     }
 

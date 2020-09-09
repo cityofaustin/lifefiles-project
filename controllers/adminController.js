@@ -4,6 +4,7 @@ const uuidv4 = require("uuid").v4;
 const secureKeyStorage = require("../common/secureKeyStorage");
 const EthCrypto = require("eth-crypto");
 const passport = require("passport");
+const documentStorageHelper = require("../common/documentStorageHelper");
 
 module.exports = {
   oauthUrl: async (req, res, next) => {
@@ -21,7 +22,7 @@ module.exports = {
     }
 
     let returnAccount = account.toAuthJSON();
-    adminInfo = await common.dbClient.getAdminData(req.payload.id);
+    let adminInfo = await common.dbClient.getAdminData(req.payload.id);
     returnAccount.adminInfo = adminInfo;
 
     res.status(200).json({
@@ -296,6 +297,7 @@ module.exports = {
       return;
     }
 
+    let postResponse;
     try {
       postResponse = await common.dbClient.genericPost(req.body, type);
     } catch (error) {
@@ -351,33 +353,33 @@ module.exports = {
     return res.status(200).json({ rolePermissionTable: rolePermissionTable });
   },
 
-  generateDefaultRolePermissionsTable: async (req, res, next) => {
-    const roles = await common.dbClient.getAllRoles();
-    const permissions = await common.dbClient.getAllPermissions();
+  // generateDefaultRolePermissionsTable: async (req, res, next) => {
+  //   const roles = await common.dbClient.getAllRoles();
+  //   const permissions = await common.dbClient.getAllPermissions();
 
-    let rolePermissionTable = {};
+  //   let rolePermissionTable = {};
 
-    for (role of roles) {
-      for (permission of permissions) {
-        if (permission.paired === false) {
-          rolePermissionTable[role.name + "-" + permission.name] = true;
-        }
-      }
-    }
+  //   for (role of roles) {
+  //     for (permission of permissions) {
+  //       if (permission.paired === false) {
+  //         rolePermissionTable[role.name + "-" + permission.name] = true;
+  //       }
+  //     }
+  //   }
 
-    for (role of roles) {
-      for (innerRole of roles) {
-        for (permission of permissions) {
-          if (permission.paired === true) {
-            if (role.name !== innerRole.name) {
-              rolePermissionTable[
-                role.name + "-" + permission.name + "-" + innerRole.name
-              ] = true;
-            }
-          }
-        }
-      }
-    }
-    return res.status(201).json({ rolePermissionTable: rolePermissionTable });
-  },
+  //   for (role of roles) {
+  //     for (innerRole of roles) {
+  //       for (permission of permissions) {
+  //         if (permission.paired === true) {
+  //           if (role.name !== innerRole.name) {
+  //             rolePermissionTable[
+  //               role.name + "-" + permission.name + "-" + innerRole.name
+  //             ] = true;
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   return res.status(201).json({ rolePermissionTable: rolePermissionTable });
+  // },
 };

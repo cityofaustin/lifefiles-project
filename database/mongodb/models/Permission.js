@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 
 var PermissionSchema = new mongoose.Schema({
   name: String,
-  paired: Boolean
+  paired: Boolean,
 });
 
 const Permission = mongoose.model("Permission", PermissionSchema);
