@@ -293,6 +293,16 @@ module.exports = {
     payload.pipe(res);
   },
 
+  getImage: async (req, res, next) => {
+    let payload;
+    payload = await documentStorageHelper.getDocumentBytes(
+      req.params.imageurl,
+      "profile-image"
+    );
+
+    payload.pipe(res);
+  },
+
   newShareRequest: async (req, res, next) => {
     let accountId = req.payload.id;
     const file =

@@ -16,6 +16,7 @@ const ShareRequest = require("./models/ShareRequest");
 const RolePermissionTable = require("./models/RolePermissionTable");
 const VerifiableCredential = require("./models/VerifiableCredential");
 const VerifiablePresentation = require("./models/VerifiablePresentation");
+const AppSetting = require("./models/AppSetting");
 
 const classes = new Map();
 classes.set("AccountType", AccountType);
@@ -161,6 +162,24 @@ class MongoDbClient {
     return accounts;
   }
 
+  // app settings
+  async saveAppSetting(_appSetting) {
+    const appSetting = new AppSetting();
+    appSetting.settingName = _appSetting.settingName;
+    appSetting.settingValue = _appSetting.settingValue;
+    return await AppSetting.findOneAndUpdate(
+      { settingName: appSetting.settingName },
+      { settingValue: appSetting.settingValue },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
+  }
+  async getAppSettings() {
+    return await AppSetting.find();
+  }
+
   // Core Features
   async addCoreFeature(feature) {
     const coreFeature = new CoreFeature();
@@ -301,7 +320,7 @@ class MongoDbClient {
 
     newAccount.accountType = accountType;
     newAccount.role = accountType.role;
-    if(accountReq.notaryId && accountReq.notaryState) {
+    if (accountReq.notaryId && accountReq.notaryState) {
       newAccount.notaryId = accountReq.notaryId;
       newAccount.notaryState = accountReq.notaryState;
     }
