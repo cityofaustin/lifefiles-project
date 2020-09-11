@@ -4,20 +4,21 @@ const auth = require("../routes/middleware/auth");
 const { onlyAdminAllowed } = require("../routes/middleware/permission");
 const documentStorageHelper = require("../common/documentStorageHelper");
 
+const path = "/admin/app-settings";
+const router = express.Router();
+
 class AppSettingController {
-  path = "/admin/app-settings";
-  router = express.Router();
 
   constructor() {
     this.initializeRoutes();
-    return this.router;
+    return router;
   }
 
   initializeRoutes() {
-    this.router
-      .route(this.path)
+    router
+      .route(path)
       .post([auth.required, onlyAdminAllowed], this.saveAppSetting);
-    this.router.route(this.path).get(this.getAppSettings);
+    router.route(path).get(this.getAppSettings);
   }
 
   saveAppSetting = async (req, res) => {
