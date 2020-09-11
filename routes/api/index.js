@@ -4,6 +4,7 @@ const { celebrate } = require("celebrate");
 const AccountController = require("../../controllers/accountController");
 const DocumentController = require("../../controllers/documentController");
 const AdminController = require("../../controllers/adminController");
+const AppController = require("../../controllers/AppSettingController");
 
 const auth = require("../middleware/auth");
 const {
@@ -77,7 +78,7 @@ router.route("/admin-accounts/").post(
 router.route("/helper-accounts/").post(
   [
     celebrate({
-      body: Schema.userRegisterSchema,
+      body: Schema.helperRegisterSchema,
     }),
   ],
   AdminController.newHelperAccount
@@ -179,6 +180,10 @@ router
   .get(auth.image, AccountController.getProfileImage);
 
 router
+  .route("/image/:imageurl")
+  .get(AccountController.getImage);
+
+router
   .route("/get-encryption-key")
   .get(auth.required, AccountController.getEncryptionKey);
 
@@ -264,7 +269,9 @@ router
     DocumentController.deleteDocument
   );
 
-router.use(function(err, req, res, next) {
+router.use(new AppController());
+
+router.use(function (err, req, res, next) {
   if (err.name === "ValidationError") {
     return res.status(422).json({
       errors: Object.keys(err.errors).reduce(function(errors, key) {
