@@ -561,6 +561,7 @@ class MongoDbClient {
   async updateDocumentVC(
     documentId,
     vc,
+    vpDocumentDidAddress,
     filename,
     key,
     permanentOrgFileArchiveNumber,
@@ -570,6 +571,8 @@ class MongoDbClient {
   ) {
     let document = await Document.findById(documentId);
     document.vcJwt = vc;
+
+    document.vpDocumentDidAddress = vpDocumentDidAddress;
 
     document.name = filename;
     document.url = key;

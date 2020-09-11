@@ -7,6 +7,7 @@ var DocumentSchema = new mongoose.Schema(
     thumbnailUrl: { type: String, index: true },
     notarized: Boolean,
     did: String,
+    vpDocumentDidAddress: String,
     hash: String,
     vcJwt: String,
     vpJwt: String,
@@ -22,7 +23,7 @@ var DocumentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-DocumentSchema.methods.getPublicInfo = function(account) {
+DocumentSchema.methods.getPublicInfo = function (account) {
   if (account.email === undefined) {
     return account;
   } else {
@@ -30,7 +31,7 @@ DocumentSchema.methods.getPublicInfo = function(account) {
   }
 };
 
-DocumentSchema.methods.toPublicInfo = function() {
+DocumentSchema.methods.toPublicInfo = function () {
   return {
     id: this._id,
     name: this.name,

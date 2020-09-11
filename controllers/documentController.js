@@ -315,6 +315,12 @@ module.exports = {
   updateDocumentVcJwt: async (req, res) => {
     const account = await common.dbClient.getAccountById(req.payload.id);
     const vc = req.body.vc;
+
+    const vcUnpacked = await common.blockchainClient.verifyVC(vc);
+    const vpDocumentDidAddress = vcUnpacked.payload.vc.verifiablePresentationReference.id.split(
+      ":"
+    )[2];
+
     let filename;
     let key;
     let permanentOrgFileArchiveNumber;
@@ -356,6 +362,7 @@ module.exports = {
     const updatedDocument = await common.dbClient.updateDocumentVC(
       document._id,
       vc,
+      vpDocumentDidAddress,
       filename,
       key,
       permanentOrgFileArchiveNumber,
@@ -363,6 +370,55 @@ module.exports = {
       account.id,
       keyForAccount
     );
+
+    console.log({ vc });
+    if (vc !== undefined) {
+      // Anchor VC to chain
+      const now = new Date();
+      // const vpUnpacked = await common.blockchainClient.verifyVP(req.body.vpJwt);
+      // const vcJwt = vpUnpacked.payload.vp.verifiableCredential[0];
+      // const vcUnpacked = await common.blockchainClient.verifyVC(vc);
+      const documentDidAddress = vcUnpacked.payload.vc.id.split(":")[2];
+
+      const expirationDate = new Date(vcUnpacked.payload.vc.expirationDate);
+      const validityTimeSeconds = Math.round((expirationDate - now) / 1000);
+
+      const documentDidPrivateKey = await secureKeyStorage.retrieveFromDb(
+        documentDidAddress
+      );
+
+      let didUrl = "";
+
+      if (req.body.storage === "ethereum") {
+        common.blockchainClient.storeDataOnEthereumBlockchain(
+          documentDidAddress,
+          documentDidPrivateKey,
+          validityTimeSeconds,
+          vc
+        );
+        didUrl = "https://etherscan.io/address/" + documentDidAddress;
+      } else if (req.body.storage === "rsk") {
+        common.rskClient.storeDataOnRskBlockchain(
+          documentDidAddress,
+          documentDidPrivateKey,
+          validityTimeSeconds,
+          vc
+        );
+        didUrl =
+          "https://explorer.testnet.rsk.co/address/" + documentDidAddress;
+      } else {
+        console.log("s3 Storage!");
+        await documentStorageHelper.uploadPublicVCJwt(
+          vc,
+          "did:ethr:" + documentDidAddress + ".json",
+          Math.round(now / 1000)
+        );
+        // eslint-disable-next-line
+        didUrl = `https://${process.env.AWS_NOTARIZED_VPJWT_BUCKET_NAME}.s3.us-east-2.amazonaws.com/did%3Aethr%3A${documentDidAddress}.json`;
+
+        console.log({ didUrl });
+      }
+    }
 
     res.status(200).json({ updatedDocument: updatedDocument.toPublicInfo() });
   },
@@ -387,7 +443,9 @@ module.exports = {
     const vpUnpacked = await common.blockchainClient.verifyVP(req.body.vpJwt);
     const vcJwt = vpUnpacked.payload.vp.verifiableCredential[0];
     const vcUnpacked = await common.blockchainClient.verifyVC(vcJwt);
-    const documentDidAddress = vcUnpacked.payload.vc.id.split(":")[2];
+    const documentDidAddress = vcUnpacked.payload.vc.verifiablePresentationReference.id.split(
+      ":"
+    )[2];
 
     const expirationDate = new Date(vcUnpacked.payload.vc.expirationDate);
     const validityTimeSeconds = Math.round((expirationDate - now) / 1000);

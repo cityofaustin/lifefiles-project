@@ -131,6 +131,35 @@ module.exports = {
     });
   },
 
+  uploadPublicVCJwt: async (vcJwt, did, timeInSeconds) => {
+    let bucketName = process.env.AWS_NOTARIZED_VPJWT_BUCKET_NAME;
+
+    let vpJwtObject = { vcJwt: vcJwt, timestamp: timeInSeconds };
+
+    console.log({ did });
+    let s3Res = await new Promise((resolve, reject) => {
+      s3.putObject(
+        {
+          ACL: "public-read",
+          Bucket: bucketName,
+          Key: did,
+          Body: Buffer.from(JSON.stringify(vpJwtObject), "utf8"),
+        },
+        function (err, data) {
+          // Handle any error and exit
+          if (err) {
+            console.log("S3 Error");
+            console.log(err);
+            return;
+          }
+          resolve(data);
+        }
+      );
+    });
+
+    return s3Res;
+  },
+
   uploadPublicVPJwt: async (vpJwt, did, timeInSeconds) => {
     let bucketName = process.env.AWS_NOTARIZED_VPJWT_BUCKET_NAME;
 
