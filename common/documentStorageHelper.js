@@ -3,7 +3,6 @@ const path = require("path");
 const request = require("request").defaults({ encoding: null });
 const md5 = require("md5");
 const ip = require("ip");
-const fs = require("fs");
 const streamBuffers = require("stream-buffers");
 
 const AWS = require("aws-sdk");
@@ -59,7 +58,7 @@ module.exports = {
           ServerSideEncryption: "AES256",
           Bucket: bucketName,
           Key: key,
-          Body: contents
+          Body: contents,
         },
         function (err, data) {
           // Handle any error and exit
