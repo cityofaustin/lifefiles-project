@@ -30,6 +30,9 @@ module.exports = {
         jwt;
 
       request.get(localUrl, function (err, res, body) {
+        if (err) {
+          console.log("Get MD5 Error: " + err);
+        }
         const md5Hash = md5(body);
         resolve(md5Hash);
       });
@@ -49,7 +52,7 @@ module.exports = {
     // profile images so using in-memory buffer as a workaround.
     // let contents = fs.readFileSync(file.tempFilePath);
     const contents = file.data;
-    let s3Res = await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       s3.putObject(
         {
           ACL: "private",

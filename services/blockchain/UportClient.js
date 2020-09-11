@@ -1,8 +1,4 @@
-const EthrDID = require("ethr-did");
 const Web3 = require("web3");
-const createVerifiableCredential = require("did-jwt-vc")
-  .createVerifiableCredential;
-const createPresentation = require("did-jwt-vc").createPresentation;
 const Resolver = require("did-resolver").Resolver;
 const getResolver = require("ethr-did-resolver").getResolver;
 const verifyCredential = require("did-jwt-vc").verifyCredential;
@@ -84,20 +80,16 @@ class UportClient {
 
     let gasStationPrice = await axios.get(ETHER_GAS_STATION_API);
 
-    let setTextReceipt;
-
     console.log(
       "Starting Set Txt Record With Eth Domain Address: " +
         ethDomainAccount.address
     );
     try {
-      setTextReceipt = await ensContract.methods
-        .setText(ENS_NODE, didKey, nameValue)
-        .send({
-          from: ethDomainAccount.address,
-          gasPrice: 100000000 * gasStationPrice.data.safeLow,
-          gas: gasEstimate,
-        });
+      await ensContract.methods.setText(ENS_NODE, didKey, nameValue).send({
+        from: ethDomainAccount.address,
+        gasPrice: 100000000 * gasStationPrice.data.safeLow,
+        gas: gasEstimate,
+      });
     } catch (err) {
       console.log("Ens Contract Error:");
       console.log(err);
@@ -140,16 +132,13 @@ class UportClient {
 
     this.nonceOverhead++;
 
-    let sendTransactionReceipt;
-    let didRegContractReceipt;
-
     console.log("Starting Eth Transactions with account: " + identity);
 
     const safeLowGasPrice = 100000000 * gasStationPrice.data.safeLow;
 
     try {
       console.log("Send Transaction Start");
-      sendTransactionReceipt = await web3.eth.sendTransaction({
+      await web3.eth.sendTransaction({
         from: fundingAccount.address,
         to: identity,
         value: payAmount * safeLowGasPrice,
@@ -173,7 +162,7 @@ class UportClient {
 
     try {
       console.log("Did Reg Contract Transaction Start");
-      didRegContractReceipt = await didRegContract.methods
+      await didRegContract.methods
         .setAttribute(identity, NAME_KEY, value, validityTime)
         .send({
           from: identity,

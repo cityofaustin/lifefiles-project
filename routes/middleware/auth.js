@@ -1,4 +1,3 @@
-var jwt = require("express-jwt");
 const common = require("../../common/common");
 const jsonwebtoken = require("jsonwebtoken");
 
@@ -109,7 +108,7 @@ var auth = {
 
     const account = await common.dbClient.getAccountByOAuthId(decoded.oauthId);
 
-    payload = {
+    let payload = {
       id: "" + account._id,
       username: account.username,
       role: account.role,

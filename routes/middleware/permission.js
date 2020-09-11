@@ -8,7 +8,7 @@ module.exports = {
       account.accountType
     );
 
-    authorized = false;
+    let authorized = false;
     if (featureName === "-") {
       authorized = true;
     } else {
@@ -33,7 +33,7 @@ module.exports = {
     if (account.role !== "admin" && account.canAddOtherAccounts !== true) {
       res.status(403).json({
         error:
-          "Not authorized. This role does not have permissions for this action. Only admins are allowed for this route.",
+          "Not authorized. This role does not have perms for this action. Only admins are allowed for this route.",
       });
     } else {
       next();

@@ -6,7 +6,7 @@ var VerifiableCredentialSchema = new mongoose.Schema({
   document: { type: mongoose.Schema.Types.ObjectId, ref: "Document" },
   documentDid: String,
   documentDidPrivateKey: String,
-  verifiedVC: String
+  verifiedVC: String,
 });
 
 const VerifiableCredential = mongoose.model(

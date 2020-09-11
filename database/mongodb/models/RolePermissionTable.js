@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 
 var RolePermissionTableSchema = new mongoose.Schema({
-  rolePermissionTable: String
+  rolePermissionTable: String,
 });
 
 const RolePermissionTable = mongoose.model(
