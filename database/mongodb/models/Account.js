@@ -45,6 +45,8 @@ var AccountSchema = new mongoose.Schema(
     shareRequests: [
       { type: mongoose.Schema.Types.ObjectId, ref: "ShareRequest" },
     ],
+    notaryId: String,
+    notaryState: String,
   },
   { timestamps: true },
   { usePushEach: true }
@@ -97,6 +99,8 @@ AccountSchema.methods.toAuthJSON = function () {
     documents: this.documents,
     profileImageUrl: this.profileImageUrl,
     canAddOtherAccounts: this.canAddOtherAccounts,
+    notaryId: this.notaryId,
+    notaryState: this.notaryState,
   };
 };
 
@@ -115,6 +119,8 @@ AccountSchema.methods.toPublicInfo = function () {
     profileImageUrl: this.profileImageUrl,
     accountType: this.accountType,
     canAddOtherAccounts: this.canAddOtherAccounts,
+    notaryId: this.notaryId,
+    notaryState: this.notaryState,
   };
 };
 

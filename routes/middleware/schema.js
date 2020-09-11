@@ -27,6 +27,22 @@ module.exports = {
       .required(),
   }),
 
+  helperRegisterSchema: Joi.object().keys({
+    // note: didn't recognize as object with multipart upload
+    email: Joi.string().min(1).required(),
+    password: Joi.string().min(1).required(),
+    accounttype: Joi.string().min(1).optional(),
+    username: Joi.string().min(1).required(),
+    firstname: Joi.string().min(1).optional(),
+    lastname: Joi.string().min(1).optional(),
+    phonenumber: Joi.string().min(1).optional(),
+    organization: Joi.string().min(1).optional(),
+    canAddOtherAccounts: Joi.any().optional(),
+    publicEncryptionKey: Joi.any().optional(),
+    notaryId: Joi.string().optional(),
+    notaryState: Joi.string().optional(),
+  }),
+
   permissionSchema: Joi.object().keys({
     permission: Joi.object()
       .keys({
