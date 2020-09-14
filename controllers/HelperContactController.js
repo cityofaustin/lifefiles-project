@@ -57,13 +57,6 @@ class HelperContactController {
       item.helperAccount = item.helperAccount.toPublicInfo();
       return item;
     });
-    // const accounts = await common.dbClient.getAllAccounts();
-    // let returnAccounts = [];
-
-    // for (let account of accounts) {
-    //   returnAccounts.push(account.toPublicInfo());
-    // }
-
     res.status(200).json(helperContacts);
   };
 
