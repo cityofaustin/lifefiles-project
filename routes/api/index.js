@@ -126,6 +126,11 @@ router
   .route("/send-code/account/:username/:oneTimeCode/:loginUuid")
   .post(AccountController.sendOneTimeAccessCode);
 
+// This route is from oauth server to send code to user's helpers
+router
+  .route("/send-helper-code/account/:username/:oneTimeCode/:loginUuid")
+  .post(AccountController.sendOneTimeAccessCodeToHelpers);
+
 router
   .route("/account/:accountId/document-types/")
   .get(
@@ -180,9 +185,7 @@ router
   .route("/profile-image/:imageurl/:jwt")
   .get(auth.image, AccountController.getProfileImage);
 
-router
-  .route("/image/:imageurl")
-  .get(AccountController.getImage);
+router.route("/image/:imageurl").get(AccountController.getImage);
 
 router
   .route("/get-encryption-key")
@@ -276,7 +279,7 @@ router.use(new HelperContactController());
 router.use(function (err, req, res, next) {
   if (err.name === "ValidationError") {
     return res.status(422).json({
-      errors: Object.keys(err.errors).reduce(function(errors, key) {
+      errors: Object.keys(err.errors).reduce(function (errors, key) {
         errors[key] = err.errors[key].message;
 
         return errors;
