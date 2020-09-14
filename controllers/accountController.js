@@ -89,6 +89,27 @@ module.exports = {
     res.status(200).json({ message: "success" });
   },
 
+  // TODO FINISH THIS IMPLEMENTATION TO SEND TO OWNER'S CONTACTS
+  sendOneTimeAccessCodeToHelpers: async (req, res, next) => {
+    let username = req.params.username;
+    let oneTimeCode = req.params.oneTimeCode;
+    let loginUuid = req.params.loginUuid;
+    let sendEmail = req.body.sendEmail;
+    let sendSms = req.body.sendSms;
+    let secret = req.body.secret;
+
+    // sort of serving as the api key so that not just anyone
+    // but only the auth server can send sms message and emails.
+    if (secret !== process.env.AUTH_SECRET) {
+      res.status(403).json({ message: "failure" });
+    }
+
+    let account = await common.dbClient.getAccountByUsername(username);
+    console.log("TODO: Send login code to this contacts helpers");
+
+    res.status(200).json({ message: "success" });
+  },
+
   secureLogin: async (req, res, next) => {
     let account = await common.dbClient.getAccountByUsername(
       req.body.account.username.toLowerCase()
