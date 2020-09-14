@@ -14,6 +14,7 @@ const {
   isAllowedReplaceDocument,
 } = require("../middleware/permission");
 const Schema = require("../middleware/schema");
+const HelperContactController = require("../../controllers/HelperContactController");
 
 // This route returns the url for the oauth sever (used in heroku setup)
 router.route("/oauth-url").get(AdminController.oauthUrl);
@@ -270,6 +271,7 @@ router
   );
 
 router.use(new AppController());
+router.use(new HelperContactController());
 
 router.use(function (err, req, res, next) {
   if (err.name === "ValidationError") {

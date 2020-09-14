@@ -17,6 +17,7 @@ const RolePermissionTable = require("./models/RolePermissionTable");
 const VerifiableCredential = require("./models/VerifiableCredential");
 const VerifiablePresentation = require("./models/VerifiablePresentation");
 const AppSetting = require("./models/AppSetting");
+const HelperContact = require("./models/HelperContact");
 
 const classes = new Map();
 classes.set("AccountType", AccountType);
@@ -24,6 +25,7 @@ classes.set("ViewFeature", ViewFeature);
 classes.set("CoreFeature", CoreFeature);
 
 let mongoDbOptions = {
+  autoIndex: true, // this makes schema index's enforced
   useUnifiedTopology: true,
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -178,6 +180,30 @@ class MongoDbClient {
   }
   async getAppSettings() {
     return await AppSetting.find();
+  }
+
+  // helper contacts
+  async getHelperContactsForOwner(accountId) {
+    return await HelperContact.find({ ownerAccount: accountId })
+      .populate({ path: "ownerAccount" })
+      .populate({ path: "helperAccount" });
+  }
+  async getHelperContactsForHelper(accountId) {
+    return await HelperContact.find({ helperAccountId: accountId })
+      .populate({ path: "ownerAccount" })
+      .populate({ path: "helperAccount" });
+  }
+  async addHelperContact(_helperContact) {
+    let helperContact = new HelperContact();
+    helperContact.ownerAccount = _helperContact.ownerAccount;
+    helperContact.helperAccount = _helperContact.helperAccount;
+    helperContact.isSocialAttestationEnabled =
+      _helperContact.isSocialAttestationEnabled;
+    helperContact.canAddNewDocuments = _helperContact.canAddNewDocuments;
+    await helperContact.save();
+    helperContact = await HelperContact.populate(helperContact, { path: "ownerAccount" });
+    helperContact = await HelperContact.populate(helperContact, { path: "helperAccount" });
+    return helperContact;
   }
 
   // Core Features

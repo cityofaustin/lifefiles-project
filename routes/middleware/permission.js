@@ -27,6 +27,18 @@ module.exports = {
     }
   },
 
+  onlyOwnerAllowed: async (req, res, next) => {
+    const account = await common.dbClient.getAccountById(req.payload.id);
+    if (account.role !== "owner") {
+      res.status(403).json({
+        error:
+          "Not authorized. This role does not have perms for this action. Only owners are allowed for this route.",
+      });
+    } else {
+      next();
+    }
+  },
+
   onlyAdminAllowed: async (req, res, next) => {
     const account = await common.dbClient.getAccountById(req.payload.id);
 
