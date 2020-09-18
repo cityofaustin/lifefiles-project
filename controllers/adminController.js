@@ -127,7 +127,7 @@ module.exports = {
       lastname: req.body.lastname,
       publicEncryptionKey: req.body.publicEncryptionKey,
       notaryId: req.body.notaryId,
-      notaryState: req.body.notaryState
+      notaryState: req.body.notaryState,
     };
     // These helper accounts cannot make new accounts that can make new accounts
     accountRequest.canAddOtherAccounts = false;
@@ -318,15 +318,33 @@ module.exports = {
     res.status(200).json({ response: postResponse });
   },
 
-  // addDocumentTypeField: async (req, res, next) => {},
+  getPublicKey: async (req, res, next) => {
+    let adminPublicKey = await common.dbClient.getAdminPublicKey();
+    return res.status(200).json({ adminPublicKey });
+  },
 
-  // deleteDocumentTypeField: async (req, res, next) => {},
+  setPrivateKey: async (req, res, next) => {
+    const adminAccountId = req.payload.id;
+    const adminAccount = await common.dbClient.getAccountById(adminAccountId);
 
-  // LEGACY
-  // resetDatabase: async (req, res, next) => {
-  //   await common.dbClient.resetDatabase();
-  //   res.status(200).json({ message: "success" });
-  // },
+    if (adminAccount.role !== "admin") {
+      res.status(403).json({
+        error: "Account not authorized to hit this route",
+      });
+      return;
+    }
+
+    let privateKey = req.body.privateKey;
+    if (privateKey.substring(0, 2) !== "0x") {
+      // Add 0x if it does not have it
+      privateKey = "0x" + privateKey;
+    }
+    const publicKey = EthCrypto.publicKeyByPrivateKey(privateKey);
+    const address = EthCrypto.publicKey.toAddress(publicKey);
+    common.dbClient.setAdminPrivateKey(address, privateKey);
+
+    res.status(201).json({ msg: "success" });
+  },
 
   getPermissions: async (req, res, next) => {
     const permissions = await common.dbClient.getAllPermissions();

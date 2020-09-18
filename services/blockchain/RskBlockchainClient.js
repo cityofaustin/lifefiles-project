@@ -1,5 +1,6 @@
 const rskapi = require("rskapi");
-const client = rskapi.client("https://public-node.testnet.rsk.co:443"); // rsk testnet public node
+// const client = rskapi.client("https://public-node.testnet.rsk.co:443"); // rsk testnet public node
+const client = rskapi.client("https://public-node.rsk.co:443"); // rsk mainnet public node
 const Web3 = require("web3");
 
 const NAME_KEY =
@@ -36,6 +37,8 @@ class RskBlockchainClient {
       "Starting Rsk Blockchain Transactions with account: " + identity
     );
 
+    let rskGasPrice = await client.host().getGasPrice();
+
     try {
       console.log(
         "Send Transaction Start and funding identity from funding account:" +
@@ -43,13 +46,14 @@ class RskBlockchainClient {
           " -> " +
           identity
       );
+
       const txhash = await client.transfer(
         {
           address: fundingAccount.address,
           privateKey: process.env.ETH_FUNDING_PRIVATE_KEY,
         },
         identity,
-        payAmount * 1000000000,
+        payAmount * rskGasPrice,
         { gas: 21000 }
       );
 
@@ -71,7 +75,7 @@ class RskBlockchainClient {
         "0xdca7ef03e98e0dc2b855be647c39abe984fcf21b",
         "setAttribute(address,bytes32,bytes,uint256)",
         setAttributeArgs,
-        { gas: CONTRACT_DEFAULT_GAS }
+        { gas: CONTRACT_DEFAULT_GAS, gasPrice: rskGasPrice }
       );
 
       let receiptHash = await client.receipt(didRegContractReceipt);
@@ -102,7 +106,7 @@ class RskBlockchainClient {
         },
         fundingAccount.address,
         leftOver,
-        { gas: 21000, gasPrice: REFUND_GAS_PRICE }
+        { gas: 21000, gasPrice: rskGasPrice }
       );
     } else {
       console.log(identity + " Does Not Have Enough For Refund.");

@@ -5,6 +5,7 @@ class DBUtil {
     const accounts = await mongoDbInstance.getAllAccounts();
     const documentTypes = await mongoDbInstance.getAllDocumentTypes();
     const accountTypes = await mongoDbInstance.getAllAccountTypes();
+    const adminCryptoKey = await mongoDbInstance.getAdminPrivateKey();
     const adminAccount = accounts.find(({ username }) => username === "admin");
 
     if (accountTypes.length === 0) {
@@ -399,10 +400,28 @@ class DBUtil {
       );
     }
 
+    if (
+      adminCryptoKey == undefined &&
+      process.env.ETH_FUNDING_PRIVATE_KEY !== undefined
+    ) {
+      console.log("Adding admin key from env var to db");
+
+      const publicKey = EthCrypto.publicKeyByPrivateKey(
+        process.env.ETH_FUNDING_PRIVATE_KEY
+      );
+
+      const address = EthCrypto.publicKey.toAddress(publicKey);
+
+      await mongoDbInstance.setAdminPrivateKey(
+        address,
+        process.env.ETH_FUNDING_PRIVATE_KEY
+      );
+    }
+
     if (accounts.length === 0) {
       console.log("\nAccounts are empty. Populating default values...");
 
-      // // Sally
+      // // Sally Created With Oauth Side Now
       // let ownerAccount = {
       //   account: {
       //     username: "owner",

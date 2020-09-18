@@ -2,6 +2,7 @@ const common = require("../common/common");
 const documentStorageHelper = require("../common/documentStorageHelper");
 const permanent = require("../common/permanentClient");
 const secureKeyStorage = require("../common/secureKeyStorage");
+const EthCrypto = require("eth-crypto");
 
 module.exports = {
   updateDocument: async (req, res, next) => {
@@ -315,6 +316,7 @@ module.exports = {
   updateDocumentVcJwt: async (req, res) => {
     const account = await common.dbClient.getAccountById(req.payload.id);
     const vc = req.body.vc;
+    const network = req.body.network;
 
     const vcUnpacked = await common.blockchainClient.verifyVC(vc);
     const vpDocumentDidAddress = vcUnpacked.payload.vc.verifiablePresentationReference.id.split(
@@ -371,7 +373,6 @@ module.exports = {
       keyForAccount
     );
 
-    console.log({ vc });
     if (vc !== undefined) {
       // Anchor VC to chain
       const now = new Date();
@@ -389,7 +390,7 @@ module.exports = {
 
       let didUrl = "";
 
-      if (req.body.storage === "ethereum") {
+      if (network === "eth") {
         common.blockchainClient.storeDataOnEthereumBlockchain(
           documentDidAddress,
           documentDidPrivateKey,
@@ -397,15 +398,16 @@ module.exports = {
           vc
         );
         didUrl = "https://etherscan.io/address/" + documentDidAddress;
-      } else if (req.body.storage === "rsk") {
+      } else if (network === "rsk") {
         common.rskClient.storeDataOnRskBlockchain(
           documentDidAddress,
           documentDidPrivateKey,
           validityTimeSeconds,
           vc
         );
-        didUrl =
-          "https://explorer.testnet.rsk.co/address/" + documentDidAddress;
+        didUrl = "https://explorer.rsk.co/address/" + documentDidAddress;
+        console.log("Saving VC to RSK Network!");
+        console.log(didUrl);
       } else {
         console.log("s3 Storage!");
         await documentStorageHelper.uploadPublicVCJwt(
@@ -415,7 +417,6 @@ module.exports = {
         );
         // eslint-disable-next-line
         didUrl = `https://${process.env.AWS_NOTARIZED_VPJWT_BUCKET_NAME}.s3.us-east-2.amazonaws.com/did%3Aethr%3A${documentDidAddress}.json`;
-
         console.log({ didUrl });
       }
     }
@@ -439,6 +440,7 @@ module.exports = {
   },
 
   anchorVpToBlockchain: async (req, res, next) => {
+    const network = req.body.network;
     const now = new Date();
     const vpUnpacked = await common.blockchainClient.verifyVP(req.body.vpJwt);
     const vcJwt = vpUnpacked.payload.vp.verifiableCredential[0];
@@ -456,7 +458,7 @@ module.exports = {
 
     let didUrl = "";
 
-    if (req.body.storage === "ethereum") {
+    if (network === "eth") {
       common.blockchainClient.storeDataOnEthereumBlockchain(
         documentDidAddress,
         documentDidPrivateKey,
@@ -464,14 +466,14 @@ module.exports = {
         req.body.vpJwt
       );
       didUrl = "https://etherscan.io/address/" + documentDidAddress;
-    } else if (req.body.storage === "rsk") {
+    } else if (network === "rsk") {
       common.rskClient.storeDataOnRskBlockchain(
         documentDidAddress,
         documentDidPrivateKey,
         validityTimeSeconds,
         req.body.vpJwt
       );
-      didUrl = "https://explorer.testnet.rsk.co/address/" + documentDidAddress;
+      didUrl = "https://explorer.rsk.co/address/" + documentDidAddress;
     } else {
       await documentStorageHelper.uploadPublicVPJwt(
         req.body.vpJwt,

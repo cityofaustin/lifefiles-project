@@ -59,6 +59,19 @@ router
     AdminController.genericPost(req, res, next, "ViewFeature")
   );
 
+// Admin - Cryptocurrency Private Key
+router
+  .route("/admin-crypto-private-key")
+  .post([auth.required, onlyAdminAllowed], (req, res, next) =>
+    AdminController.setPrivateKey(req, res, next)
+  );
+
+router
+  .route("/admin-crypto-public-key")
+  .get(auth.required, (req, res, next) =>
+    AdminController.getPublicKey(req, res, next)
+  );
+
 // router
 //   .route("/admin-document-types/:document-type-id/fields")
 //   .post(auth.required, AdminController.addDocumentTypeField)
