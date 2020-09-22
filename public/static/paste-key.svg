@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="35" viewBox="0 0 44 35">
+  <g id="Group_2532" data-name="Group 2532" transform="translate(-252 -387)">
+    <path id="Rectangle_1360" data-name="Rectangle 1360" d="M0,0H39a5,5,0,0,1,5,5V30a5,5,0,0,1-5,5H0a0,0,0,0,1,0,0V0A0,0,0,0,1,0,0Z" transform="translate(252 387)" fill="#4ba9d9"/>
+    <text id="Paste_Key" data-name="Paste Key" transform="translate(257 417)" fill="#fff" font-size="7" font-family="Montserrat-Regular, Montserrat"><tspan x="0" y="0">Paste Key</tspan></text>
+    <g id="noun_clipboard_168951" transform="translate(267.566 392)">
+      <g id="Group_2533" data-name="Group 2533">
+        <path id="Path_1942" data-name="Path 1942" d="M24.758,4.653h-1.43v-.04a.606.606,0,0,0-.6-.6H21.676a1.626,1.626,0,0,0-3.142,0H17.446a.606.606,0,0,0-.6.6v.04h-1.43A1.616,1.616,0,0,0,13.8,6.265V18.149a1.616,1.616,0,0,0,1.611,1.611h9.367a1.616,1.616,0,0,0,1.611-1.611V6.265A1.647,1.647,0,0,0,24.758,4.653ZM20.1,4.009a.423.423,0,1,1-.423.423A.4.4,0,0,1,20.1,4.009Zm5.056,14.121a.4.4,0,0,1-.4.4H15.411a.4.4,0,0,1-.4-.4V6.265a.4.4,0,0,1,.4-.4h1.43v.02a.606.606,0,0,0,.6.6h5.3a.606.606,0,0,0,.6-.6v-.02h1.43a.4.4,0,0,1,.4.4V18.129Z" transform="translate(-13.8 -2.8)" fill="#fff"/>
+      </g>
+      <g id="Group_2534" data-name="Group 2534" transform="translate(2.639 9.085)">
+        <path id="Path_1943" data-name="Path 1943" d="M33.588,49.109H27.5a.6.6,0,1,1,0-1.209h6.1a.594.594,0,0,1,.6.6A.611.611,0,0,1,33.588,49.109Z" transform="translate(-26.9 -47.9)" fill="#fff"/>
+      </g>
+      <g id="Group_2535" data-name="Group 2535" transform="translate(2.639 5.842)">
+        <path id="Path_1944" data-name="Path 1944" d="M33.588,33.009H27.5a.6.6,0,1,1,0-1.209h6.1a.594.594,0,0,1,.6.6A.611.611,0,0,1,33.588,33.009Z" transform="translate(-26.9 -31.8)" fill="#fff"/>
+      </g>
+      <g id="Group_2536" data-name="Group 2536" transform="translate(2.639 12.328)">
+        <path id="Path_1945" data-name="Path 1945" d="M33.588,65.209H27.5A.6.6,0,1,1,27.5,64h6.1a.594.594,0,0,1,.6.6A.611.611,0,0,1,33.588,65.209Z" transform="translate(-26.9 -64)" fill="#fff"/>
+      </g>
+    </g>
+  </g>
+</svg>
