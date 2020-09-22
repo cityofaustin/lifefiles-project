@@ -31,6 +31,7 @@ Hit the api endpoints at: http://localhost:5000/api/
 ## One Click Heroku Deployment
 
 Alternativly you can deploy the backend to heroku with one click:
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 ![Image of Heroku One Click Deploy](https://www.herokucdn.com/deploy/button.svg)
 [Deploy to Heroku](https://www.heroku.com/deploy/?template=https://github.com/cityofaustin/mypass)

@@ -2,7 +2,6 @@
   "name": "MyPass",
   "description": "MyPass Quickstart",
   "repository": "https://github.com/cityofaustin/mypass",
-  "addons": ["mongolab"],
 
   "env": {
     "FILE_SAFE_KEY": {
