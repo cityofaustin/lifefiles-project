@@ -14,7 +14,7 @@ module.exports = {
   myAdminAccount: async (req, res, next) => {
     const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
 
-    if (account.role !== "admin" && account.canAddOtherAccounts !== true) {
+    if (account.role !== "admin") {
       res.status(403).json({
         error: "Account not authorized",
       });
@@ -45,7 +45,7 @@ module.exports = {
       }
 
       if (account) {
-        if (account.role === "admin" || account.canAddOtherAccounts === true) {
+        if (account.role === "admin") {
           account.token = account.generateJWT();
           return res.json({ account: account.toAuthJSON() });
         } else {
@@ -207,10 +207,7 @@ module.exports = {
     //   return;
     // }
 
-    if (
-      adminAccount.role !== "admin" &&
-      adminAccount.canAddOtherAccounts !== true
-    ) {
+    if (adminAccount.role !== "admin") {
       res.status(403).json({
         error: "Account not authorized to create accounts with this role level",
       });
@@ -240,9 +237,9 @@ module.exports = {
     }
 
     // Helper accounts cannot make new accounts that can make new accounts
-    if (adminAccount.canAddOtherAccounts == true) {
-      req.body.account.canAddOtherAccounts = false;
-    }
+    // if (adminAccount.canAddOtherAccounts == true) {
+    //   req.body.account.canAddOtherAccounts = false;
+    // }
 
     let account;
     try {
