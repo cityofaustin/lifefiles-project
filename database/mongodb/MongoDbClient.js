@@ -215,7 +215,7 @@ class MongoDbClient {
       .populate({ path: "helperAccount" });
   }
   async getHelperContactsForHelper(accountId) {
-    return await HelperContact.find({ helperAccountId: accountId })
+    return await HelperContact.find({ helperAccount: accountId })
       .populate({ path: "ownerAccount" })
       .populate({ path: "helperAccount" });
   }
