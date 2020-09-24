@@ -183,6 +183,8 @@ module.exports = {
 
       if (ownerAccount.account.username === "owner") {
         profileImage = "sally.png";
+        ownerAccount.account.firstname = "Sally";
+        ownerAccount.account.lastname = "Owner";
       }
 
       try {
