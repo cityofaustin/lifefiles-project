@@ -346,8 +346,9 @@ class MongoDbClient {
     newAccount.didAddress = did.address;
     newAccount.didPublicEncryptionKey = did.publicEncryptionKey;
     newAccount.didPrivateKeyGuid = did.privateKeyGuid;
-    newAccount.profileImageUrl = profileImageUrl;
-
+    if(profileImageUrl) {
+      newAccount.profileImageUrl = profileImageUrl;
+    }
     if (accountReq.canAddOtherAccounts === undefined) {
       newAccount.canAddOtherAccounts = false;
     } else {

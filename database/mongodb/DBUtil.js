@@ -396,7 +396,7 @@ class DBUtil {
         adminAccount.account,
         adminDid.did,
         "06fy-0000",
-        "goku.png"
+        // "goku.png"
       );
     }
 

@@ -179,7 +179,7 @@ module.exports = {
       };
 
       let account;
-      let profileImage = "anon-user.png";
+      let profileImage = undefined;
 
       if (ownerAccount.account.username === "owner") {
         profileImage = "sally.png";
