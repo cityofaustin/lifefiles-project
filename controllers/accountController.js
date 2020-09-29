@@ -293,8 +293,15 @@ module.exports = {
       accountId = req.params.accountId;
     }
 
-    const shareRequests = await common.dbClient.getShareRequests(accountId);
-
+    let shareRequests = await common.dbClient.getShareRequests(accountId);
+    // NOTE: need some additional information about the document like valid until, is notarized
+    const account = await common.dbClient.getAllAccountInfoById(accountId);
+    shareRequests = shareRequests.map(sr => {
+      const sr2 = sr.toObject();
+      const doc = account.documents.find(doc1 => doc1.type === sr.documentType);
+      sr2.validUntilDate = (doc && doc.validUntilDate) ? doc.validUntilDate : undefined;
+      return sr2;
+    });
     res.status(200).json(shareRequests);
   },
 
