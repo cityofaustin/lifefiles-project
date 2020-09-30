@@ -300,6 +300,8 @@ module.exports = {
       const sr2 = sr.toObject();
       const doc = account.documents.find(doc1 => doc1.type === sr.documentType);
       sr2.validUntilDate = (doc && doc.validUntilDate) ? doc.validUntilDate : undefined;
+      sr2.vcJwt = (doc && doc.vcJwt) ? doc.vcJwt : undefined;
+      sr2.vpDocumentDidAddress = (doc && doc.vpDocumentDidAddress) ? doc.vpDocumentDidAddress : undefined;
       return sr2;
     });
     res.status(200).json(shareRequests);
