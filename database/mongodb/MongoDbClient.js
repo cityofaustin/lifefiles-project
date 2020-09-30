@@ -346,7 +346,7 @@ class MongoDbClient {
     newAccount.didAddress = did.address;
     newAccount.didPublicEncryptionKey = did.publicEncryptionKey;
     newAccount.didPrivateKeyGuid = did.privateKeyGuid;
-    if(profileImageUrl) {
+    if (profileImageUrl) {
       newAccount.profileImageUrl = profileImageUrl;
     }
     if (accountReq.canAddOtherAccounts === undefined) {
@@ -369,7 +369,7 @@ class MongoDbClient {
       newAccount.oauthId = "billy-oauth-123";
     }
 
-    if (newAccount.email === "admin@admin.com") {
+    if (newAccount.email === process.env.ADMIN_EMAIL) {
       newAccount.oauthId = "admin-oauth-123";
     }
 

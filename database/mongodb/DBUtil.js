@@ -357,6 +357,7 @@ class DBUtil {
 
     if (
       process.env.ADMIN_PASSWORD !== undefined &&
+      process.env.ADMIN_EMAIL !== undefined &&
       adminAccount === undefined
     ) {
       console.log("\nAdmin account is empty. Populating admin account...");
@@ -392,10 +393,10 @@ class DBUtil {
         adminDid.did.privateKey
       );
 
-      mongoDbInstance.createAccount(
+      await mongoDbInstance.createAccount(
         adminAccount.account,
         adminDid.did,
-        "06fy-0000",
+        "06fy-0000"
         // "goku.png"
       );
     }
