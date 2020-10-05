@@ -370,7 +370,7 @@ class DBUtil {
           lastname: "admin",
           password: process.env.ADMIN_PASSWORD,
           accounttype: "Admin",
-          email: "admin@admin.com",
+          email: process.env.ADMIN_EMAIL,
           phonenumber: "555-555-5555",
           organization: "-",
         },

@@ -141,6 +141,7 @@ module.exports = {
       did = await common.blockchainClient.createNewDID();
       did.privateKey = "byok";
       did.publicEncryptionKey = accountRequest.publicEncryptionKey;
+      did.address = req.body.username;
       did.privateKeyGuid = uuid;
       // Random password and this accout doesn't use it. They use the secure login method.
       accountRequest.password = uuidv4();
