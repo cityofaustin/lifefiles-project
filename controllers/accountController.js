@@ -296,12 +296,16 @@ module.exports = {
     let shareRequests = await common.dbClient.getShareRequests(accountId);
     // NOTE: need some additional information about the document like valid until, is notarized
     const account = await common.dbClient.getAllAccountInfoById(accountId);
-    shareRequests = shareRequests.map(sr => {
+    shareRequests = shareRequests.map((sr) => {
       const sr2 = sr.toObject();
-      const doc = account.documents.find(doc1 => doc1.type === sr.documentType);
-      sr2.validUntilDate = (doc && doc.validUntilDate) ? doc.validUntilDate : undefined;
-      sr2.vcJwt = (doc && doc.vcJwt) ? doc.vcJwt : undefined;
-      sr2.vpDocumentDidAddress = (doc && doc.vpDocumentDidAddress) ? doc.vpDocumentDidAddress : undefined;
+      const doc = account.documents.find(
+        (doc1) => doc1.type === sr.documentType
+      );
+      sr2.validUntilDate =
+        doc && doc.validUntilDate ? doc.validUntilDate : undefined;
+      sr2.vcJwt = doc && doc.vcJwt ? doc.vcJwt : undefined;
+      sr2.vpDocumentDidAddress =
+        doc && doc.vpDocumentDidAddress ? doc.vpDocumentDidAddress : undefined;
       return sr2;
     });
     res.status(200).json(shareRequests);
@@ -322,6 +326,14 @@ module.exports = {
 
     if (req.params.imageurl === "anon-user.png") {
       payload = fs.createReadStream("./assets/anon-user.png");
+    } else if (req.params.imageurl === "sally.png") {
+      payload = fs.createReadStream("./assets/sally.png");
+    } else if (req.params.imageurl === "billy.png") {
+      payload = fs.createReadStream("./assets/billy.png");
+    } else if (req.params.imageurl === "karen.png") {
+      payload = fs.createReadStream("./assets/karen.png");
+    } else if (req.params.imageurl === "josh.png") {
+      payload = fs.createReadStream("./assets/josh.png");
     } else {
       payload = await documentStorageHelper.getDocumentBytes(
         req.params.imageurl,
