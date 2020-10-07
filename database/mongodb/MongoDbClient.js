@@ -153,6 +153,13 @@ class MongoDbClient {
     return accounts[0];
   }
 
+  async setAccountPhoneNumber(username, phoneNumber) {
+    const account = await Account.findOne({ username });
+    account.phoneNumber = phoneNumber;
+    await account.save();
+    return account;
+  }
+
   async getAccountByUsername(username) {
     const accounts = await Account.find({ username: username });
     return accounts[0];
