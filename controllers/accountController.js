@@ -15,6 +15,17 @@ module.exports = {
     res.status(200).json({ encryptionKey: key });
   },
 
+  setAccountPhoneNumber: async (req, res, next) => {
+    let username = req.body.username;
+    let phoneNumber = req.body.phoneNumber;
+    let secret = req.body.secret;
+    if (secret !== process.env.AUTH_SECRET) {
+      res.status(403).json({ message: "failure" });
+    }
+    let account = await common.dbClient.setAccountPhoneNumber(username, phoneNumber);
+    res.status(200).json({ account });
+  },
+
   sendOneTimeAccessCode: async (req, res, next) => {
     let username = req.params.username;
     let oneTimeCode = req.params.oneTimeCode;

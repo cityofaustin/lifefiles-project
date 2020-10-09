@@ -139,6 +139,11 @@ router
   .route("/send-code/account/:username/:oneTimeCode/:loginUuid")
   .post(AccountController.sendOneTimeAccessCode);
 
+// This route is from oauth server to set phone number on login method update
+router
+  .route("/accounts/set-phone-number")
+  .post(AccountController.setAccountPhoneNumber);
+
 // This route is from oauth server to send code to user's helpers
 router
   .route("/send-helper-code/account/:username/:oneTimeCode/:loginUuid")
