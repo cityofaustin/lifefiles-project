@@ -13,7 +13,6 @@ const providerConfig = {
 };
 
 const resolver = new Resolver(getResolver(providerConfig));
-// const resolver = new Resolver();
 
 class SimpleBlockchainClient {
   async createNewDID() {
@@ -29,8 +28,6 @@ class SimpleBlockchainClient {
   }
 
   async verifyVP(vpJwt) {
-    // let resolver = new Resolver();
-    // let resolver = new Resolver(getResolver(providerConfig));
     const verifiedVP = await verifyPresentation(vpJwt, resolver);
     return verifiedVP;
   }
