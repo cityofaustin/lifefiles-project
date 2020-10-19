@@ -59,6 +59,19 @@ router
     AdminController.genericPost(req, res, next, "ViewFeature")
   );
 
+// Admin - Cryptocurrency Private Key
+router
+  .route("/admin-crypto-private-key")
+  .post([auth.required, onlyAdminAllowed], (req, res, next) =>
+    AdminController.setPrivateKey(req, res, next)
+  );
+
+router
+  .route("/admin-crypto-public-key")
+  .get(auth.required, (req, res, next) =>
+    AdminController.getPublicKey(req, res, next)
+  );
+
 // router
 //   .route("/admin-document-types/:document-type-id/fields")
 //   .post(auth.required, AdminController.addDocumentTypeField)
@@ -125,6 +138,11 @@ router.route("/accounts/admin-login").post(
 router
   .route("/send-code/account/:username/:oneTimeCode/:loginUuid")
   .post(AccountController.sendOneTimeAccessCode);
+
+// This route is from oauth server to set phone number on login method update
+router
+  .route("/accounts/set-phone-number")
+  .post(AccountController.setAccountPhoneNumber);
 
 // This route is from oauth server to send code to user's helpers
 router

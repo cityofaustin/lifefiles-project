@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="101" height="51.756" viewBox="0 0 101 51.756">
+  <g id="Group_2506" data-name="Group 2506" transform="translate(-75 -459.244)">
+    <g id="Group_1591" data-name="Group 1591" transform="translate(-9 -71)">
+      <rect id="Rectangle_1107" data-name="Rectangle 1107" width="101" height="50" rx="10" transform="translate(84 532)" fill="#76b3ef"/>
+      <text id="Private_Key" data-name="Private Key" transform="translate(134 574)" fill="#fff" font-size="16" font-family="Montserrat-Medium, Montserrat" font-weight="500"><tspan x="-45.272" y="0">Private Key</tspan></text>
+    </g>
+    <path id="Path_1345" data-name="Path 1345" d="M8.372,25.921A8.37,8.37,0,1,1,11.762,9.9L21.508.151A.513.513,0,0,1,21.876,0a.194.194,0,0,1,.057.005L25.09.379a.523.523,0,0,1,.451.456l.373,3.152a.5.5,0,0,1-.145.425L23.727,6.455a.513.513,0,0,1-.736,0l-.529-.529-1.192,1.2.529.529a.513.513,0,0,1,.15.368.5.5,0,0,1-.15.363L20.254,9.928a.516.516,0,0,1-.731,0L18.994,9.4l-1.2,1.192.529.529a.518.518,0,0,1,.156.368.527.527,0,0,1-.156.368l-2.3,2.3a8.269,8.269,0,0,1,.715,3.39,8.3,8.3,0,0,1-2.452,5.92A8.309,8.309,0,0,1,8.372,25.921Zm.886-9.259a2.563,2.563,0,0,0-4.375,1.814,2.563,2.563,0,0,0,5.127,0A2.566,2.566,0,0,0,9.259,16.662Z" transform="translate(125.98 459.244) rotate(45)" fill="#fff"/>
+  </g>
+</svg>

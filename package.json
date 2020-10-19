@@ -19,7 +19,7 @@
     "did-jwt-vc": "^0.1.6",
     "did-resolver": "^1.1.0",
     "dotenv": "^8.2.0",
-    "eth-crypto": "^1.7.0",
+    "eth-crypto": "^1.8.0",
     "ethr-did": "^1.1.0",
     "ethr-did-registry": "0.0.3",
     "ethr-did-resolver": "^2.4.0",

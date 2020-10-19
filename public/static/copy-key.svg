@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="44" height="35" viewBox="0 0 44 35">
+  <g id="Group_2532" data-name="Group 2532" transform="translate(-252 -387)">
+    <path id="Rectangle_1360" data-name="Rectangle 1360" d="M0,0H39a5,5,0,0,1,5,5V30a5,5,0,0,1-5,5H0a0,0,0,0,1,0,0V0A0,0,0,0,1,0,0Z" transform="translate(252 387)" fill="#d95868"/>
+    <text id="Copy_Key" data-name="Copy Key" transform="translate(258 417)" fill="#fff" font-size="7" font-family="Montserrat-Regular, Montserrat"><tspan x="0" y="0">Copy Key</tspan></text>
+    <g id="Group_2530" data-name="Group 2530" transform="translate(266.525 392.525)">
+      <rect id="Rectangle_1361" data-name="Rectangle 1361" width="10" height="10" rx="1" transform="translate(1.475 5.475)" fill="#fff"/>
+      <g id="noun_copy_308007">
+        <g id="Group_2529" data-name="Group 2529" transform="translate(0 0)">
+          <path id="Path_1941" data-name="Path 1941" d="M6,11.939a1.485,1.485,0,0,1,1.486-1.486h8.9a1.485,1.485,0,0,1,1.486,1.486v8.9a1.485,1.485,0,0,1-1.486,1.486h-8.9A1.485,1.485,0,0,1,6,20.843v-8.9Zm1.484,0h8.907v8.907H7.484V11.938Zm13.36,5.938a1.485,1.485,0,0,0,1.484-1.484V14.907H20.844v1.484H19.36v1.484ZM22.329,7.484A1.485,1.485,0,0,0,20.844,6H19.36V7.484h1.484V8.969h1.484V7.484ZM11.938,6a1.485,1.485,0,0,0-1.484,1.484V8.969h1.484V7.484h1.484V6Zm2.969,0h2.969V7.484H14.907V6Zm5.938,4.453h1.484v2.969H20.844V10.453Z" transform="translate(-6 -6)" fill="#fff" fill-rule="evenodd"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

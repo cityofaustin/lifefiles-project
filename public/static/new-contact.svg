@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="229" height="237" viewBox="0 0 229 237">
+  <defs>
+    <clipPath id="clip-path">
+      <path id="Path_1214" data-name="Path 1214" d="M109.546,0A109.546,109.546,0,1,1,0,109.546,109.546,109.546,0,0,1,109.546,0Z" fill="none" stroke="#2362c7" stroke-width="5"/>
+    </clipPath>
+  </defs>
+  <g id="Group_2101" data-name="Group 2101" transform="translate(-342 -345)">
+    <g id="Group_2099" data-name="Group 2099" transform="translate(350.443 345)">
+      <g id="Group_32" data-name="Group 32" transform="translate(0)" clip-path="url(#clip-path)">
+        <path id="Union_54" data-name="Union 54" d="M26.05,152.115c-7.681,0-13.994-2.372-18.767-7.05C2.45,140.324,0,133.9,0,125.956c0-3.055.1-6.078.295-8.983a92.62,92.62,0,0,1,1.2-9.616A77.813,77.813,0,0,1,3.786,97.7a48.567,48.567,0,0,1,3.856-9.014,33.894,33.894,0,0,1,5.814-7.806,25.52,25.52,0,0,1,8.355-5.407,28.1,28.1,0,0,1,10.664-1.99c1.508,0,2.966.637,5.779,2.526,1.759,1.18,3.787,2.526,6.029,4a33.923,33.923,0,0,0,7.786,3.535,29.43,29.43,0,0,0,19.061,0A34.031,34.031,0,0,0,78.922,80c2.262-1.489,4.29-2.835,6.022-4,2.815-1.888,4.273-2.526,5.781-2.526a28.125,28.125,0,0,1,10.666,1.989,25.543,25.543,0,0,1,8.354,5.406,33.869,33.869,0,0,1,5.815,7.807,48.481,48.481,0,0,1,3.858,9.012,77.873,77.873,0,0,1,2.3,9.664,93.305,93.305,0,0,1,1.2,9.612h0c.2,2.9.3,5.92.3,8.986,0,7.942-2.45,14.372-7.284,19.11-4.774,4.678-11.088,7.05-18.766,7.05Zm9.473-89.574A36,36,0,0,1,25.1,36.636a36,36,0,0,1,10.42-25.9A33.919,33.919,0,0,1,60.672,0,33.928,33.928,0,0,1,85.821,10.731,36,36,0,0,1,96.242,36.636a36,36,0,0,1-10.419,25.9,33.923,33.923,0,0,1-25.15,10.734A33.932,33.932,0,0,1,35.523,62.541Z" transform="translate(47.301 31.689)" fill="#818181"/>
+      </g>
+    </g>
+    <g id="Group_1099" data-name="Group 1099" transform="translate(441.615 478.037)">
+      <circle id="Ellipse_374" data-name="Ellipse 374" cx="18.5" cy="18.5" r="18.5" transform="translate(0.385 -0.037)" fill="#fcfcfc"/>
+      <g id="Group_1071" data-name="Group 1071" transform="translate(11.345 11.613)">
+        <line id="Line_276" data-name="Line 276" y2="14.728" transform="translate(7.364)" fill="none" stroke="#818181" stroke-linecap="round" stroke-width="5"/>
+        <line id="Line_277" data-name="Line 277" x2="14.058" transform="translate(0 7.364)" fill="none" stroke="#818181" stroke-linecap="round" stroke-width="5"/>
+      </g>
+    </g>
+    <text id="New_Contact" data-name="New Contact" transform="translate(343 551)" fill="#645857" stroke="rgba(0,0,0,0)" stroke-width="1" font-size="25" font-family="Montserrat-Bold, Montserrat" font-weight="700"><tspan x="28.488" y="24">New Contact</tspan></text>
+  </g>
+</svg>

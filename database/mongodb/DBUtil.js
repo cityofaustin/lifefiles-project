@@ -5,6 +5,7 @@ class DBUtil {
     const accounts = await mongoDbInstance.getAllAccounts();
     const documentTypes = await mongoDbInstance.getAllDocumentTypes();
     const accountTypes = await mongoDbInstance.getAllAccountTypes();
+    const adminCryptoKey = await mongoDbInstance.getAdminPrivateKey();
     const adminAccount = accounts.find(({ username }) => username === "admin");
 
     if (accountTypes.length === 0) {
@@ -356,6 +357,7 @@ class DBUtil {
 
     if (
       process.env.ADMIN_PASSWORD !== undefined &&
+      process.env.ADMIN_EMAIL !== undefined &&
       adminAccount === undefined
     ) {
       console.log("\nAdmin account is empty. Populating admin account...");
@@ -368,7 +370,7 @@ class DBUtil {
           lastname: "admin",
           password: process.env.ADMIN_PASSWORD,
           accounttype: "Admin",
-          email: "admin@admin.com",
+          email: process.env.ADMIN_EMAIL,
           phonenumber: "555-555-5555",
           organization: "-",
         },
@@ -391,18 +393,36 @@ class DBUtil {
         adminDid.did.privateKey
       );
 
-      mongoDbInstance.createAccount(
+      await mongoDbInstance.createAccount(
         adminAccount.account,
         adminDid.did,
-        "06fy-0000",
-        "goku.png"
+        "06fy-0000"
+        // "goku.png"
+      );
+    }
+
+    if (
+      adminCryptoKey == undefined &&
+      process.env.ETH_FUNDING_PRIVATE_KEY !== undefined
+    ) {
+      console.log("Adding admin key from env var to db");
+
+      const publicKey = EthCrypto.publicKeyByPrivateKey(
+        process.env.ETH_FUNDING_PRIVATE_KEY
+      );
+
+      const address = EthCrypto.publicKey.toAddress(publicKey);
+
+      await mongoDbInstance.setAdminPrivateKey(
+        address,
+        process.env.ETH_FUNDING_PRIVATE_KEY
       );
     }
 
     if (accounts.length === 0) {
       console.log("\nAccounts are empty. Populating default values...");
 
-      // // Sally
+      // // Sally Created With Oauth Side Now
       // let ownerAccount = {
       //   account: {
       //     username: "owner",

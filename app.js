@@ -51,7 +51,7 @@ if (process.env.ETH_FUNDING_PRIVATE_KEY !== undefined) {
 common.dbClient = dbClient;
 
 const limiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // 5 minutes
+  windowMs: 1 * 60 * 1000, // 1 minute
   max: 200, // limit each IP to 100 requests per windowMs
 });
 

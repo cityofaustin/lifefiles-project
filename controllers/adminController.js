@@ -14,7 +14,7 @@ module.exports = {
   myAdminAccount: async (req, res, next) => {
     const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
 
-    if (account.role !== "admin" && account.canAddOtherAccounts !== true) {
+    if (account.role !== "admin") {
       res.status(403).json({
         error: "Account not authorized",
       });
@@ -45,7 +45,7 @@ module.exports = {
       }
 
       if (account) {
-        if (account.role === "admin" || account.canAddOtherAccounts === true) {
+        if (account.role === "admin") {
           account.token = account.generateJWT();
           return res.json({ account: account.toAuthJSON() });
         } else {
@@ -127,7 +127,7 @@ module.exports = {
       lastname: req.body.lastname,
       publicEncryptionKey: req.body.publicEncryptionKey,
       notaryId: req.body.notaryId,
-      notaryState: req.body.notaryState
+      notaryState: req.body.notaryState,
     };
     // These helper accounts cannot make new accounts that can make new accounts
     accountRequest.canAddOtherAccounts = false;
@@ -141,6 +141,7 @@ module.exports = {
       did = await common.blockchainClient.createNewDID();
       did.privateKey = "byok";
       did.publicEncryptionKey = accountRequest.publicEncryptionKey;
+      did.address = req.body.username;
       did.privateKeyGuid = uuid;
       // Random password and this accout doesn't use it. They use the secure login method.
       accountRequest.password = uuidv4();
@@ -207,10 +208,7 @@ module.exports = {
     //   return;
     // }
 
-    if (
-      adminAccount.role !== "admin" &&
-      adminAccount.canAddOtherAccounts !== true
-    ) {
+    if (adminAccount.role !== "admin") {
       res.status(403).json({
         error: "Account not authorized to create accounts with this role level",
       });
@@ -240,9 +238,9 @@ module.exports = {
     }
 
     // Helper accounts cannot make new accounts that can make new accounts
-    if (adminAccount.canAddOtherAccounts == true) {
-      req.body.account.canAddOtherAccounts = false;
-    }
+    // if (adminAccount.canAddOtherAccounts == true) {
+    //   req.body.account.canAddOtherAccounts = false;
+    // }
 
     let account;
     try {
@@ -318,15 +316,33 @@ module.exports = {
     res.status(200).json({ response: postResponse });
   },
 
-  // addDocumentTypeField: async (req, res, next) => {},
+  getPublicKey: async (req, res, next) => {
+    let adminPublicKey = await common.dbClient.getAdminPublicKey();
+    return res.status(200).json({ adminPublicKey });
+  },
 
-  // deleteDocumentTypeField: async (req, res, next) => {},
+  setPrivateKey: async (req, res, next) => {
+    const adminAccountId = req.payload.id;
+    const adminAccount = await common.dbClient.getAccountById(adminAccountId);
 
-  // LEGACY
-  // resetDatabase: async (req, res, next) => {
-  //   await common.dbClient.resetDatabase();
-  //   res.status(200).json({ message: "success" });
-  // },
+    if (adminAccount.role !== "admin") {
+      res.status(403).json({
+        error: "Account not authorized to hit this route",
+      });
+      return;
+    }
+
+    let privateKey = req.body.privateKey;
+    if (privateKey.substring(0, 2) !== "0x") {
+      // Add 0x if it does not have it
+      privateKey = "0x" + privateKey;
+    }
+    const publicKey = EthCrypto.publicKeyByPrivateKey(privateKey);
+    const address = EthCrypto.publicKey.toAddress(publicKey);
+    common.dbClient.setAdminPrivateKey(address, privateKey);
+
+    res.status(201).json({ msg: "success" });
+  },
 
   getPermissions: async (req, res, next) => {
     const permissions = await common.dbClient.getAllPermissions();

@@ -87,7 +87,7 @@ class UportClient {
     try {
       await ensContract.methods.setText(ENS_NODE, didKey, nameValue).send({
         from: ethDomainAccount.address,
-        gasPrice: 100000000 * gasStationPrice.data.safeLow,
+        gasPrice: 100000000 * (gasStationPrice.data.safeLow / 10),
         gas: gasEstimate,
       });
     } catch (err) {
@@ -134,7 +134,7 @@ class UportClient {
 
     console.log("Starting Eth Transactions with account: " + identity);
 
-    const safeLowGasPrice = 100000000 * gasStationPrice.data.safeLow;
+    const safeLowGasPrice = 100000000 * (gasStationPrice.data.safeLow / 10);
 
     try {
       console.log("Send Transaction Start");

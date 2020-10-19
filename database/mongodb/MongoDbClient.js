@@ -18,6 +18,7 @@ const VerifiableCredential = require("./models/VerifiableCredential");
 const VerifiablePresentation = require("./models/VerifiablePresentation");
 const AppSetting = require("./models/AppSetting");
 const HelperContact = require("./models/HelperContact");
+const AdminCryptoKey = require("./models/AdminCryptoKey");
 
 const classes = new Map();
 classes.set("AccountType", AccountType);
@@ -117,7 +118,32 @@ class MongoDbClient {
 
     adminData.viewFeatures = await ViewFeature.find({});
     adminData.coreFeatures = await CoreFeature.find({});
+    adminData.adminCryptoKey = await AdminCryptoKey.findOne();
     return adminData;
+  }
+
+  async setAdminPrivateKey(publicKey, privateKey) {
+    let adminCryptoKey;
+    adminCryptoKey = await AdminCryptoKey.findOne();
+
+    if (adminCryptoKey === null || adminCryptoKey === undefined) {
+      adminCryptoKey = new AdminCryptoKey();
+    }
+
+    adminCryptoKey.publicKey = publicKey;
+    adminCryptoKey.privateKey = privateKey;
+    await adminCryptoKey.save();
+    return adminCryptoKey;
+  }
+
+  async getAdminPublicKey() {
+    let adminCryptoKey = await AdminCryptoKey.findOne();
+    return adminCryptoKey.publicKey;
+  }
+
+  async getAdminPrivateKey() {
+    let adminCryptoKey = await AdminCryptoKey.findOne();
+    return adminCryptoKey;
   }
 
   // Accounts
@@ -125,6 +151,13 @@ class MongoDbClient {
   async getAccountByOAuthId(id) {
     const accounts = await Account.find({ oauthId: id });
     return accounts[0];
+  }
+
+  async setAccountPhoneNumber(username, phoneNumber) {
+    const account = await Account.findOne({ username });
+    account.phoneNumber = phoneNumber;
+    await account.save();
+    return account;
   }
 
   async getAccountByUsername(username) {
@@ -189,7 +222,7 @@ class MongoDbClient {
       .populate({ path: "helperAccount" });
   }
   async getHelperContactsForHelper(accountId) {
-    return await HelperContact.find({ helperAccountId: accountId })
+    return await HelperContact.find({ helperAccount: accountId })
       .populate({ path: "ownerAccount" })
       .populate({ path: "helperAccount" });
   }
@@ -201,8 +234,12 @@ class MongoDbClient {
       _helperContact.isSocialAttestationEnabled;
     helperContact.canAddNewDocuments = _helperContact.canAddNewDocuments;
     await helperContact.save();
-    helperContact = await HelperContact.populate(helperContact, { path: "ownerAccount" });
-    helperContact = await HelperContact.populate(helperContact, { path: "helperAccount" });
+    helperContact = await HelperContact.populate(helperContact, {
+      path: "ownerAccount",
+    });
+    helperContact = await HelperContact.populate(helperContact, {
+      path: "helperAccount",
+    });
     return helperContact;
   }
 
@@ -316,8 +353,9 @@ class MongoDbClient {
     newAccount.didAddress = did.address;
     newAccount.didPublicEncryptionKey = did.publicEncryptionKey;
     newAccount.didPrivateKeyGuid = did.privateKeyGuid;
-    newAccount.profileImageUrl = profileImageUrl;
-
+    if (profileImageUrl) {
+      newAccount.profileImageUrl = profileImageUrl;
+    }
     if (accountReq.canAddOtherAccounts === undefined) {
       newAccount.canAddOtherAccounts = false;
     } else {
@@ -338,7 +376,7 @@ class MongoDbClient {
       newAccount.oauthId = "billy-oauth-123";
     }
 
-    if (newAccount.email === "admin@admin.com") {
+    if (newAccount.email === process.env.ADMIN_EMAIL) {
       newAccount.oauthId = "admin-oauth-123";
     }
 

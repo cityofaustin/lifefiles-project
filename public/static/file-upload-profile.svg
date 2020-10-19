@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="170" height="193.5" viewBox="0 0 170 193.5">
+  <g id="Group_2538" data-name="Group 2538" transform="translate(-95 -214.5)">
+    <g id="Group_2537" data-name="Group 2537">
+      <g id="Group_2503" data-name="Group 2503" transform="translate(0 7)">
+        <g id="noun_Camera_1560248" transform="translate(157 -658.362)">
+          <path id="Path_1919" data-name="Path 1919" d="M18.782,970.362l-1.245,3.113H13.179A2.174,2.174,0,0,0,11,975.654v12.452a2.174,2.174,0,0,0,2.179,2.179H33.1a2.174,2.174,0,0,0,2.179-2.179V975.654a2.174,2.174,0,0,0-2.179-2.179H28.744L27.5,970.362H18.782Zm4.358,5.6a5.915,5.915,0,1,1-5.915,5.915A5.929,5.929,0,0,1,23.141,975.965Zm0,1.868a4.047,4.047,0,1,0,4.047,4.047A4.033,4.033,0,0,0,23.141,977.833Z" transform="translate(0 0)" fill="#76b3ef"/>
+        </g>
+        <g id="Group_2501" data-name="Group 2501" transform="translate(2 9)">
+          <path id="Path_1934" data-name="Path 1934" d="M7.342,275.3A3.638,3.638,0,0,0,3.7,278.941v21.822a3.637,3.637,0,1,0,7.274,0V282.578H29.164a3.637,3.637,0,1,0,0-7.274Zm94.562,0a3.637,3.637,0,1,0,0,7.274h18.185v18.185a3.637,3.637,0,1,0,7.274,0V278.941a3.637,3.637,0,0,0-3.637-3.637ZM7.288,369.817A3.637,3.637,0,0,0,3.7,373.5v21.822a3.637,3.637,0,0,0,3.637,3.637H29.163a3.637,3.637,0,1,0,0-7.274H10.979V373.5a3.637,3.637,0,0,0-3.69-3.687Zm116.384,0a3.637,3.637,0,0,0-3.584,3.687v18.185H101.9a3.637,3.637,0,1,0,0,7.274h21.822a3.637,3.637,0,0,0,3.637-3.637V373.5a3.637,3.637,0,0,0-3.69-3.687Z" transform="translate(112.297 -75.304)" fill="#76b3ef" stroke="#fff" stroke-width="3"/>
+        </g>
+      </g>
+      <g id="Rectangle_1359" data-name="Rectangle 1359" transform="translate(95 366)" fill="#fff" stroke="#76b3ef" stroke-width="2">
+        <rect width="170" height="42" rx="5" stroke="none"/>
+        <rect x="1" y="1" width="168" height="40" rx="4" fill="none"/>
+      </g>
+    </g>
+    <text id="Browse_my_files" data-name="Browse my files" transform="translate(180 392)" fill="#76b3ef" font-size="14" font-family="Montserrat-Bold, Montserrat" font-weight="700"><tspan x="-58.464" y="0">Browse my files</tspan></text>
+    <g id="noun_person_2021615" transform="translate(125.764 217.78)">
+      <path id="Path_1918" data-name="Path 1918" d="M40.243,78.878a24.956,24.956,0,0,0,29.27,0,30.471,30.471,0,0,1,12.065,12.2,41.87,41.87,0,1,0-53.4,0A30.471,30.471,0,0,1,40.243,78.878ZM54.878,36.436A22.144,22.144,0,1,1,32.734,58.58,22.143,22.143,0,0,1,54.878,36.436Z" transform="translate(0)" fill="#76b3ef"/>
+    </g>
+  </g>
+</svg>
