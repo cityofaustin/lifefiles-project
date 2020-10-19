@@ -457,7 +457,7 @@ class MongoDbClient {
   }
 
   // TODO: Make document id / url explicit in share request params
-  async createShareRequest(accountRequestingId, accountId, documentTypeName) {
+  async createShareRequest(accountRequestingId, accountId, documentTypeName, canView = false, canReplace = false, canDownload = false) {
     const account = await Account.findById(accountId);
     const documents = await this.getDocuments(accountId);
 
@@ -482,6 +482,9 @@ class MongoDbClient {
     shareRequest.documentType = documentTypeName;
     shareRequest.documentUrl = documentUrl;
     shareRequest.documentId = documentId;
+    shareRequest.canView = canView;
+    shareRequest.canReplace = canReplace;
+    shareRequest.canDownload = canDownload;
     await shareRequest.save();
 
     account.shareRequests.push(shareRequest);
@@ -498,6 +501,15 @@ class MongoDbClient {
 
     await shareRequest.save();
 
+    return shareRequest;
+  }
+
+  async updateShareRequestPermissions(shareRequestId, canView, canReplace, canDownload) {
+    const shareRequest = await ShareRequest.findById(shareRequestId);
+    shareRequest.canView = canView;
+    shareRequest.canReplace = canReplace;
+    shareRequest.canDownload = canDownload;
+    await shareRequest.save();
     return shareRequest;
   }
 

@@ -200,6 +200,14 @@ router
   );
 
 router
+  .route("/share-requests/:shareRequestId/permissions")
+  .put([
+    auth.required,
+    (req, res, next) => isAllowedPostShareRequest(req, res, next),
+    AccountController.updateShareRequestPermissions,
+  ]);
+
+router
   .route("/profile-image/:imageurl/:jwt")
   .get(auth.image, AccountController.getProfileImage);
 

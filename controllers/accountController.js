@@ -379,6 +379,7 @@ module.exports = {
     let fromAccountId = req.body.fromAccountId;
     const toAccountId = req.body.toAccountId;
     const documentTypeName = req.body.documentType;
+    const {canView, canReplace, canDownload} = {...req.body}; 
 
     let authorized = false;
 
@@ -416,7 +417,10 @@ module.exports = {
     let shareRequest = await common.dbClient.createShareRequest(
       toAccountId,
       fromAccountId,
-      documentTypeName
+      documentTypeName,
+      canView,
+      canReplace,
+      canDownload
     );
 
     if (approved) {
@@ -480,6 +484,18 @@ module.exports = {
       thumbnailKey
     );
 
+    res.status(200).json(shareRequest);
+  },
+
+  updateShareRequestPermissions: async (req, res, next) => {
+    const shareRequestId = req.params.shareRequestId;
+    const {canDownload, canReplace, canView} = {...req.body};
+    const shareRequest = await common.dbClient.updateShareRequestPermissions(
+      shareRequestId,
+      canView,
+      canReplace,
+      canDownload
+    );
     res.status(200).json(shareRequest);
   },
 
