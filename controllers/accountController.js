@@ -22,7 +22,10 @@ module.exports = {
     if (secret !== process.env.AUTH_SECRET) {
       res.status(403).json({ message: "failure" });
     }
-    let account = await common.dbClient.setAccountPhoneNumber(username, phoneNumber);
+    let account = await common.dbClient.setAccountPhoneNumber(
+      username,
+      phoneNumber
+    );
     res.status(200).json({ account });
   },
 
@@ -51,8 +54,8 @@ module.exports = {
       account.username.toLowerCase() == "owner".toLowerCase() ||
       account.username.toLowerCase() == "caseworker".toLowerCase()
     ) {
-      contactEmail = process.env.CONTACT_EMAIL;
-      contactPhoneNumber = process.env.CONTACT_PHONE;
+      contactEmail = "owner@owner.com";
+      contactPhoneNumber = "555-555-5555";
     } else {
       contactEmail = account.email;
       contactPhoneNumber = account.phoneNumber;
@@ -61,7 +64,7 @@ module.exports = {
     if (sendEmail) {
       try {
         const send = require("gmail-send")({
-          user: "adam.carnagey.dev@gmail.com",
+          user: "mypass.austinatx@gmail.com",
           pass: process.env.MYPASS_GMAIL_PASSWORD,
           to: contactEmail,
           subject: `Mypass user ${username} is requesting a login code`,
