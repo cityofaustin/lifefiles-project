@@ -6,7 +6,7 @@ We mainly use the blockchain to store a JWT of a [verifiable credential](https:/
 
 This uses the Uport [ethr-did-registry](https://github.com/uport-project/ethr-did-registry) smart contract to post JWTs to the Ethereum Blockchain. To interact with this contract the documents did address needs to be the one publishing a blockchain transaction. There is a problem here in that these newly created document dids do not have any ethereum on it to make a transaction. To solve this problem we use our funding wallet estimate how much the transaction will cost, then send the funds over to the document did address. The document DID makes the transaction with the UPort registry and then sends the remaining funds back to the funding wallet.
 
-```mermaid
+```mermaid 
 sequenceDiagram
 Funding Wallet ->> Document DID Wallet: Estimate cost, send funds
 Document DID Wallet->>Did Registry Contract: JWT Gets stored in Blockchain
