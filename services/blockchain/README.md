@@ -12,8 +12,21 @@ Funding Wallet ->> Document DID Wallet: Estimate cost, send funds
 Document DID Wallet->>Did Registry Contract: JWT Gets stored in Blockchain
 Note right of Document DID Wallet: Wait for confirmation
 Document DID Wallet->> Funding Wallet: Send remainng funds back (if any)
-
 ```
+
+```mermaid
+sequenceDiagram
+Alice ->> Bob: Hello Bob, how are you?
+Bob-->>John: How about you John?
+Bob--x Alice: I am good thanks!
+Bob-x John: I am good thanks!
+Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
+
+Bob-->Alice: Checking with John...
+Alice->John: Yes... John, how are you?
+```
+
+
 
 Here are all the steps broken down in more detail.
 
