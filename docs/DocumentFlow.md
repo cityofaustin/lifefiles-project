@@ -42,4 +42,4 @@ Encryption ->> Compression: Decrypt copy with helper's private key
 Compression ->> Browser Storage: unzip copy
 Browser Storage ->> Helper: View Copy of Document
 ```
-<img src="shareflow.png" align="middle" width="900" >
+<img src="shareflow.png" align="middle" width="1100" >
