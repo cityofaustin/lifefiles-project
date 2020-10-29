@@ -47,6 +47,9 @@ var AccountSchema = new mongoose.Schema(
     ],
     notaryId: String,
     notaryState: String,
+    isNotDisplayPhoto: Boolean,
+    isNotDisplayName: Boolean,
+    isNotDisplayPhone: Boolean
   },
   { timestamps: true },
   { usePushEach: true }
@@ -101,6 +104,10 @@ AccountSchema.methods.toAuthJSON = function () {
     canAddOtherAccounts: this.canAddOtherAccounts,
     notaryId: this.notaryId,
     notaryState: this.notaryState,
+    phoneNumber: this.phoneNumber,
+    isNotDisplayPhoto: this.isNotDisplayPhoto,
+    isNotDisplayName: this.isNotDisplayName,
+    isNotDisplayPhone: this.isNotDisplayPhone
   };
 };
 

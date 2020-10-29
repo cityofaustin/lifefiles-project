@@ -272,7 +272,13 @@ module.exports = {
 
     const updatedAccount = await common.dbClient.updateAccount(
       accountId,
-      profileImageUrl
+      profileImageUrl,
+      req.body.phonenumber,
+      req.body.firstname,
+      req.body.lastname,
+      Boolean(req.body.isnotdisplayphoto),
+      Boolean(req.body.isnotdisplayname),
+      Boolean(req.body.isnotdisplayphone)
     );
 
     return res.status(201).json({ account: updatedAccount.toAuthJSON() });
