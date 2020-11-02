@@ -165,6 +165,13 @@ class MongoDbClient {
     return accounts[0];
   }
 
+  async getAccountByUsernameWithShareRequests(username) {
+    const account = await Account.findOne({ username }).populate({
+      path: "shareRequests",
+    });
+    return account;
+  }
+
   async getAccountById(id) {
     const account = await Account.findById(id);
     return account;
@@ -216,6 +223,11 @@ class MongoDbClient {
   }
 
   // helper contacts
+  async getHelperContactById(id) {
+    return await HelperContact.findById(id)
+      .populate({ path: "ownerAccount" })
+      .populate({ path: "helperAccount" });
+  }
   async getHelperContactsForOwner(accountId) {
     return await HelperContact.find({ ownerAccount: accountId })
       .populate({ path: "ownerAccount" })
@@ -241,6 +253,12 @@ class MongoDbClient {
       path: "helperAccount",
     });
     return helperContact;
+  }
+  async deleteHelperContact(id) {
+    const hc = await HelperContact.findOneAndRemove({
+      _id: id,
+    });
+    return hc;
   }
 
   // Core Features
@@ -455,7 +473,14 @@ class MongoDbClient {
     });
     return;
   }
-
+  async deleteShareRequestByIds(ids) {
+    await ShareRequest.deleteMany({
+      _id: {
+        $in: ids
+      }
+    });
+    return;
+  }
   async deleteShareRequest(shareRequestAccountOwnerId, shareRequestId) {
     let account = await Account.findById(shareRequestAccountOwnerId);
 
