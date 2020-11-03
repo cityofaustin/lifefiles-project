@@ -39,19 +39,29 @@ class HelperContactController {
     }
   };
 
-  deleteHelperContact = async (req, res) => {
-    const { id } = { ...req.params };
-    // get owner share requests for the helper and delete them first
-    const hc = await common.dbClient.getHelperContactById(id);
-    const ownerAccount = await common.dbClient.getAccountByUsernameWithShareRequests(hc.ownerAccount.username);
-    const helperAccount = await common.dbClient.getAccountByUsername(hc.helperAccount.username);
-    const ownerShareRequests = ownerAccount.shareRequests;
-    const shareRequests = ownerShareRequests.filter(osr => osr.shareWithAccountId === helperAccount.id);
-    const deleteIds = shareRequests.map(sr => sr.id);
-    await common.dbClient.deleteShareRequestByIds(deleteIds);
-    // then delete the owner helper contact
-    await common.dbClient.deleteHelperContact(id);
-    res.status(200).json({ message: "success" });
+  deleteHelperContact = async (req, res, next) => {
+    try {
+      const { id } = { ...req.params };
+      // get owner share requests for the helper and delete them first
+      const hc = await common.dbClient.getHelperContactById(id);
+      const ownerAccount = await common.dbClient.getAccountByUsernameWithShareRequests(
+        hc.ownerAccount.username
+      );
+      const helperAccount = await common.dbClient.getAccountByUsername(
+        hc.helperAccount.username
+      );
+      const ownerShareRequests = ownerAccount.shareRequests;
+      const shareRequests = ownerShareRequests.filter(
+        (osr) => osr.shareWithAccountId === helperAccount.id
+      );
+      const deleteIds = shareRequests.map((sr) => sr.id);
+      await common.dbClient.deleteShareRequestByIds(deleteIds);
+      // then delete the owner helper contact
+      await common.dbClient.deleteHelperContact(id);
+      res.status(200).json({ message: "success" });
+    } catch (err) {
+      next(err);
+    }
   };
 
   getHelperContacts = async (req, res) => {

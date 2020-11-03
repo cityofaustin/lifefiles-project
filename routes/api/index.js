@@ -104,7 +104,9 @@ router
   .put([auth.required, onlyAdminAllowed], AdminController.updateAccount);
 
 // Accounts
-router.route("/my-account").get(auth.required, AccountController.myAccount);
+router.route("/my-account")
+  .get(auth.required, AccountController.myAccount)
+  .delete(auth.required, AccountController.deleteMyAccount);
 
 router
   .route("/accounts")

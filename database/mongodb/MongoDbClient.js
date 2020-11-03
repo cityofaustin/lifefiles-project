@@ -246,6 +246,12 @@ class MongoDbClient {
       _helperContact.isSocialAttestationEnabled;
     helperContact.canAddNewDocuments = _helperContact.canAddNewDocuments;
     await helperContact.save();
+    const ownerAccount = await this.getAccountById(_helperContact.ownerAccount);
+    ownerAccount.helperContacts.push(helperContact);
+    await ownerAccount.save();
+    const helperAccount = await this.getAccountById(_helperContact.helperAccount);
+    helperAccount.helperContacts.push(helperContact);
+    await helperAccount.save();
     helperContact = await HelperContact.populate(helperContact, {
       path: "ownerAccount",
     });
@@ -255,10 +261,17 @@ class MongoDbClient {
     return helperContact;
   }
   async deleteHelperContact(id) {
-    const hc = await HelperContact.findOneAndRemove({
+    const hc = await HelperContact.findById(id);
+    let ownerAccount = await Account.findById(hc.ownerAccount);
+    await ownerAccount.helperContacts.pull({ _id: id});
+    await ownerAccount.save();
+    let helperAccount = await Account.findById(hc.helperAccount);
+    await helperAccount.helperContacts.pull({ _id: id});
+    await helperAccount.save();
+    const hc2 = await HelperContact.findOneAndRemove({
       _id: id,
     });
-    return hc;
+    return hc2;
   }
 
   // Core Features

@@ -246,6 +246,35 @@ module.exports = {
     });
   },
 
+  deleteMyAccount: async (req, res, next) => {
+    try {
+      // deletes all their helper contacts, their share requests,
+      // their documents, their oauth account
+      let payloadId = req.payload.id;
+      const account = await common.dbClient.getAccountById(payloadId);
+      for(const hc of account.helperContacts) {
+        await common.dbClient.deleteHelperContact(hc);
+      }
+      // this is only for owner
+      const deleteIds = account.shareRequests.map((sr) => sr.toString());
+      await common.dbClient.deleteShareRequestByIds(deleteIds);
+      for(let docId of account.documents) {
+        docId = docId.toString();
+        const doc = await common.dbClient.getDocumentById(docId);
+        if(doc) {
+          const filename = doc.url;
+          await common.dbClient.deleteDocument(filename);
+          await documentStorageHelper.deleteDocumentBytes(filename, "document");
+        }
+      }
+      await common.dbClient.deleteAccount(payloadId);
+      // TODO: if owner then oauth
+      res.status(200).json({ message: "success" });
+    } catch (err) {
+      next(err);
+    }
+  },
+
   getAccounts: async (req, res, next) => {
     const accounts = await common.dbClient.getAllAccounts();
     let returnAccounts = [];
@@ -388,7 +417,7 @@ module.exports = {
     let fromAccountId = req.body.fromAccountId;
     const toAccountId = req.body.toAccountId;
     const documentTypeName = req.body.documentType;
-    const {canView, canReplace, canDownload} = {...req.body}; 
+    const { canView, canReplace, canDownload } = { ...req.body };
 
     let authorized = false;
 
@@ -498,7 +527,7 @@ module.exports = {
 
   updateShareRequestPermissions: async (req, res, next) => {
     const shareRequestId = req.params.shareRequestId;
-    const {canDownload, canReplace, canView} = {...req.body};
+    const { canDownload, canReplace, canView } = { ...req.body };
     const shareRequest = await common.dbClient.updateShareRequestPermissions(
       shareRequestId,
       canView,

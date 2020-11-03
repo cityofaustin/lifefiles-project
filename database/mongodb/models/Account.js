@@ -49,7 +49,10 @@ var AccountSchema = new mongoose.Schema(
     notaryState: String,
     isNotDisplayPhoto: Boolean,
     isNotDisplayName: Boolean,
-    isNotDisplayPhone: Boolean
+    isNotDisplayPhone: Boolean,
+    helperContacts: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "HelperContact"}
+    ],
   },
   { timestamps: true },
   { usePushEach: true }
