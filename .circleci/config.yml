@@ -25,7 +25,7 @@ jobs:
       - checkout
       - node/with-cache:
           steps:
-            - run: ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-21-233-194.us-east-2.compute.amazonaws.com "bash -s" < deploy.sh
+            - run: ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-138-238-132.us-east-2.compute.amazonaws.com "bash -s" < deploy.sh
 
 workflows:
   test-and-deploy:
