@@ -248,27 +248,33 @@ module.exports = {
 
   deleteMyAccount: async (req, res, next) => {
     try {
-      // deletes all their helper contacts, their share requests,
-      // their documents, their oauth account
       let payloadId = req.payload.id;
       const account = await common.dbClient.getAccountById(payloadId);
       for(const hc of account.helperContacts) {
         await common.dbClient.deleteHelperContact(hc);
       }
       // this is only for owner
-      const deleteIds = account.shareRequests.map((sr) => sr.toString());
+      let deleteIds = [];
+      if(account.role === 'owner') {
+        deleteIds = account.shareRequests.map((sr) => sr.toString());
+      }
+      if(account.role === 'helper') {
+        const shareRequests = await common.dbClient.getShareRequestsBySharedWith(payloadId);
+        deleteIds = shareRequests.map(sr => sr._id.toString());
+      }
       await common.dbClient.deleteShareRequestByIds(deleteIds);
-      for(let docId of account.documents) {
-        docId = docId.toString();
-        const doc = await common.dbClient.getDocumentById(docId);
-        if(doc) {
-          const filename = doc.url;
-          await common.dbClient.deleteDocument(filename);
-          await documentStorageHelper.deleteDocumentBytes(filename, "document");
+      if(account.role === 'owner') {
+        for(let docId of account.documents) {
+          docId = docId.toString();
+          const doc = await common.dbClient.getDocumentById(docId);
+          if(doc) {
+            const filename = doc.url;
+            await common.dbClient.deleteDocument(filename);
+            await documentStorageHelper.deleteDocumentBytes(filename, "document");
+          }
         }
       }
       await common.dbClient.deleteAccount(payloadId);
-      // TODO: if owner then oauth
       res.status(200).json({ message: "success" });
     } catch (err) {
       next(err);

@@ -262,16 +262,23 @@ class MongoDbClient {
   }
   async deleteHelperContact(id) {
     const hc = await HelperContact.findById(id);
-    let ownerAccount = await Account.findById(hc.ownerAccount);
-    await ownerAccount.helperContacts.pull({ _id: id});
-    await ownerAccount.save();
-    let helperAccount = await Account.findById(hc.helperAccount);
-    await helperAccount.helperContacts.pull({ _id: id});
-    await helperAccount.save();
-    const hc2 = await HelperContact.findOneAndRemove({
-      _id: id,
-    });
-    return hc2;
+    if(hc) {
+      let ownerAccount = await Account.findById(hc.ownerAccount);
+      if(ownerAccount) {
+        await ownerAccount.helperContacts.pull({ _id: id});
+        await ownerAccount.save();
+      }
+      let helperAccount = await Account.findById(hc.helperAccount);
+      if(helperAccount) {
+        await helperAccount.helperContacts.pull({ _id: id});
+        await helperAccount.save();
+      }
+      const hc2 = await HelperContact.findOneAndRemove({
+        _id: id,
+      });
+      return hc2;
+    }
+    return hc;
   }
 
   // Core Features
@@ -471,6 +478,11 @@ class MongoDbClient {
     });
 
     return account.shareRequests;
+  }
+
+  async getShareRequestsBySharedWith(accountId) {
+    const shareRequests = await ShareRequest.find({shareWithAccountId: accountId});
+    return shareRequests;
   }
 
   async getShareRequestByUrl(url) {

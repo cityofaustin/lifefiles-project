@@ -25,15 +25,20 @@ class HelperContactController {
 
   addHelperContact = async (req, res, next) => {
     try {
-      const helperContact = await common.dbClient.addHelperContact({
-        ownerAccount: req.payload.id,
-        helperAccount: req.body.helperAccountId,
-        isSocialAttestationEnabled: req.body.isSocialAttestationEnabled,
-        canAddNewDocuments: req.body.canAddNewDocuments,
-      });
-      helperContact.ownerAccount = helperContact.ownerAccount.toPublicInfo();
-      helperContact.helperAccount = helperContact.helperAccount.toPublicInfo();
-      res.status(200).json(helperContact);
+      const helperAccount = await common.dbClient.getAccountById(req.body.helperAccountId);
+      if(helperAccount) {
+        const helperContact = await common.dbClient.addHelperContact({
+          ownerAccount: req.payload.id,
+          helperAccount: req.body.helperAccountId,
+          isSocialAttestationEnabled: req.body.isSocialAttestationEnabled,
+          canAddNewDocuments: req.body.canAddNewDocuments,
+        });
+        helperContact.ownerAccount = helperContact.ownerAccount.toPublicInfo();
+        helperContact.helperAccount = helperContact.helperAccount.toPublicInfo();
+        res.status(200).json(helperContact);
+      } else {
+        res.status(500).json({error: 'helper account is not there'});
+      }
     } catch (err) {
       next(err); // Pass errors to Express.
     }
