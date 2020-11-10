@@ -53,6 +53,7 @@ var AccountSchema = new mongoose.Schema(
     helperContacts: [
       { type: mongoose.Schema.Types.ObjectId, ref: "HelperContact"}
     ],
+    isSecure: Boolean
   },
   { timestamps: true },
   { usePushEach: true }
@@ -110,7 +111,8 @@ AccountSchema.methods.toAuthJSON = function () {
     phoneNumber: this.phoneNumber,
     isNotDisplayPhoto: this.isNotDisplayPhoto,
     isNotDisplayName: this.isNotDisplayName,
-    isNotDisplayPhone: this.isNotDisplayPhone
+    isNotDisplayPhone: this.isNotDisplayPhone,
+    isSecure: this.isSecure
   };
 };
 

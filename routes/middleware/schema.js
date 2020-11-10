@@ -41,6 +41,7 @@ module.exports = {
     publicEncryptionKey: Joi.any().optional(),
     notaryId: Joi.string().optional(),
     notaryState: Joi.string().optional(),
+    role: Joi.string().required()
   }),
 
   permissionSchema: Joi.object().keys({

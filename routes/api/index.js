@@ -88,14 +88,14 @@ router.route("/admin-accounts/").post(
   AdminController.newAccount
 );
 
-// Helper Registers Account
-router.route("/helper-accounts/").post(
+// Secure Owner / Helper Registers Account
+router.route("/secure-accounts/").post(
   [
     celebrate({
       body: Schema.helperRegisterSchema,
     }),
   ],
-  AdminController.newHelperAccount
+  AdminController.newSecureAccount
 );
 
 router

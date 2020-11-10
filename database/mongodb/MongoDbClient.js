@@ -399,7 +399,10 @@ class MongoDbClient {
     } else {
       newAccount.canAddOtherAccounts = accountReq.canAddOtherAccounts;
     }
-
+    
+    if(accountReq.isSecure) {
+      newAccount.isSecure = accountReq.isSecure;
+    }
     if (accountReq.password) {
       newAccount.setPassword(accountReq.password);
     }

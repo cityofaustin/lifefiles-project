@@ -116,10 +116,11 @@ module.exports = {
   },
 
   // This can be called by anyone
-  newHelperAccount: async (req, res, next) => {
+  newSecureAccount: async (req, res, next) => {
     const uuid = uuidv4();
     let did;
     const accountRequest = {
+      role: req.body.role,
       email: req.body.email,
       password: req.body.password,
       username: req.body.username,
@@ -128,10 +129,16 @@ module.exports = {
       publicEncryptionKey: req.body.publicEncryptionKey,
       notaryId: req.body.notaryId,
       notaryState: req.body.notaryState,
+      isSecure: true
     };
-    // These helper accounts cannot make new accounts that can make new accounts
+    // These secure owner/helper accounts cannot make new accounts that can make new accounts
     accountRequest.canAddOtherAccounts = false;
-    accountRequest.accounttype = "Case Manager Notary";
+
+    if(accountRequest.role === 'owner') {
+      accountRequest.accounttype = "Owner";
+    } else {
+      accountRequest.accounttype = "Case Manager Notary";
+    }
 
     const permanentArchiveNumber = await permanent.createArchive(
       accountRequest.email
@@ -155,7 +162,7 @@ module.exports = {
 
     await secureKeyStorage.store(uuid, did.privateKey);
 
-    let profileImageUrl = "anon-user.png";
+    let profileImageUrl = undefined;
 
     if (req.files && req.files.img) {
       profileImageUrl = await documentStorageHelper.upload(
