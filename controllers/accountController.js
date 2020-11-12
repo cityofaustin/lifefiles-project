@@ -108,8 +108,8 @@ module.exports = {
     let username = req.params.username;
     let oneTimeCode = req.params.oneTimeCode;
     let loginUuid = req.params.loginUuid;
-    let sendEmail = req.body.sendEmail;
-    let sendSms = req.body.sendSms;
+    // let sendEmail = req.body.sendEmail;
+    // let sendSms = req.body.sendSms;
     let secret = req.body.secret;
 
     // sort of serving as the api key so that not just anyone
@@ -119,7 +119,47 @@ module.exports = {
     }
 
     let account = await common.dbClient.getAccountByUsername(username);
-    console.log("TODO: Send login code to this contacts helpers");
+    // get helper contacts that have social attestation turned on.
+    let helperContacts = await common.dbClient.getHelperContactsForOwner(account._id.toString());
+    for(const helperContact of helperContacts) {
+      const helperAccount = helperContact.helperAccount;
+      if(helperContact.isSocialAttestationEnabled) {
+        if(helperAccount.phoneNumber) {
+          try {
+            smsUtil.sendSms(
+              `The one time code for user: ${username} is ${oneTimeCode}.`,
+              "+1" + helperAccount.phoneNumber
+            );
+          } catch(err) {
+            console.error(err.message);
+          }
+        }
+        if(helperAccount.email) {
+          try {
+            const send = require("gmail-send")({
+              user: "mypass.austinatx@gmail.com",
+              pass: process.env.MYPASS_GMAIL_PASSWORD,
+              to: helperAccount.email,
+              subject: `Mypass user ${username} is requesting a login code`,
+            });
+    
+            send(
+              {
+                // eslint-disable-next-line
+                text: `The one time code for user: ${username} is ${oneTimeCode}. Alternatively you can click this link to generate a code and send it to the users email:  ${process.env.OAUTH_URL}/provide-social-login-code/${loginUuid}`,
+              },
+              (error, result, fullResult) => {
+                if (error) console.error(error);
+                console.log(result);
+              }
+            );
+          } catch(err) {
+            console.error(err.message);
+          }
+        }
+      }
+    }
+    // console.log("TODO: Send login code to this contacts helpers");
 
     res.status(200).json({ message: "success" });
   },
