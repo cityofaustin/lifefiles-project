@@ -165,6 +165,11 @@ class MongoDbClient {
     return accounts[0];
   }
 
+  async getAccountByShareRequest(shareRequestId) {
+    const account = await Account.findOne({shareRequests: shareRequestId});
+    return account;
+  }
+
   async getAccountByUsernameWithShareRequests(username) {
     const account = await Account.findOne({ username }).populate({
       path: "shareRequests",
@@ -494,6 +499,12 @@ class MongoDbClient {
     });
     return shareRequest;
   }
+
+  async getShareRequestById(id) {
+    const shareRequest = await ShareRequest.findById(id);
+    return shareRequest;
+  }
+
   // NOTE: share request doesn't have document id but it has document type
   async deleteShareRequestByDocumentId(documentType) {
     await ShareRequest.deleteMany({

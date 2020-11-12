@@ -182,6 +182,10 @@ router
     AccountController.newShareRequest
   );
 
+  router
+  .route("/share-requests/:shareRequestId/replace")
+  .post(auth.required, AccountController.replaceShareRequest);
+
 router
   .route("/share-requests/:shareRequestId")
   .put(
@@ -262,6 +266,10 @@ router
     ],
     DocumentController.updateDocument
   );
+
+  router
+  .route("/share-requests/:shareRequestId/documents")
+  .get(auth.required, DocumentController.getDocumentByShareRequest);
 
 router
   .route("/account/:accountForId/documents/:documentType")

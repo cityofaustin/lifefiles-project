@@ -9,13 +9,24 @@ module.exports = {
     const documentId = req.params.documentId;
     const account = await common.dbClient.getAccountById(req.payload.id);
     const document = await common.dbClient.getDocumentById(documentId);
-
-    if (!document.belongsTo._id.equals(account._id)) {
-      console.log("Account not authorized update this document");
-      res.status(403).json({
-        error: "Account not authorized update this document",
-      });
-      return;
+    
+    if (!document.belongsTo._id.equals(account._id)) { // not owner
+      let isAllowed = false;
+      let sharedRequest = await common.dbClient.getShareRequestsBySharedWith(account._id);
+      sharedRequest = sharedRequest.find(sr => sr.documentType === document.type);
+      if(sharedRequest.shareWithAccountId) {
+        if(sharedRequest.canReplace) {
+          isAllowed = true;
+        }
+      } 
+      // helper but not on share request or not allowed to update.
+      if(!isAllowed) {
+        console.log("Account not authorized update this document");
+        res.status(403).json({
+          error: "Account not authorized update this document",
+        });
+        return;
+      }
     }
 
     let md5 = document.hash;
@@ -229,6 +240,14 @@ module.exports = {
     const documents = await common.dbClient.getDocuments(accountId);
 
     res.status(200).json({ documents: documents });
+  },
+
+  getDocumentByShareRequest: async (req, res, next) => {
+    const {shareRequestId} = {...req.params};
+    const shareRequest = await common.dbClient.getShareRequestById(shareRequestId);
+    const account = await common.dbClient.getAccountByShareRequest(shareRequestId);
+    const document = await common.dbClient.getDocumentByDocumentType(account._id.toString(), shareRequest.documentType);
+    res.status(200).json({ document });
   },
 
   getDocument: async (req, res, next) => {

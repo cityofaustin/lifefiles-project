@@ -479,6 +479,82 @@ module.exports = {
     res.status(200).json(shareRequest);
   },
 
+  replaceShareRequest: async (req, res, next) => {
+    let accountId = req.payload.id;
+    const shareRequestId = req.params.shareRequestId;
+    const file =
+      req.files && req.files.img && req.files.img[0]
+        ? req.files.img[0]
+        : undefined;
+    const thumbnailFile =
+      req.files && req.files.img && req.files.img[1]
+        ? req.files.img[1]
+        : undefined;
+
+    let fromAccountId = req.body.fromAccountId;
+    const toAccountId = req.body.toAccountId;
+    const documentTypeName = req.body.documentType;
+    const { canView, canReplace, canDownload } = { ...req.body };
+
+
+    accountId = "" + accountId;
+    fromAccountId = "" + fromAccountId;
+
+    // TODO: need to not allow helper that is not in same document share request as this share request
+    // let authorized = false;
+    let authorized = true;
+    // if (accountId === fromAccountId || accountId === toAccountId) {
+    //   authorized = true;
+    // }
+
+    if (!authorized) {
+      res.status(403).json({
+        error: "Account not authorized to approve or create this share request",
+      });
+      return;
+    }
+
+    const sr = await common.dbClient.getShareRequestById(shareRequestId);
+
+    let approved = sr.approved;
+    let key;
+    let thumbnailKey;
+
+    await common.dbClient.deleteShareRequest(fromAccountId, shareRequestId);
+
+    if (approved) {
+      if (file) {
+        key = await documentStorageHelper.upload(file, "document");
+      }
+      if (thumbnailFile) {
+        thumbnailKey = await documentStorageHelper.upload(
+          thumbnailFile,
+          "document"
+        );
+      }
+    }
+
+    let shareRequest = await common.dbClient.createShareRequest(
+      toAccountId,
+      fromAccountId,
+      documentTypeName,
+      canView,
+      canReplace,
+      canDownload
+    );
+
+    if (approved) {
+      shareRequest = await common.dbClient.approveOrDenyShareRequest(
+        shareRequest._id,
+        approved,
+        key,
+        thumbnailKey
+      );
+    }
+
+    res.status(200).json(shareRequest);
+  },
+
   approveOrDenyShareRequest: async (req, res, next) => {
     const account = await common.dbClient.getAllAccountInfoById(req.payload.id);
     const shareRequestId = req.params.shareRequestId;
