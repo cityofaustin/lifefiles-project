@@ -29,6 +29,21 @@ module.exports = {
     res.status(200).json({ account });
   },
 
+  isSocialSupportEnabled: async (req, res, next) => {
+    const { secret, username } = { ...req.body };
+    if (secret !== process.env.AUTH_SECRET) {
+      res.status(403).json({ message: "failure" });
+    }
+    const account = await common.dbClient.getAccountByUsername(username);
+    const helperContacts = await common.dbClient.getHelperContactsForOwner(
+      account._id.toString()
+    );
+    let isEnabled = helperContacts.find((hc) => hc.isSocialAttestationEnabled)
+      ? true
+      : false;
+    return res.status(200).json({ isEnabled });
+  },
+
   sendOneTimeAccessCode: async (req, res, next) => {
     let username = req.params.username;
     let oneTimeCode = req.params.oneTimeCode;
@@ -120,21 +135,23 @@ module.exports = {
 
     let account = await common.dbClient.getAccountByUsername(username);
     // get helper contacts that have social attestation turned on.
-    let helperContacts = await common.dbClient.getHelperContactsForOwner(account._id.toString());
-    for(const helperContact of helperContacts) {
+    let helperContacts = await common.dbClient.getHelperContactsForOwner(
+      account._id.toString()
+    );
+    for (const helperContact of helperContacts) {
       const helperAccount = helperContact.helperAccount;
-      if(helperContact.isSocialAttestationEnabled) {
-        if(helperAccount.phoneNumber) {
+      if (helperContact.isSocialAttestationEnabled) {
+        if (helperAccount.phoneNumber) {
           try {
             smsUtil.sendSms(
               `The one time code for user: ${username} is ${oneTimeCode}.`,
               "+1" + helperAccount.phoneNumber
             );
-          } catch(err) {
+          } catch (err) {
             console.error(err.message);
           }
         }
-        if(helperAccount.email) {
+        if (helperAccount.email) {
           try {
             const send = require("gmail-send")({
               user: "mypass.austinatx@gmail.com",
@@ -142,7 +159,7 @@ module.exports = {
               to: helperAccount.email,
               subject: `Mypass user ${username} is requesting a login code`,
             });
-    
+
             send(
               {
                 // eslint-disable-next-line
@@ -153,7 +170,7 @@ module.exports = {
                 console.log(result);
               }
             );
-          } catch(err) {
+          } catch (err) {
             console.error(err.message);
           }
         }
@@ -290,27 +307,32 @@ module.exports = {
     try {
       let payloadId = req.payload.id;
       const account = await common.dbClient.getAccountById(payloadId);
-      for(const hc of account.helperContacts) {
+      for (const hc of account.helperContacts) {
         await common.dbClient.deleteHelperContact(hc);
       }
       // this is only for owner
       let deleteIds = [];
-      if(account.role === 'owner') {
+      if (account.role === "owner") {
         deleteIds = account.shareRequests.map((sr) => sr.toString());
       }
-      if(account.role === 'helper') {
-        const shareRequests = await common.dbClient.getShareRequestsBySharedWith(payloadId);
-        deleteIds = shareRequests.map(sr => sr._id.toString());
+      if (account.role === "helper") {
+        const shareRequests = await common.dbClient.getShareRequestsBySharedWith(
+          payloadId
+        );
+        deleteIds = shareRequests.map((sr) => sr._id.toString());
       }
       await common.dbClient.deleteShareRequestByIds(deleteIds);
-      if(account.role === 'owner') {
-        for(let docId of account.documents) {
+      if (account.role === "owner") {
+        for (let docId of account.documents) {
           docId = docId.toString();
           const doc = await common.dbClient.getDocumentById(docId);
-          if(doc) {
+          if (doc) {
             const filename = doc.url;
             await common.dbClient.deleteDocument(filename);
-            await documentStorageHelper.deleteDocumentBytes(filename, "document");
+            await documentStorageHelper.deleteDocumentBytes(
+              filename,
+              "document"
+            );
           }
         }
       }
@@ -535,7 +557,6 @@ module.exports = {
     const toAccountId = req.body.toAccountId;
     const documentTypeName = req.body.documentType;
     const { canView, canReplace, canDownload } = { ...req.body };
-
 
     accountId = "" + accountId;
     fromAccountId = "" + fromAccountId;

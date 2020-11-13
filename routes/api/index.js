@@ -140,7 +140,10 @@ router.route("/accounts/admin-login").post(
 router
   .route("/send-code/account/:username/:oneTimeCode/:loginUuid")
   .post(AccountController.sendOneTimeAccessCode);
-
+// from oauth server to see if social support enabled
+router
+  .route("/social-support/enabled")
+  .post(AccountController.isSocialSupportEnabled);
 // This route is from oauth server to set phone number on login method update
 router
   .route("/accounts/set-phone-number")
