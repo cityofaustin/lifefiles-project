@@ -520,6 +520,25 @@ module.exports = {
       }
     }
 
+    try {
+      // delete existing share request if there was one
+      // there is an edge case where a helper can request a document
+      // and an owner might not have refreshed the page and instead of
+      // approving the request creates another share request
+      const ownerSRs = await common.dbClient.getShareRequests(fromAccountId);
+      const existingSR = ownerSRs.find(
+        (sr) =>
+          sr.documentType === documentTypeName &&
+          sr.shareWithAccountId === toAccountId
+      );
+      if(existingSR) {
+        const shareRequestId = existingSR._id.toString();
+        await common.dbClient.deleteShareRequest(fromAccountId, shareRequestId);
+      }
+    } catch (err) {
+      console.error("failed to delete existing share request");
+    }
+
     let shareRequest = await common.dbClient.createShareRequest(
       toAccountId,
       fromAccountId,
