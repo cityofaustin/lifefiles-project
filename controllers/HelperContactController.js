@@ -21,12 +21,17 @@ class HelperContactController {
     this.router
       .route(this.path + "/:id")
       .delete([auth.required, onlyOwnerAllowed], this.deleteHelperContact);
+    this.router
+      .route(this.path + "/:id/share-requests")
+      .delete([auth.required, onlyOwnerAllowed], this.unshareAllWithHelper);
   }
 
   addHelperContact = async (req, res, next) => {
     try {
-      const helperAccount = await common.dbClient.getAccountById(req.body.helperAccountId);
-      if(helperAccount) {
+      const helperAccount = await common.dbClient.getAccountById(
+        req.body.helperAccountId
+      );
+      if (helperAccount) {
         const helperContact = await common.dbClient.addHelperContact({
           ownerAccount: req.payload.id,
           helperAccount: req.body.helperAccountId,
@@ -37,10 +42,33 @@ class HelperContactController {
         helperContact.helperAccount = helperContact.helperAccount.toPublicInfo();
         res.status(200).json(helperContact);
       } else {
-        res.status(500).json({error: 'helper account is not there'});
+        res.status(500).json({ error: "helper account is not there" });
       }
     } catch (err) {
       next(err); // Pass errors to Express.
+    }
+  };
+
+  unshareAllWithHelper = async (req, res, next) => {
+    try {
+      const { id } = { ...req.params };
+      // get owner share requests for the helper and delete them
+      const hc = await common.dbClient.getHelperContactById(id);
+      const ownerAccount = await common.dbClient.getAccountByUsernameWithShareRequests(
+        hc.ownerAccount.username
+      );
+      const helperAccount = await common.dbClient.getAccountByUsername(
+        hc.helperAccount.username
+      );
+      const ownerShareRequests = ownerAccount.shareRequests;
+      const shareRequests = ownerShareRequests.filter(
+        (osr) => osr.shareWithAccountId === helperAccount.id
+      );
+      const deleteIds = shareRequests.map((sr) => sr.id);
+      await common.dbClient.deleteShareRequestByIds(deleteIds);
+      res.status(200).json({ message: "success" });
+    } catch (err) {
+      next(err);
     }
   };
 
