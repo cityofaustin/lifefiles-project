@@ -1,6 +1,6 @@
 const express = require("express");
 const common = require("../common/common");
-const Account = require("../database/mongodb/models/Account");
+// const Account = require("../database/mongodb/models/Account");
 const auth = require("../routes/middleware/auth");
 const { onlyOwnerAllowed } = require("../routes/middleware/permission");
 
@@ -20,7 +20,8 @@ class HelperContactController {
     this.router.route(this.path).get(auth.required, this.getHelperContacts);
     this.router
       .route(this.path + "/:id")
-      .delete([auth.required, onlyOwnerAllowed], this.deleteHelperContact);
+      .delete([auth.required, onlyOwnerAllowed], this.deleteHelperContact)
+      .put([auth.required, onlyOwnerAllowed], this.updateHelperContact);
     this.router
       .route(this.path + "/:id/share-requests")
       .delete([auth.required, onlyOwnerAllowed], this.unshareAllWithHelper);
@@ -46,6 +47,16 @@ class HelperContactController {
       }
     } catch (err) {
       next(err); // Pass errors to Express.
+    }
+  };
+
+  updateHelperContact = async (req, res, next) => {
+    try {
+      const helperContact = {...req.body};
+      const hc = await common.dbClient.saveHelperContact(helperContact);
+      res.status(200).json(hc);
+    } catch (err) {
+      next(err);
     }
   };
 

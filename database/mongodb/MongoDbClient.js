@@ -19,6 +19,7 @@ const VerifiablePresentation = require("./models/VerifiablePresentation");
 const AppSetting = require("./models/AppSetting");
 const HelperContact = require("./models/HelperContact");
 const AdminCryptoKey = require("./models/AdminCryptoKey");
+const { find } = require("./models/Account");
 
 const classes = new Map();
 classes.set("AccountType", AccountType);
@@ -166,7 +167,7 @@ class MongoDbClient {
   }
 
   async getAccountByShareRequest(shareRequestId) {
-    const account = await Account.findOne({shareRequests: shareRequestId});
+    const account = await Account.findOne({ shareRequests: shareRequestId });
     return account;
   }
 
@@ -228,6 +229,13 @@ class MongoDbClient {
   }
 
   // helper contacts
+  async saveHelperContact(hc) {
+    // their _id is not the account id
+    delete hc.ownerAccount;
+    delete hc.helperAccount;
+    return await HelperContact.updateOne({ _id: hc._id }, hc);
+  }
+
   async getHelperContactById(id) {
     return await HelperContact.findById(id)
       .populate({ path: "ownerAccount" })
@@ -254,7 +262,9 @@ class MongoDbClient {
     const ownerAccount = await this.getAccountById(_helperContact.ownerAccount);
     ownerAccount.helperContacts.push(helperContact);
     await ownerAccount.save();
-    const helperAccount = await this.getAccountById(_helperContact.helperAccount);
+    const helperAccount = await this.getAccountById(
+      _helperContact.helperAccount
+    );
     helperAccount.helperContacts.push(helperContact);
     await helperAccount.save();
     helperContact = await HelperContact.populate(helperContact, {
@@ -267,15 +277,15 @@ class MongoDbClient {
   }
   async deleteHelperContact(id) {
     const hc = await HelperContact.findById(id);
-    if(hc) {
+    if (hc) {
       let ownerAccount = await Account.findById(hc.ownerAccount);
-      if(ownerAccount) {
-        await ownerAccount.helperContacts.pull({ _id: id});
+      if (ownerAccount) {
+        await ownerAccount.helperContacts.pull({ _id: id });
         await ownerAccount.save();
       }
       let helperAccount = await Account.findById(hc.helperAccount);
-      if(helperAccount) {
-        await helperAccount.helperContacts.pull({ _id: id});
+      if (helperAccount) {
+        await helperAccount.helperContacts.pull({ _id: id });
         await helperAccount.save();
       }
       const hc2 = await HelperContact.findOneAndRemove({
@@ -404,8 +414,8 @@ class MongoDbClient {
     } else {
       newAccount.canAddOtherAccounts = accountReq.canAddOtherAccounts;
     }
-    
-    if(accountReq.isSecure) {
+
+    if (accountReq.isSecure) {
       newAccount.isSecure = accountReq.isSecure;
     }
     if (accountReq.password) {
@@ -489,7 +499,9 @@ class MongoDbClient {
   }
 
   async getShareRequestsBySharedWith(accountId) {
-    const shareRequests = await ShareRequest.find({shareWithAccountId: accountId});
+    const shareRequests = await ShareRequest.find({
+      shareWithAccountId: accountId,
+    });
     return shareRequests;
   }
 
@@ -515,8 +527,8 @@ class MongoDbClient {
   async deleteShareRequestByIds(ids) {
     await ShareRequest.deleteMany({
       _id: {
-        $in: ids
-      }
+        $in: ids,
+      },
     });
     return;
   }
