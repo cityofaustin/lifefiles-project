@@ -24,6 +24,10 @@ router
   .route("/my-admin-account")
   .get([auth.required, onlyAdminAllowed], AdminController.myAdminAccount);
 
+router
+  .route("/admin/email-password")
+  .put([auth.required, onlyAdminAllowed], AdminController.saveAdminAccount);
+
 // Admin - Document Types
 router
   .route("/admin-document-types")
@@ -104,7 +108,8 @@ router
   .put([auth.required, onlyAdminAllowed], AdminController.updateAccount);
 
 // Accounts
-router.route("/my-account")
+router
+  .route("/my-account")
   .get(auth.required, AccountController.myAccount)
   .delete(auth.required, AccountController.deleteMyAccount);
 
@@ -185,7 +190,7 @@ router
     AccountController.newShareRequest
   );
 
-  router
+router
   .route("/share-requests/:shareRequestId/replace")
   .post(auth.required, AccountController.replaceShareRequest);
 
@@ -270,7 +275,7 @@ router
     DocumentController.updateDocument
   );
 
-  router
+router
   .route("/share-requests/:shareRequestId/documents")
   .get(auth.required, DocumentController.getDocumentByShareRequest);
 

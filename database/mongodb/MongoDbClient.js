@@ -210,6 +210,19 @@ class MongoDbClient {
     return accounts;
   }
 
+  // admin account
+  async saveAdminAccount(email, password) {
+    const filter = { username: "admin" };
+    // const update = { email, password };
+    let adminAccount = await Account.findOne(filter);
+    if (adminAccount) {
+      adminAccount.setPassword(password);
+      adminAccount.email = email;
+      adminAccount = await Account.findOneAndUpdate(filter, adminAccount);
+    }
+    return adminAccount;
+  }
+
   // app settings
   async saveAppSetting(_appSetting) {
     const appSetting = new AppSetting();

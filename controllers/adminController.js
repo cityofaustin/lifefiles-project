@@ -30,6 +30,16 @@ module.exports = {
     });
   },
 
+  saveAdminAccount: async (req, res, next) => {
+    try {
+      const {email, password} = {...req.body};
+      const account = await common.dbClient.saveAdminAccount(email, password);
+      return res.status(200).json({ account });
+    } catch (err) {
+      next(err);
+    }
+  },
+
   adminLogin: async (req, res, next) => {
     if (!req.body.account.email) {
       return res.status(422).json({ errors: { email: "can't be blank" } });
@@ -129,12 +139,12 @@ module.exports = {
       publicEncryptionKey: req.body.publicEncryptionKey,
       notaryId: req.body.notaryId,
       notaryState: req.body.notaryState,
-      isSecure: true
+      isSecure: true,
     };
     // These secure owner/helper accounts cannot make new accounts that can make new accounts
     accountRequest.canAddOtherAccounts = false;
 
-    if(accountRequest.role === 'owner') {
+    if (accountRequest.role === "owner") {
       accountRequest.accounttype = "Owner";
     } else {
       accountRequest.accounttype = "Case Manager Notary";
