@@ -79,13 +79,14 @@ app.use(
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 // Using NGIX cors config if production
-if (
-  process.env.ENVIRONMENT === "DEVELOPMENT" ||
-  process.env.ENVIRONMENT === "HEROKU"
-) {
-  app.use(helmet());
-  app.use(cors());
-}
+// NOTE: always use express cors as nginx doesn't send cors on failure
+// if (
+// process.env.ENVIRONMENT === "DEVELOPMENT" ||
+// process.env.ENVIRONMENT === "HEROKU"
+// ) {
+app.use(helmet());
+app.use(cors());
+// }
 
 app.use(errors());
 app.use(router);
