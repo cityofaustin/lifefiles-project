@@ -30,18 +30,22 @@ module.exports = {
   },
 
   isSocialSupportEnabled: async (req, res, next) => {
-    const { secret, username } = { ...req.body };
-    if (secret !== process.env.AUTH_SECRET) {
-      res.status(403).json({ message: "failure" });
+    try {
+      const { secret, username } = { ...req.body };
+      if (secret !== process.env.AUTH_SECRET) {
+        res.status(403).json({ message: "failure" });
+      }
+      const account = await common.dbClient.getAccountByUsername(username);
+      const helperContacts = await common.dbClient.getHelperContactsForOwner(
+        account._id.toString()
+      );
+      let isEnabled = helperContacts.find((hc) => hc.isSocialAttestationEnabled)
+        ? true
+        : false;
+      res.status(200).json({ isEnabled });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
     }
-    const account = await common.dbClient.getAccountByUsername(username);
-    const helperContacts = await common.dbClient.getHelperContactsForOwner(
-      account._id.toString()
-    );
-    let isEnabled = helperContacts.find((hc) => hc.isSocialAttestationEnabled)
-      ? true
-      : false;
-    return res.status(200).json({ isEnabled });
   },
 
   sendOneTimeAccessCode: async (req, res, next) => {
@@ -316,9 +320,8 @@ module.exports = {
         deleteIds = account.shareRequests.map((sr) => sr.toString());
       }
       if (account.role === "helper") {
-        const shareRequests = await common.dbClient.getShareRequestsBySharedWith(
-          payloadId
-        );
+        const shareRequests =
+          await common.dbClient.getShareRequestsBySharedWith(payloadId);
         deleteIds = shareRequests.map((sr) => sr._id.toString());
       }
       await common.dbClient.deleteShareRequestByIds(deleteIds);
@@ -531,7 +534,7 @@ module.exports = {
           sr.documentType === documentTypeName &&
           sr.shareWithAccountId === toAccountId
       );
-      if(existingSR) {
+      if (existingSR) {
         const shareRequestId = existingSR._id.toString();
         await common.dbClient.deleteShareRequest(fromAccountId, shareRequestId);
       }
