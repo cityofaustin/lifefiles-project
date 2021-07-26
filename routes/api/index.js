@@ -15,6 +15,7 @@ const {
 } = require("../middleware/permission");
 const Schema = require("../middleware/schema");
 const HelperContactController = require("../../controllers/HelperContactController");
+const notaryController = require("../../controllers/notaryController");
 
 // This route returns the url for the oauth sever (used in heroku setup)
 router.route("/oauth-url").get(AdminController.oauthUrl);
@@ -316,6 +317,8 @@ router
     ],
     DocumentController.deleteDocument
   );
+
+router.route("/notary/query").post(notaryController.query);
 
 router.use(new AppController());
 router.use(new HelperContactController());
