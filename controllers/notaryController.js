@@ -27,7 +27,8 @@ const notaryController = {
       let attributes = ["Name:", "Address:", "Expires:", "County:"];
 
       if (responseHtml.indexOf("No records found.") !== -1) {
-        return {};
+        res.status(200).json({});
+        return;
       }
 
       for (let attribute of attributes) {
