@@ -45,7 +45,7 @@ This project is funded by the Robert Wood Johnson Foundation and developed by th
 
 The project timeline can be found here: [Timeline](https://docs.google.com/spreadsheets/d/1kMICJU_4RQoiki9yyuenM59W-u7ECp5vaF7qTbelfvQ/edit?usp=sharing)
 
-## MyPass Features
+## LifeFiles Features
 
 <img src="/docs/MyPassOverview.png" align="middle" width="900" >
 
