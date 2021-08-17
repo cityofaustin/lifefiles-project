@@ -37,7 +37,7 @@ Alternativly you can deploy the backend to heroku with one click:
 
 ### Next Launch the React Frontend
 
-The Frontend for this project can be found at: https://github.com/cityofaustin/mypass-frontend
+The Frontend for this project can be found at: https://github.com/cityofaustin/lifefiles-frontend
 
 ## Project Info
 
