@@ -34,7 +34,7 @@
     "ip": "^1.1.5",
     "jest": "^25.5.4",
     "joi-objectid": "^3.0.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "md5": "^2.3.0",
     "methods": "^1.1.2",
     "mongoose": "^5.10.4",
