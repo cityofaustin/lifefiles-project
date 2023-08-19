@@ -7,7 +7,7 @@ let adminToken;
 let nobodyAccountId;
 let nobodyAccountToken;
 let nobodyCaseworkerAccountId;
-// let nobodyCaseworkerAccountToken;
+let nobodyCaseworkerAccountToken;
 
 if (process.env.ENVIRONMENT !== "DEVELOPMENT") {
   console.log("Skipping Tests");
@@ -121,149 +121,111 @@ describe("Mypass Integration Tests", () => {
         });
     });
 
-    it("nobody should not be allowed to do anything", () => {
+    it("nobody should not be allowed to do anything", async () => {
       // Start admin permissions
-      request("http://localhost:5000/api/")
+      let res = await request("http://localhost:5000/api/")
         .get("my-admin-account/")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end((err, res) => {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .post("admin-document-types/")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .post("admin-document-types/")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .put("admin-document-types/2342")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .delete("admin-document-types/2342")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .get("admin-account-types/")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
-      request("http://localhost:5000/api/")
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
+      res = await request("http://localhost:5000/api/")
         .get("admin-view-features/")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .delete("admin-accounts/234")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
       // Start Permissions
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .get("account/:accountId/document-types/")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .get("account/:accountId/share-requests/")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .post("share-requests/")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .put("share-requests/23423")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .delete("share-requests/23423")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
       //WARNING -  Creates an eth transaction
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .post("anchor-vp-to-blockchain")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .post("documents")
 
         .attach("img", passport)
         .field("type", "passport")
         .field("encryptionPubKey", "234")
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .put("documents/234")
 
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .put("documents/234")
 
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .post("account/:accountForId/documents/:documentType")
 
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
 
-      request("http://localhost:5000/api/")
+      res = await request("http://localhost:5000/api/")
         .post("upload-document-on-behalf-of-user/")
 
-        .set({ Authorization: `Bearer ${nobodyAccountToken}` })
-        .end(function (err, res) {
-          expect(res.statusCode).toBe(403);
-        });
+        .set({ Authorization: `Bearer ${nobodyAccountToken}` });
+      expect(res.statusCode).toBe(403);
     });
 
     it("should delete nobody", () => {
