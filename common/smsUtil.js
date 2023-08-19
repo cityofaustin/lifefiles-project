@@ -1,31 +1,24 @@
 module.exports = {
   sendSms: async (message, number) => {
-    var AWS = require("aws-sdk");
-
-    AWS.config.update({
+    const { SNSClient, PublishCommand } = require("@aws-sdk/client-sns");
+    const snsClient = new SNSClient({
       region: "us-east-1",
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_SECRET_KEY,
     });
 
     // Create publish parameters
-    var params = {
+    const params = {
       Message: message,
       PhoneNumber: number,
     };
 
-    // Create promise and SNS service object
-    var publishTextPromise = new AWS.SNS({ apiVersion: "2010-03-31" })
-      .publish(params)
-      .promise();
-
     // Handle promise's fulfilled/rejected states
-    publishTextPromise
-      .then(function (data) {
-        console.log("MessageID is " + data.MessageId);
-      })
-      .catch(function (err) {
-        console.error(err, err.stack);
-      });
+    try {
+      const publishTextPromise = await snsClient.send(new PublishCommand(params));
+      console.log("MessageID is " + publishTextPromise.MessageId);
+    } catch (err) {
+      console.error(err, err.stack);
+    }
   },
 };
