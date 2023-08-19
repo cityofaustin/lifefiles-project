@@ -6,11 +6,11 @@ const helperContactSchema = new mongoose.Schema({
   isSocialAttestationEnabled: Boolean,
   canAddNewDocuments: Boolean,
 });
-helperContactSchema.index({'ownerAccount': 1, 'helperAccount': 1}, {unique: true});
-
-const HelperContact = mongoose.model(
-  "HelperContact",
-  helperContactSchema
+helperContactSchema.index(
+  { ownerAccount: 1, helperAccount: 1 },
+  { unique: true }
 );
+
+const HelperContact = mongoose.model("HelperContact", helperContactSchema);
 
 module.exports = HelperContact;

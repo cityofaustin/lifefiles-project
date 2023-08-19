@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "mypass document locker",
   "main": "app.js",
+  "engines": {
+    "node": ">=v18.12.1"
+  },
   "scripts": {
     "start": "node ./app.js",
     "dev": "nodemon ./app.js",
@@ -52,10 +55,9 @@
     "chai-each": "0.0.1",
     "chai-like": "^1.1.1",
     "chai-things": "^0.2.0",
-    "eslint": "^7.8.1",
-    "eslint-config-strongloop": "^2.1.0",
+    "eslint": "^8.47.0",
     "mocha": "^7.2.0",
-    "nodemon": "^2.0.4",
+    "nodemon": "^3.0.1",
     "supertest": "^4.0.2"
   }
 }
