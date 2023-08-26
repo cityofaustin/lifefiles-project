@@ -30,7 +30,6 @@ let mongoDbOptions = {
   autoIndex: true, // this makes schema index's enforced
   useUnifiedTopology: true,
   useNewUrlParser: true,
-  useCreateIndex: true,
 };
 
 class MongoDbClient {

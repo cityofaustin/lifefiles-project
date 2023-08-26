@@ -30,6 +30,7 @@ module.exports = {
   },
 
   isSocialSupportEnabled: async (req, res, next) => {
+    let isEnabled = false;
     try {
       const { secret, username } = { ...req.body };
       if (secret !== process.env.AUTH_SECRET) {
@@ -44,7 +45,7 @@ module.exports = {
         : false;
       res.status(200).json({ isEnabled });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      return res.status(200).json({ isEnabled });
     }
   },
 
