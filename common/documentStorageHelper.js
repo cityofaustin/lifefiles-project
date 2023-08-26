@@ -82,7 +82,7 @@ module.exports = {
       Key: filename,
     });
     try {
-      const response = await client.send(command);
+      const response = await s3.send(command);
       // The Body object also has 'transformToByteArray' and 'transformToWebStream' methods.
       const str = await response.Body.transformToString();
       let myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({

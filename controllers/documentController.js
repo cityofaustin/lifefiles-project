@@ -9,18 +9,23 @@ module.exports = {
     const documentId = req.params.documentId;
     const account = await common.dbClient.getAccountById(req.payload.id);
     const document = await common.dbClient.getDocumentById(documentId);
-    
-    if (!document.belongsTo._id.equals(account._id)) { // not owner
+
+    if (!document.belongsTo._id.equals(account._id)) {
+      // not owner
       let isAllowed = false;
-      let sharedRequest = await common.dbClient.getShareRequestsBySharedWith(account._id);
-      sharedRequest = sharedRequest.find(sr => sr.documentType === document.type);
-      if(sharedRequest.shareWithAccountId) {
-        if(sharedRequest.canReplace) {
+      let sharedRequest = await common.dbClient.getShareRequestsBySharedWith(
+        account._id
+      );
+      sharedRequest = sharedRequest.find(
+        (sr) => sr.documentType === document.type
+      );
+      if (sharedRequest.shareWithAccountId) {
+        if (sharedRequest.canReplace) {
           isAllowed = true;
         }
-      } 
+      }
       // helper but not on share request or not allowed to update.
-      if(!isAllowed) {
+      if (!isAllowed) {
         console.log("Account not authorized update this document");
         res.status(403).json({
           error: "Account not authorized update this document",
@@ -243,10 +248,17 @@ module.exports = {
   },
 
   getDocumentByShareRequest: async (req, res, next) => {
-    const {shareRequestId} = {...req.params};
-    const shareRequest = await common.dbClient.getShareRequestById(shareRequestId);
-    const account = await common.dbClient.getAccountByShareRequest(shareRequestId);
-    const document = await common.dbClient.getDocumentByDocumentType(account._id.toString(), shareRequest.documentType);
+    const { shareRequestId } = { ...req.params };
+    const shareRequest = await common.dbClient.getShareRequestById(
+      shareRequestId
+    );
+    const account = await common.dbClient.getAccountByShareRequest(
+      shareRequestId
+    );
+    const document = await common.dbClient.getDocumentByDocumentType(
+      account._id.toString(),
+      shareRequest.documentType
+    );
     res.status(200).json({ document });
   },
 
@@ -288,7 +300,10 @@ module.exports = {
         filename,
         "document"
       );
-      if (payload.error !== undefined) {
+      if (!payload) {
+        return res.status(404).json({ error: "Failed to get file" });
+      }
+      if (payload?.error !== undefined) {
         res.status(404).json({
           error: payload.error,
         });
@@ -338,9 +353,8 @@ module.exports = {
     const network = req.body.network;
 
     const vcUnpacked = await common.blockchainClient.verifyVC(vc);
-    const vpDocumentDidAddress = vcUnpacked.payload.vc.verifiablePresentationReference.id.split(
-      ":"
-    )[2];
+    const vpDocumentDidAddress =
+      vcUnpacked.payload.vc.verifiablePresentationReference.id.split(":")[2];
 
     let filename;
     let key;
@@ -464,9 +478,8 @@ module.exports = {
     const vpUnpacked = await common.blockchainClient.verifyVP(req.body.vpJwt);
     const vcJwt = vpUnpacked.payload.vp.verifiableCredential[0];
     const vcUnpacked = await common.blockchainClient.verifyVC(vcJwt);
-    const documentDidAddress = vcUnpacked.payload.vc.verifiablePresentationReference.id.split(
-      ":"
-    )[2];
+    const documentDidAddress =
+      vcUnpacked.payload.vc.verifiablePresentationReference.id.split(":")[2];
 
     const expirationDate = new Date(vcUnpacked.payload.vc.expirationDate);
     const validityTimeSeconds = Math.round((expirationDate - now) / 1000);

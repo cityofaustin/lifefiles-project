@@ -59,7 +59,7 @@ var AccountSchema = new mongoose.Schema(
   { usePushEach: true }
 );
 
-AccountSchema.plugin(uniqueValidator, { message: "is already taken." });
+// AccountSchema.plugin(uniqueValidator, { message: "is already taken." });
 
 AccountSchema.methods.validPassword = function (password) {
   var hash = crypto
